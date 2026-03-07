@@ -48,13 +48,13 @@ if (regBtn) {
   regBtn.addEventListener("click", async (e) => {
     e.preventDefault();
 
-    const inputs   = document.querySelectorAll("#registration input");
-    const firstName = inputs[0].value.trim();
-    const lastName  = inputs[1].value.trim();
-    const email     = inputs[2].value.trim();
-    const password  = inputs[3].value.trim();
+    const inputs      = document.querySelectorAll("#registration input");
+    const username    = inputs[0].value.trim();
+    const email       = inputs[1].value.trim();
+    const password    = inputs[2].value.trim();
+    const confirmPass = inputs[3].value.trim();
 
-    if (!firstName || !lastName || !email || !password) {
+    if (!username || !email || !password || !confirmPass) {
       showMsg("#registration", "⚠️ Please fill in all fields.", true);
       return;
     }
@@ -62,12 +62,16 @@ if (regBtn) {
       showMsg("#registration", "⚠️ Password must be at least 6 characters.", true);
       return;
     }
+    if (password !== confirmPass) {
+      showMsg("#registration", "⚠️ Passwords do not match.", true);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
       await updateProfile(userCredential.user, {
-        displayName: firstName + " " + lastName
+        displayName: username
       });
 
       showMsg("#registration", "🎉 Account created! Redirecting to login...");
