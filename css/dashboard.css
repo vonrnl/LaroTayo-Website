@@ -1,0 +1,626 @@
+/* ============================================
+   DASHBOARD STYLES – LARO TAYO
+   ============================================ */
+
+.dashboard-body {
+  background: #F0F6FF;
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---- TOP NAVBAR ---- */
+
+.dash-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 72px;
+  background: #1c1c1c;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.dash-nav-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.dash-user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--yellow));
+  border: 3px solid var(--orange-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.dash-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-welcome {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dash-welcome strong {
+  color: var(--yellow);
+  font-family: 'Fredoka One', cursive;
+}
+
+.dash-email {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+}
+
+.dash-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #e53935;
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.9rem;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 3px 0 #b71c1c;
+}
+
+.dash-logout-btn:hover {
+  background: #c62828;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #b71c1c;
+}
+
+.dash-logout-btn .material-symbols-rounded {
+  font-size: 18px;
+}
+
+
+/* ---- MAIN CONTENT ---- */
+
+.dash-main {
+  padding: 100px 36px 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dash-header {
+  margin-bottom: 32px;
+}
+
+.dash-header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.dash-header p {
+  color: #6A8AA0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.dash-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  margin-bottom: 20px;
+}
+
+.section-title h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.4rem;
+  color: var(--text);
+  margin-top: 8px;
+}
+
+
+/* ---- STAT CARDS ---- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 3px solid transparent;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-3px); }
+
+.stat-card.orange { border-color: var(--orange); box-shadow: 0 4px 0 var(--orange-dark); }
+.stat-card.blue   { border-color: var(--blue);   box-shadow: 0 4px 0 #1A5A9A; }
+.stat-card.green  { border-color: var(--green);  box-shadow: 0 4px 0 var(--green-dark); }
+.stat-card.yellow { border-color: var(--yellow); box-shadow: 0 4px 0 var(--orange); }
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card.orange .stat-icon { background: rgba(244,162,52,0.15); color: var(--orange); }
+.stat-card.blue   .stat-icon { background: rgba(43,127,212,0.15);  color: var(--blue); }
+.stat-card.green  .stat-icon { background: rgba(76,175,80,0.15);   color: var(--green); }
+.stat-card.yellow .stat-icon { background: rgba(255,215,0,0.2);    color: #E6A800; }
+
+.stat-icon .material-symbols-rounded {
+  font-size: 28px;
+  font-variation-settings: 'FILL' 1;
+}
+
+.stat-value {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  color: var(--text);
+  display: block;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  display: block;
+}
+
+
+/* ---- PROGRESS ---- */
+
+.progress-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.progress-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 22px;
+  border: 3px solid #dde8f0;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.progress-card:hover { transform: translateY(-3px); }
+.progress-card.locked { opacity: 0.6; filter: grayscale(0.4); }
+
+.progress-game-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.progress-icon { font-size: 2rem; flex-shrink: 0; }
+
+.progress-game-info h4 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.progress-level {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  text-transform: uppercase;
+}
+
+.progress-percent {
+  margin-left: auto;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.3rem;
+  color: var(--orange);
+}
+
+.progress-bar-wrap {
+  background: #eef4ff;
+  border-radius: 50px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 50px;
+  transition: width 1s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.progress-bar.orange { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.progress-bar.blue   { background: linear-gradient(90deg, var(--blue), #64B5F6); }
+.progress-bar.green  { background: linear-gradient(90deg, var(--green), #81C784); }
+.progress-bar.gray   { background: #ccc; }
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+
+/* ---- CHARTS ---- */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 3px solid #dde8f0;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+}
+
+.chart-header { margin-bottom: 20px; }
+
+.chart-header h3 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.chart-sub {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6A8AA0;
+}
+
+.chart-wrap {
+  height: 220px;
+  position: relative;
+}
+
+
+/* ---- GAME HISTORY ---- */
+
+.game-history {
+  background: #fff;
+  border-radius: 20px;
+  border: 3px solid #dde8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 22px;
+  border-bottom: 2px solid #f0f6ff;
+  transition: background 0.2s;
+}
+
+.history-item:last-child { border-bottom: none; }
+.history-item:hover { background: #f8fbff; }
+.history-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+.history-info { flex: 1; }
+.history-info h4 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.history-info span { font-size: 0.78rem; font-weight: 700; color: #6A8AA0; }
+
+.history-result {
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+.history-result.win  { background: rgba(76,175,80,0.15); color: var(--green); border: 2px solid var(--green); }
+.history-result.loss { background: rgba(244,67,54,0.1);  color: #e53935;     border: 2px solid #e53935; }
+
+.history-score {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  color: var(--orange);
+  min-width: 70px;
+  text-align: right;
+}
+
+
+/* ---- RESPONSIVE ---- */
+
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .dash-nav { padding: 0 16px; }
+  .dash-user-info { display: none; }
+  .dash-main { padding: 88px 16px 40px; }
+  .progress-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+
+@media (max-width: 480px) {
+  .dash-logout-btn span:last-child { display: none; }
+  .dash-logout-btn { padding: 9px 14px; }
+  .stat-card { padding: 16px 12px; flex-direction: column; text-align: center; gap: 8px; }
+  .history-item { padding: 12px 14px; gap: 10px; }
+  .history-score { min-width: unset; }
+}
+
+
+/* ---- EDIT PROFILE BUTTON ---- */
+
+.dash-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.9rem;
+  padding: 9px 20px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 3px 0 var(--orange-dark);
+}
+
+.dash-edit-btn:hover {
+  background: var(--orange-dark);
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--orange-dark);
+}
+
+.dash-edit-btn .material-symbols-rounded { font-size: 18px; }
+
+
+/* ---- EDIT PROFILE MODAL ---- */
+
+.ep-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  padding: 16px;
+}
+
+.ep-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.ep-modal {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  transform: translateY(30px) scale(0.97);
+  transition: transform 0.25s ease;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ep-overlay.open .ep-modal {
+  transform: translateY(0) scale(1);
+}
+
+.ep-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #f0f4ff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #888;
+  transition: background 0.2s;
+}
+
+.ep-close:hover { background: #ffe0e0; color: #e53935; }
+
+.ep-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+/* Avatar section */
+.ep-avatar-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ep-avatar-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--yellow));
+  border: 4px solid var(--orange-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  margin: 0 auto 10px;
+  transition: transform 0.2s;
+}
+
+.ep-avatar-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.ep-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+}
+
+.ep-avatar-opt {
+  background: #f0f6ff;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-size: 1.4rem;
+  padding: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  line-height: 1;
+}
+
+.ep-avatar-opt:hover {
+  background: #ffe8cc;
+  transform: scale(1.15);
+}
+
+.ep-avatar-opt.selected {
+  border-color: var(--orange);
+  background: #fff3e0;
+  transform: scale(1.1);
+}
+
+/* Nickname input */
+.ep-field {
+  margin-bottom: 16px;
+}
+
+.ep-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.ep-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2.5px solid #dde8f0;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.ep-input:focus { border-color: var(--orange); }
+
+/* Message */
+.ep-msg {
+  min-height: 24px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.ep-msg.success { background: #e0ffe8; color: #1a7a3c; }
+.ep-msg.error   { background: #ffe0e0; color: #c0392b; }
+
+/* Save button */
+.ep-save-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  padding: 14px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 0 var(--orange-dark);
+}
+
+.ep-save-btn:hover {
+  background: var(--orange-dark);
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--orange-dark);
+}
+
+.ep-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 480px) {
+  .ep-modal { padding: 28px 20px; }
+  .ep-avatar-grid { grid-template-columns: repeat(6, 1fr); }
+  .dash-edit-btn span:last-child { display: none; }
+  .dash-edit-btn { padding: 9px 14px; }
+}

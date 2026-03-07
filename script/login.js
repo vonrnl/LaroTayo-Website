@@ -103,7 +103,7 @@ if (loginBtn) {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       showMsg("#login", "✅ Welcome back, " + (userCredential.user.displayName || userCredential.user.email) + "!");
-      setTimeout(() => { window.location.hash = "#home"; }, 1200);
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
 
     } catch (err) {
       const msgs = {
@@ -117,7 +117,127 @@ if (loginBtn) {
   });
 }
 
+// ---- EDIT PROFILE MODAL ----
+function initEditProfile(user) {
+  const overlay    = document.getElementById('ep-overlay');
+  const closeBtn   = document.getElementById('ep-close');
+  const editBtn    = document.getElementById('dash-edit-profile');
+  const saveBtn    = document.getElementById('ep-save');
+  const nicknameIn = document.getElementById('ep-nickname');
+  const avatarGrid = document.getElementById('ep-avatar-grid');
+  const preview    = document.getElementById('ep-avatar-preview');
+  const msg        = document.getElementById('ep-msg');
+
+  if (!overlay) return;
+
+  // Load saved avatar from localStorage
+  let selectedEmoji = localStorage.getItem('dash-avatar') || '🎮';
+
+  function openModal() {
+    nicknameIn.value = user.displayName || '';
+    selectedEmoji = localStorage.getItem('dash-avatar') || '🎮';
+    preview.textContent = selectedEmoji;
+    // Mark selected avatar
+    document.querySelectorAll('.ep-avatar-opt').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.emoji === selectedEmoji);
+    });
+    msg.textContent = '';
+    msg.className = 'ep-msg';
+    overlay.classList.add('open');
+  }
+
+  function closeModal() { overlay.classList.remove('open'); }
+
+  editBtn.onclick = openModal;
+  closeBtn.onclick = closeModal;
+  overlay.onclick = (e) => { if (e.target === overlay) closeModal(); };
+
+  // Avatar selection
+  avatarGrid.onclick = (e) => {
+    const btn = e.target.closest('.ep-avatar-opt');
+    if (!btn) return;
+    selectedEmoji = btn.dataset.emoji;
+    preview.textContent = selectedEmoji;
+    document.querySelectorAll('.ep-avatar-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  };
+
+  // Save
+  saveBtn.onclick = async () => {
+    const nickname = nicknameIn.value.trim();
+    if (!nickname) {
+      msg.textContent = '⚠️ Please enter a nickname.';
+      msg.className = 'ep-msg error';
+      return;
+    }
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+    try {
+      await updateProfile(user, { displayName: nickname });
+      localStorage.setItem('dash-avatar', selectedEmoji);
+      // Update navbar instantly
+      const dashName       = document.getElementById('dash-name');
+      const dashAvatar     = document.getElementById('dash-avatar');
+      const dashHeaderName = document.getElementById('dash-header-name');
+      const dashHeaderAvatar = document.getElementById('dash-header-avatar');
+      if (dashName)         dashName.textContent         = nickname;
+      if (dashAvatar)       dashAvatar.textContent       = selectedEmoji;
+      if (dashHeaderName)   dashHeaderName.textContent   = nickname;
+      if (dashHeaderAvatar) dashHeaderAvatar.textContent = selectedEmoji;
+      msg.textContent = '✅ Profile updated!';
+      msg.className = 'ep-msg success';
+      setTimeout(closeModal, 1200);
+    } catch (err) {
+      msg.textContent = '❌ Failed to save. Try again.';
+      msg.className = 'ep-msg error';
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
+    }
+  };
+}
+
 onAuthStateChanged(auth, (user) => {
+  const isDashboard = window.location.pathname.includes('dashboard');
+
+  // ---- DASHBOARD PAGE ----
+  if (isDashboard) {
+    if (!user) {
+      window.location.href = 'index.html#login';
+      return;
+    }
+
+    const displayName = user.displayName || user.email.split('@')[0];
+
+    const dashName   = document.getElementById('dash-name');
+    const dashEmail  = document.getElementById('dash-email');
+    const dashLogout = document.getElementById('dash-logout');
+
+    if (dashName)  dashName.textContent  = displayName;
+    if (dashEmail) dashEmail.textContent = user.email;
+
+    const dashHeaderName = document.getElementById('dash-header-name');
+    if (dashHeaderName) dashHeaderName.textContent = displayName;
+
+    // Load saved avatar
+    const savedAvatar     = localStorage.getItem('dash-avatar') || '🎮';
+    const dashAvatar      = document.getElementById('dash-avatar');
+    const dashHeaderAvatar = document.getElementById('dash-header-avatar');
+    if (dashAvatar)       dashAvatar.textContent       = savedAvatar;
+    if (dashHeaderAvatar) dashHeaderAvatar.textContent = savedAvatar;
+
+    if (dashLogout) {
+      dashLogout.onclick = () => {
+        signOut(auth).then(() => { window.location.href = 'index.html'; });
+      };
+    }
+
+    // Init edit profile modal
+    initEditProfile(user);
+    return;
+  }
+
+  // ---- INDEX PAGE ----
   const loginNavItem = document.querySelector('a[href="#login"].nav-item');
   if (!loginNavItem) return;
 

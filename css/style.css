@@ -1,3 +1,5 @@
+/* ---- VARIABLES & RESET ---- */
+
 * {
   margin: 0;
   padding: 0;
@@ -122,13 +124,6 @@ nav .logo {
 .nav-item.active .material-symbols-rounded,
 .nav-item.active span {
   color: #fff;
-}
-
-@media (max-width: 720px) {
-  nav { padding: 0 16px; }
-  .logo-text { font-size: 1.1rem; }
-  .nav-item { padding: 6px 10px; min-width: 48px; }
-  .nav-item span { font-size: 0.55rem; }
 }
 
 
@@ -502,12 +497,6 @@ section {
   border-color: #E91E8C;
 }
 
-.emoji {
-  font-size: 2.8rem;
-  display: block;
-  margin-bottom: 12px;
-}
-
 .card h3 {
   font-family: 'Fredoka One', cursive;
   font-size: 1.5rem;
@@ -558,13 +547,6 @@ section {
   gap: 24px;
   max-width: 1080px;
   margin: 0 auto;
-}
-
-@media (max-width: 768px) {
-  .feats-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .feats-grid { grid-template-columns: 1fr; }
 }
 
 .feat {
@@ -629,14 +611,7 @@ section {
   align-items: center;
   max-width: 1000px;
   margin: 0 auto;
-}
-
-@media (max-width: 700px) {
-  .about-wrap {
-    grid-template-columns: 1fr;
-    gap: 28px;
-  }
-}
+ }
 
 .about-img {
   background: linear-gradient(160deg, #87CEEB, #2B7FD4);
