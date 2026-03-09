@@ -20,7 +20,6 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ---- SWEETALERT2 HELPERS ----
 const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',
@@ -127,7 +126,7 @@ if (loginBtn) {
 
       await Swal.fire({
         icon: 'success',
-        title: `Kamusta, ${name}! 👋`,
+        title: `Hello, ${name}! 👋`,
         text: 'Login successful! Taking you to your dashboard...',
         confirmButtonColor: '#F4A234',
         timer: 1500,
@@ -256,7 +255,7 @@ onAuthStateChanged(auth, (user) => {
     if (dashLogout) {
       dashLogout.onclick = async () => {
         const confirm = await Swal.fire({
-          title: 'Leaving na? 👋',
+          title: 'Leaving? 👋',
           text: 'Are you sure you want to logout?',
           icon: 'question',
           showCancelButton: true,
@@ -288,7 +287,7 @@ onAuthStateChanged(auth, (user) => {
     loginNavItem.onclick = async (e) => {
       e.preventDefault();
       const confirm = await Swal.fire({
-        title: 'Leaving na? 👋',
+        title: 'Leaving? 👋',
         text: 'Are you sure you want to logout?',
         icon: 'question',
         showCancelButton: true,

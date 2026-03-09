@@ -879,7 +879,7 @@ section {
   border: 3px solid #dde8f0;
   border-radius: 12px;
   font-family: 'Nunito', sans-serif;
-  font-size: 16px; /* Prevents iOS auto-zoom on focus */
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 12px;
@@ -943,13 +943,6 @@ footer p + p {
   margin-top: 6px;
 }
 
-
-/* ============================================
-   MOBILE-FIRST RESPONSIVE OVERHAUL
-   ============================================ */
-
-/* ---- HAMBURGER BUTTON ---- */
-
 .hamburger {
   display: none;
   flex-direction: column;
@@ -989,7 +982,6 @@ footer p + p {
 }
 
 
-/* ---- TABLET (≤ 900px) ---- */
 @media (max-width: 900px) {
   .hero-inner {
     gap: 28px;
@@ -1007,7 +999,6 @@ footer p + p {
 }
 
 
-/* ---- HAMBURGER BREAKPOINT (≤ 768px) ---- */
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
@@ -1064,7 +1055,6 @@ footer p + p {
     background: rgba(255,255,255,0.07);
   }
 
-  /* Hero: stack on tablet */
   .hero-inner {
     flex-direction: column;
     text-align: center;
@@ -1094,7 +1084,6 @@ footer p + p {
     height: 260px;
   }
 
-  /* About section */
   .about-wrap {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -1130,7 +1119,6 @@ footer p + p {
     font-size: 0.92rem;
   }
 
-  /* Hero */
   .hero-inner {
     padding: 28px 16px 48px;
     gap: 24px;
@@ -1181,7 +1169,6 @@ footer p + p {
     font-size: 1.4rem;
   }
 
-  /* Cards */
   .cards-grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -1191,7 +1178,6 @@ footer p + p {
     padding: 22px 18px;
   }
 
-  /* Features */
   .feats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
@@ -1232,13 +1218,11 @@ footer p + p {
     font-size: 0.88rem;
   }
 
-  /* Requirements */
   .req-grid {
     grid-template-columns: 1fr;
     gap: 14px;
   }
 
-  /* Download */
   .dl-box {
     padding: 28px 20px;
     width: 100%;
@@ -1322,7 +1306,7 @@ footer p + p {
   }
 
   .modal input {
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    font-size: 16px; 
   }
 }
 
@@ -1360,8 +1344,6 @@ footer p + p {
   }
 }
 
-
-/* ---- TOUCH: Remove hover effects on touch devices ---- */
 @media (hover: none) {
   .card:hover,
   .feat:hover,
