@@ -1,4 +1,4 @@
-/* ---- ABOUT PAGE HERO ---- */
+/* ---- ABOUT HERO ---- */
 
 .about-hero {
   background: linear-gradient(160deg, rgba(13,30,60,0.75) 0%, rgba(26,74,138,0.75) 100%),
@@ -13,8 +13,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 50%, rgba(244,162,52,0.15), transparent 60%),
-              radial-gradient(ellipse at 75% 30%, rgba(255,215,0,0.1), transparent 55%);
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(244,162,52,0.15), transparent 60%),
+    radial-gradient(ellipse at 75% 30%, rgba(255,215,0,0.1), transparent 55%);
 }
 
 .about-hero-inner {
@@ -32,9 +33,7 @@
   text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
 }
 
-.about-hero h1 span {
-  color: var(--yellow);
-}
+.about-hero h1 span { color: var(--yellow); }
 
 .about-hero p {
   color: rgba(255,255,255,0.8);
@@ -72,13 +71,6 @@
   align-items: center;
 }
 
-@media (max-width: 720px) {
-  .mission-inner {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-}
-
 .mission-text h2 {
   font-family: 'Fredoka One', cursive;
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
@@ -105,8 +97,7 @@
 }
 
 .mission-img img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
@@ -121,7 +112,7 @@
 }
 
 
-/* ---- TEAM MEMBERS ---- */
+/* ---- TEAM ---- */
 
 .team-section {
   background: #fff;
@@ -163,9 +154,12 @@
   box-shadow: 0 9px 0 var(--orange-dark);
 }
 
+.member-card:nth-child(even) {
+  background: linear-gradient(135deg, #FFF9E6, #FFF0C0);
+}
+
 .member-photo-wrap {
-  width: 110px;
-  height: 110px;
+  width: 110px; height: 110px;
   flex-shrink: 0;
   border-radius: 50%;
   border: 4px solid var(--orange);
@@ -175,8 +169,7 @@
 }
 
 .member-photo-wrap img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
@@ -196,10 +189,6 @@
 .av3 { background: linear-gradient(135deg, #C8E8FF, #64B5F6); }
 .av4 { background: linear-gradient(135deg, #FFCCBC, #FF8A65); }
 .av5 { background: linear-gradient(135deg, #E1BEE7, #BA68C8); }
-
-.member-info {
-  flex: 1;
-}
 
 .member-info h3 {
   font-family: 'Fredoka One', cursive;
@@ -228,35 +217,6 @@
   line-height: 1.65;
 }
 
-/* Alternate card colors */
-.member-card:nth-child(even) {
-  background: linear-gradient(135deg, #FFF9E6, #FFF0C0);
-}
-
-@media (max-width: 560px) {
-  .member-card {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .role-tag {
-    display: block;
-    width: fit-content;
-    margin: 0 auto 10px;
-  }
-}
-
-
-/* ---- NAV ACTIVE ---- */
-
-.nav-active {
-  color: var(--yellow) !important;
-}
-
-.nav-active::after {
-  transform: scaleX(1) !important;
-}
-
 
 /* ---- BACK SECTION ---- */
 
@@ -267,78 +227,29 @@
 }
 
 
-/* ---- ABOUT PAGE: TABLET (≤ 768px) ---- */
+/* ---- RESPONSIVE ---- */
+
 @media (max-width: 768px) {
-  .about-hero {
-    padding: 120px 20px 70px;
-  }
-
-  .mission-inner {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .mission-img {
-    max-width: 380px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .member-card {
-    padding: 22px 20px;
-    gap: 20px;
-  }
-
-  .member-photo-wrap {
-    width: 90px;
-    height: 90px;
-  }
+  .about-hero { padding: 120px 20px 70px; }
+  .mission-inner { grid-template-columns: 1fr; gap: 32px; }
+  .mission-img { max-width: 380px; margin: 0 auto; width: 100%; }
+  .member-card { padding: 22px 20px; gap: 20px; }
+  .member-photo-wrap { width: 90px; height: 90px; }
 }
 
-
-/* ---- ABOUT PAGE: MOBILE (≤ 600px) ---- */
 @media (max-width: 600px) {
-  .about-hero {
-    padding: 100px 16px 56px;
-  }
+  .about-hero { padding: 100px 16px 56px; }
+  .about-hero h1 { font-size: clamp(2.2rem, 9vw, 3rem); margin: 10px 0 12px; }
+  .about-hero p { font-size: 0.92rem; }
 
-  .about-hero h1 {
-    font-size: clamp(2.2rem, 9vw, 3rem);
-    margin: 10px 0 12px;
-  }
+  .mission-section { padding: 56px 16px; }
+  .mission-inner { gap: 24px; }
+  .mission-text h2 { font-size: 1.6rem; }
+  .mission-text p { font-size: 0.92rem; }
+  .mission-img { max-width: 100%; aspect-ratio: 4/3; }
 
-  .about-hero p {
-    font-size: 0.92rem;
-  }
-
-  .mission-section {
-    padding: 56px 16px;
-  }
-
-  .mission-inner {
-    gap: 24px;
-  }
-
-  .mission-text h2 {
-    font-size: 1.6rem;
-  }
-
-  .mission-text p {
-    font-size: 0.92rem;
-  }
-
-  .mission-img {
-    max-width: 100%;
-    aspect-ratio: 4/3;
-  }
-
-  .team-section {
-    padding: 56px 16px;
-  }
-
-  .members-grid {
-    gap: 18px;
-  }
+  .team-section { padding: 56px 16px; }
+  .members-grid { gap: 18px; }
 
   .member-card {
     flex-direction: column;
@@ -347,53 +258,18 @@
     gap: 16px;
   }
 
-  .member-photo-wrap {
-    width: 90px;
-    height: 90px;
-  }
+  .member-photo-wrap { width: 90px; height: 90px; }
+  .role-tag { display: block; width: fit-content; margin: 0 auto 10px; }
+  .member-info h3 { font-size: 1.2rem; }
+  .member-info p { font-size: 0.88rem; }
 
-  .role-tag {
-    display: block;
-    width: fit-content;
-    margin: 0 auto 10px;
-  }
-
-  .member-info h3 {
-    font-size: 1.2rem;
-  }
-
-  .member-info p {
-    font-size: 0.88rem;
-  }
-
-  .back-section {
-    padding: 36px 16px;
-  }
-
-  .back-section .btn-orange {
-    display: block;
-    width: fit-content;
-    margin: 0 auto;
-  }
+  .back-section { padding: 36px 16px; }
+  .back-section .btn-orange { display: block; width: fit-content; margin: 0 auto; }
 }
 
-
-/* ---- ABOUT PAGE: SMALL MOBILE (≤ 420px) ---- */
 @media (max-width: 420px) {
-  .about-hero h1 {
-    font-size: 2rem;
-  }
-
-  .member-card {
-    padding: 18px 12px;
-  }
-
-  .member-photo-wrap {
-    width: 78px;
-    height: 78px;
-  }
-
-  .member-info h3 {
-    font-size: 1.1rem;
-  }
+  .about-hero h1 { font-size: 2rem; }
+  .member-card { padding: 18px 12px; }
+  .member-photo-wrap { width: 78px; height: 78px; }
+  .member-info h3 { font-size: 1.1rem; }
 }

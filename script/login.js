@@ -20,135 +20,104 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 2500,
-  timerProgressBar: true,
-  didOpen: (toast) => {
-    toast.addEventListener('mouseenter', Swal.stopTimer);
-    toast.addEventListener('mouseleave', Swal.resumeTimer);
-  }
-});
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'larotayo2026';
 
-function showSuccess(title, text = '') {
-  return Swal.fire({
-    icon: 'success',
-    title,
-    text,
-    confirmButtonColor: '#F4A234',
-    fontFamily: 'Nunito',
+// ---- ADMIN LOGIN ----
+const adminLoginBtn = document.getElementById('admin-login-btn');
+if (adminLoginBtn) {
+  adminLoginBtn.addEventListener('click', () => {
+    const user = document.getElementById('admin-username').value.trim();
+    const pass = document.getElementById('admin-password').value.trim();
+    const err  = document.getElementById('admin-err');
+
+    if (!user || !pass) { err.textContent = 'Please fill in both fields.'; return; }
+    if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
+      err.textContent = 'Invalid admin credentials.';
+      document.getElementById('admin-password').value = '';
+      return;
+    }
+
+    err.textContent = '';
+    sessionStorage.setItem('admin-logged-in', 'yes');
+    adminLoginBtn.textContent = 'Redirecting...';
+    adminLoginBtn.disabled = true;
+    setTimeout(() => { window.location.href = 'admin.html'; }, 800);
   });
 }
 
-function showError(title, text = '') {
-  return Swal.fire({
-    icon: 'error',
-    title,
-    text,
-    confirmButtonColor: '#F4A234',
-  });
-}
+// ---- STUDENT LOGIN ----
+const studentLoginBtn = document.getElementById('student-login-btn');
+if (studentLoginBtn) {
+  studentLoginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('student-email').value.trim();
+    const pass  = document.getElementById('student-password').value.trim();
+    const err   = document.getElementById('student-err');
 
-function showToast(icon, title) {
-  return Toast.fire({ icon, title });
-}
+    if (!email || !pass) { err.textContent = 'Please enter your email and password.'; return; }
 
-// ---- REGISTRATION ----
-const regBtn = document.querySelector("#registration .btn-orange");
-if (regBtn) {
-  regBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const inputs      = document.querySelectorAll("#registration input");
-    const username    = inputs[0].value.trim();
-    const email       = inputs[1].value.trim();
-    const password    = inputs[2].value.trim();
-    const confirmPass = inputs[3].value.trim();
-
-    if (!username || !email || !password || !confirmPass) {
-      showError('Missing Fields', 'Please fill in all fields.');
-      return;
-    }
-    if (password.length < 6) {
-      showError('Weak Password', 'Password must be at least 6 characters.');
-      return;
-    }
-    if (password !== confirmPass) {
-      showError('Password Mismatch', 'Passwords do not match. Please try again.');
-      return;
-    }
+    studentLoginBtn.textContent = 'Logging in...';
+    studentLoginBtn.disabled = true;
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: username });
-
-      await Swal.fire({
-        icon: 'success',
-        title: '🎉 Account Created!',
-        text: 'Welcome to Laro Tayo! Redirecting to login...',
-        confirmButtonColor: '#F4A234',
-        timer: 2000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-
-      window.location.hash = "#login";
-
-    } catch (err) {
-      const msgs = {
-        "auth/email-already-in-use": "That email is already registered.",
-        "auth/invalid-email":        "Please enter a valid email address.",
-        "auth/weak-password":        "Password is too weak."
-      };
-      showError('Registration Failed', msgs[err.code] || err.message);
-    }
-  });
-}
-
-// ---- LOGIN ----
-const loginBtn = document.querySelector("#login .btn-orange");
-if (loginBtn) {
-  loginBtn.addEventListener("click", async () => {
-    const inputs   = document.querySelectorAll("#login input");
-    const email    = inputs[0].value.trim();
-    const password = inputs[1].value.trim();
-
-    if (!email || !password) {
-      showError('Missing Fields', 'Please enter your email and password.');
-      return;
-    }
-
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const name = userCredential.user.displayName || userCredential.user.email;
-
-      await Swal.fire({
-        icon: 'success',
-        title: `Hello, ${name}! 👋`,
-        text: 'Login successful! Taking you to your dashboard...',
-        confirmButtonColor: '#F4A234',
-        timer: 1500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-      });
-
-      window.location.href = "dashboard.html";
-
-    } catch (err) {
+      await signInWithEmailAndPassword(auth, email, pass);
+      err.textContent = '';
+      window.location.href = 'dashboard.html';
+    } catch (e) {
       const msgs = {
         "auth/user-not-found":     "No account found with that email.",
         "auth/wrong-password":     "Incorrect password. Please try again.",
         "auth/invalid-email":      "Please enter a valid email.",
         "auth/invalid-credential": "Wrong email or password."
       };
-      showError('Login Failed', msgs[err.code] || err.message);
+      err.textContent = msgs[e.code] || e.message;
+      studentLoginBtn.textContent = 'Login';
+      studentLoginBtn.disabled = false;
     }
   });
 }
 
-// ---- EDIT PROFILE MODAL ----
+// ---- REGISTRATION ----
+const regBtn = document.getElementById('register-btn');
+if (regBtn) {
+  regBtn.addEventListener('click', async () => {
+    const username    = document.getElementById('reg-username').value.trim();
+    const email       = document.getElementById('reg-email').value.trim();
+    const password    = document.getElementById('reg-password').value.trim();
+    const confirmPass = document.getElementById('reg-confirm').value.trim();
+
+    if (!username || !email || !password || !confirmPass) {
+      alert('Please fill in all fields.'); return;
+    }
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters.'); return;
+    }
+    if (password !== confirmPass) {
+      alert('Passwords do not match. Please try again.'); return;
+    }
+
+    regBtn.textContent = 'Creating account...';
+    regBtn.disabled = true;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: username });
+      alert('Account created! Welcome to Laro Tayo! You can now login.');
+      window.location.hash = '';
+    } catch (err) {
+      const msgs = {
+        "auth/email-already-in-use": "That email is already registered.",
+        "auth/invalid-email":        "Please enter a valid email address.",
+        "auth/weak-password":        "Password is too weak."
+      };
+      alert(msgs[err.code] || err.message);
+      regBtn.textContent = 'Sign up';
+      regBtn.disabled = false;
+    }
+  });
+}
+
+// ---- EDIT PROFILE MODAL (dashboard) ----
 function initEditProfile(user) {
   const overlay    = document.getElementById('ep-overlay');
   const closeBtn   = document.getElementById('ep-close');
@@ -192,10 +161,9 @@ function initEditProfile(user) {
   saveBtn.onclick = async () => {
     const nickname = nicknameIn.value.trim();
     if (!nickname) {
-      showToast('warning', 'Please enter a nickname!');
+      if (msg) { msg.textContent = 'Please enter a nickname!'; msg.className = 'ep-msg error'; }
       return;
     }
-
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<span class="material-symbols-rounded">hourglass_empty</span> Saving...';
 
@@ -203,21 +171,15 @@ function initEditProfile(user) {
       await updateProfile(user, { displayName: nickname });
       localStorage.setItem('dash-avatar', selectedEmoji);
 
-      const dashName         = document.getElementById('dash-name');
-      const dashAvatar       = document.getElementById('dash-avatar');
-      const dashHeaderName   = document.getElementById('dash-header-name');
-      const dashHeaderAvatar = document.getElementById('dash-header-avatar');
-
-      if (dashName)         dashName.textContent         = nickname;
-      if (dashAvatar)       dashAvatar.textContent       = selectedEmoji;
-      if (dashHeaderName)   dashHeaderName.textContent   = nickname;
-      if (dashHeaderAvatar) dashHeaderAvatar.textContent = selectedEmoji;
+      const el = (id) => document.getElementById(id);
+      if (el('dash-name'))          el('dash-name').textContent          = nickname;
+      if (el('dash-avatar'))        el('dash-avatar').textContent        = selectedEmoji;
+      if (el('dash-header-name'))   el('dash-header-name').textContent   = nickname;
+      if (el('dash-header-avatar')) el('dash-header-avatar').textContent = selectedEmoji;
 
       closeModal();
-      showToast('success', 'Profile updated successfully!');
-
     } catch (err) {
-      showToast('error', 'Failed to save. Please try again.');
+      if (msg) { msg.textContent = 'Failed to save. Please try again.'; msg.className = 'ep-msg error'; }
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
@@ -230,41 +192,22 @@ onAuthStateChanged(auth, (user) => {
   const isDashboard = window.location.pathname.includes('dashboard');
 
   if (isDashboard) {
-    if (!user) {
-      window.location.href = 'index.html#login';
-      return;
-    }
+    if (!user) { window.location.href = 'index.html'; return; }
 
     const displayName = user.displayName || user.email.split('@')[0];
-
-    const dashName         = document.getElementById('dash-name');
-    const dashEmail        = document.getElementById('dash-email');
-    const dashLogout       = document.getElementById('dash-logout');
-    const dashHeaderName   = document.getElementById('dash-header-name');
-    const dashAvatar       = document.getElementById('dash-avatar');
-    const dashHeaderAvatar = document.getElementById('dash-header-avatar');
-
-    if (dashName)         dashName.textContent         = displayName;
-    if (dashEmail)        dashEmail.textContent        = user.email;
-    if (dashHeaderName)   dashHeaderName.textContent   = displayName;
-
     const savedAvatar = localStorage.getItem('dash-avatar') || '🎮';
-    if (dashAvatar)       dashAvatar.textContent       = savedAvatar;
-    if (dashHeaderAvatar) dashHeaderAvatar.textContent = savedAvatar;
+    const el = (id) => document.getElementById(id);
 
+    if (el('dash-name'))          el('dash-name').textContent          = displayName;
+    if (el('dash-email'))         el('dash-email').textContent         = user.email;
+    if (el('dash-header-name'))   el('dash-header-name').textContent   = displayName;
+    if (el('dash-avatar'))        el('dash-avatar').textContent        = savedAvatar;
+    if (el('dash-header-avatar')) el('dash-header-avatar').textContent = savedAvatar;
+
+    const dashLogout = el('dash-logout');
     if (dashLogout) {
       dashLogout.onclick = async () => {
-        const confirm = await Swal.fire({
-          title: 'Leaving? 👋',
-          text: 'Are you sure you want to logout?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#e53935',
-          cancelButtonColor: '#F4A234',
-          confirmButtonText: 'Yes, logout',
-          cancelButtonText: 'Stay'
-        });
-        if (confirm.isConfirmed) {
+        if (confirm('Are you sure you want to logout?')) {
           signOut(auth).then(() => { window.location.href = 'index.html'; });
         }
       };
@@ -274,36 +217,26 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  // ---- INDEX PAGE ----
-  const loginNavItem = document.querySelector('a[href="#login"].nav-item');
-  if (!loginNavItem) return;
+  // Index page: swap LOGIN <-> LOGOUT in nav
+  const navLoginItem = document.querySelector('a[href="#login"].nav-item');
+  if (!navLoginItem) return;
 
   if (user) {
-    loginNavItem.innerHTML = `
+    navLoginItem.innerHTML = `
       <span class="material-symbols-rounded">logout</span>
       <span>LOGOUT</span>
     `;
-    loginNavItem.href = "#";
-    loginNavItem.onclick = async (e) => {
+    navLoginItem.href = "#";
+    navLoginItem.onclick = (e) => {
       e.preventDefault();
-      const confirm = await Swal.fire({
-        title: 'Leaving? 👋',
-        text: 'Are you sure you want to logout?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#e53935',
-        cancelButtonColor: '#F4A234',
-        confirmButtonText: 'Yes, logout',
-        cancelButtonText: 'Stay'
-      });
-      if (confirm.isConfirmed) {
+      if (confirm('Are you sure you want to logout?')) {
         signOut(auth).then(() => {
-          loginNavItem.innerHTML = `
+          navLoginItem.innerHTML = `
             <span class="material-symbols-rounded">lock</span>
             <span>LOGIN</span>
           `;
-          loginNavItem.href = "#login";
-          loginNavItem.onclick = null;
+          navLoginItem.href = "#login";
+          navLoginItem.onclick = null;
         });
       }
     };
