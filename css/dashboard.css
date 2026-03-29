@@ -549,80 +549,66 @@
 .ep-save-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
 
+
+/* ---- HAMBURGER (mobile) ---- */
+
+.dash-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  z-index: 200;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.dash-hamburger:hover { background: rgba(255,255,255,0.08); }
+
+.dash-hamburger span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #fff;
+  border-radius: 4px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.dash-hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.dash-hamburger.open span:nth-child(2) { opacity: 0; }
+.dash-hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* Mobile avatar (shown beside hamburger) */
+.dash-avatar-mobile  { display: none; }
+.dash-avatar-desktop { display: flex; }
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 1100px) {
-  .stats-grid  { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .charts-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  /* Navbar */
-  .dash-nav    { padding: 0 14px; height: 64px; }
+  .dash-nav { padding: 0 16px; }
   .dash-user-info { display: none; }
-  .dash-user-avatar { width: 38px; height: 38px; font-size: 1.1rem; }
-
-  /* Hide text labels on nav buttons, keep icons */
-  .dash-logout-btn span:not(.material-symbols-rounded),
-  .dash-edit-btn   span:not(.material-symbols-rounded),
-  .dash-shop-btn   span:not(.material-symbols-rounded) { display: none; }
-  .dash-logout-btn, .dash-edit-btn, .dash-shop-btn { padding: 9px 12px; }
-
-  /* Main */
-  .dash-main   { padding: 80px 14px 40px; }
-  .dash-header h1 { font-size: 1.3rem; }
-
-  /* Stats */
-  .stats-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .stat-card   { padding: 16px 12px; gap: 10px; }
-  .stat-value  { font-size: 1.6rem; }
-
-  /* Progress */
+  .dash-main { padding: 88px 16px 40px; }
   .progress-grid { grid-template-columns: 1fr; }
-
-  /* Charts */
-  .charts-grid { grid-template-columns: 1fr; gap: 14px; }
-  .chart-wrap  { height: 180px; }
-
-  /* History */
-  .history-item  { padding: 12px 14px; gap: 10px; }
-  .history-score { min-width: unset; font-size: 0.9rem; }
-  .history-result { font-size: 0.7rem; padding: 3px 8px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
 @media (max-width: 480px) {
-  /* Navbar — icon only */
-  .dash-nav { padding: 0 10px; gap: 6px; }
-  .dash-nav-user { gap: 6px; }
-
-  /* Stats — 2 col but compact */
-  .stats-grid { gap: 8px; }
-  .stat-card  { padding: 12px 10px; flex-direction: column; text-align: center; gap: 6px; }
-  .stat-icon  { width: 40px; height: 40px; }
-  .stat-icon .material-symbols-rounded { font-size: 22px; }
-  .stat-value { font-size: 1.4rem; }
-  .stat-label { font-size: 0.7rem; }
-
-  /* Progress */
-  .progress-card { padding: 16px 14px; }
-  .progress-icon { font-size: 1.6rem; }
-  .progress-game-info h4 { font-size: 0.95rem; }
-  .progress-percent { font-size: 1.1rem; }
-
-  /* History */
-  .history-icon  { font-size: 1.4rem; }
-  .history-info h4 { font-size: 0.9rem; }
-
-  /* Edit profile modal */
-  .ep-modal  { padding: 24px 16px; }
-  .ep-title  { font-size: 1.2rem; }
-  .ep-avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-  .ep-avatar-opt  { font-size: 1.2rem; padding: 5px; }
-  .ep-avatar-preview { width: 64px; height: 64px; font-size: 2rem; }
-}
-
-@media (max-width: 360px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .dash-main  { padding: 72px 10px 32px; }
-  .ep-avatar-grid { grid-template-columns: repeat(4, 1fr); }
+  .dash-logout-btn span:last-child,
+  .dash-edit-btn span:last-child { display: none; }
+  .dash-logout-btn, .dash-edit-btn { padding: 9px 14px; }
+  .stat-card { padding: 16px 12px; flex-direction: column; text-align: center; gap: 8px; }
+  .history-item { padding: 12px 14px; gap: 10px; }
+  .history-score { min-width: unset; }
+  .ep-modal { padding: 28px 20px; }
+  .ep-avatar-grid { grid-template-columns: repeat(6, 1fr); }
 }

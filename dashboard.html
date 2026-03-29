@@ -19,25 +19,33 @@
     <a href="index.html" class="logo">
       <span class="logo-o">LARO TAYO</span>
     </a>
-    <div class="dash-nav-user">
-      <div class="dash-user-avatar" id="dash-avatar">🎮</div>
+
+    <!-- Avatar shown on mobile beside hamburger -->
+    <div class="dash-user-avatar dash-avatar-mobile" id="dash-avatar-mobile">🎮</div>
+
+    <!-- Hamburger (mobile only) -->
+    <button class="dash-hamburger" id="dash-hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Nav menu -->
+    <div class="dash-nav-user" id="dash-nav-user">
+      <div class="dash-user-avatar dash-avatar-desktop" id="dash-avatar">🎮</div>
       <div class="dash-user-info">
         <span class="dash-welcome">Welcome back, <strong id="dash-name">...</strong>!</span>
         <span class="dash-email" id="dash-email">...</span>
       </div>
- 
       <a href="store.html" class="dash-shop-btn">
         <span class="material-symbols-rounded">storefront</span>
-        Shop
+        <span>Shop</span>
       </a>
- 
       <button class="dash-edit-btn" id="dash-edit-profile">
         <span class="material-symbols-rounded">edit</span>
-        Edit Profile
+        <span>Edit Profile</span>
       </button>
       <button class="dash-logout-btn" id="dash-logout">
         <span class="material-symbols-rounded">logout</span>
-        Logout
+        <span>Logout</span>
       </button>
     </div>
   </nav>
@@ -158,5 +166,30 @@
     </section>
  
   </main>
+
+  <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('dash-hamburger');
+    const navUser   = document.getElementById('dash-nav-user');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      navUser.classList.toggle('open');
+    });
+    // Close menu when a button inside is clicked
+    navUser.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        navUser.classList.remove('open');
+      });
+    });
+    // Sync mobile avatar with desktop avatar (updated by dashboard.js)
+    const observer = new MutationObserver(() => {
+      const desktop = document.getElementById('dash-avatar');
+      const mobile  = document.getElementById('dash-avatar-mobile');
+      if (desktop && mobile) mobile.textContent = desktop.textContent;
+    });
+    const desktopAvatar = document.getElementById('dash-avatar');
+    if (desktopAvatar) observer.observe(desktopAvatar, { childList: true, subtree: true, characterData: true });
+  </script>
   </body>
 </html>
