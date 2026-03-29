@@ -552,25 +552,77 @@
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 1100px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid  { grid-template-columns: repeat(2, 1fr); }
   .charts-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-  .dash-nav { padding: 0 16px; }
+  /* Navbar */
+  .dash-nav    { padding: 0 14px; height: 64px; }
   .dash-user-info { display: none; }
-  .dash-main { padding: 88px 16px 40px; }
+  .dash-user-avatar { width: 38px; height: 38px; font-size: 1.1rem; }
+
+  /* Hide text labels on nav buttons, keep icons */
+  .dash-logout-btn span:not(.material-symbols-rounded),
+  .dash-edit-btn   span:not(.material-symbols-rounded),
+  .dash-shop-btn   span:not(.material-symbols-rounded) { display: none; }
+  .dash-logout-btn, .dash-edit-btn, .dash-shop-btn { padding: 9px 12px; }
+
+  /* Main */
+  .dash-main   { padding: 80px 14px 40px; }
+  .dash-header h1 { font-size: 1.3rem; }
+
+  /* Stats */
+  .stats-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card   { padding: 16px 12px; gap: 10px; }
+  .stat-value  { font-size: 1.6rem; }
+
+  /* Progress */
   .progress-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Charts */
+  .charts-grid { grid-template-columns: 1fr; gap: 14px; }
+  .chart-wrap  { height: 180px; }
+
+  /* History */
+  .history-item  { padding: 12px 14px; gap: 10px; }
+  .history-score { min-width: unset; font-size: 0.9rem; }
+  .history-result { font-size: 0.7rem; padding: 3px 8px; }
 }
 
 @media (max-width: 480px) {
-  .dash-logout-btn span:last-child,
-  .dash-edit-btn span:last-child { display: none; }
-  .dash-logout-btn, .dash-edit-btn { padding: 9px 14px; }
-  .stat-card { padding: 16px 12px; flex-direction: column; text-align: center; gap: 8px; }
-  .history-item { padding: 12px 14px; gap: 10px; }
-  .history-score { min-width: unset; }
-  .ep-modal { padding: 28px 20px; }
-  .ep-avatar-grid { grid-template-columns: repeat(6, 1fr); }
+  /* Navbar — icon only */
+  .dash-nav { padding: 0 10px; gap: 6px; }
+  .dash-nav-user { gap: 6px; }
+
+  /* Stats — 2 col but compact */
+  .stats-grid { gap: 8px; }
+  .stat-card  { padding: 12px 10px; flex-direction: column; text-align: center; gap: 6px; }
+  .stat-icon  { width: 40px; height: 40px; }
+  .stat-icon .material-symbols-rounded { font-size: 22px; }
+  .stat-value { font-size: 1.4rem; }
+  .stat-label { font-size: 0.7rem; }
+
+  /* Progress */
+  .progress-card { padding: 16px 14px; }
+  .progress-icon { font-size: 1.6rem; }
+  .progress-game-info h4 { font-size: 0.95rem; }
+  .progress-percent { font-size: 1.1rem; }
+
+  /* History */
+  .history-icon  { font-size: 1.4rem; }
+  .history-info h4 { font-size: 0.9rem; }
+
+  /* Edit profile modal */
+  .ep-modal  { padding: 24px 16px; }
+  .ep-title  { font-size: 1.2rem; }
+  .ep-avatar-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .ep-avatar-opt  { font-size: 1.2rem; padding: 5px; }
+  .ep-avatar-preview { width: 64px; height: 64px; font-size: 2rem; }
+}
+
+@media (max-width: 360px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-main  { padding: 72px 10px 32px; }
+  .ep-avatar-grid { grid-template-columns: repeat(4, 1fr); }
 }
