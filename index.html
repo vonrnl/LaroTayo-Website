@@ -14,7 +14,7 @@
   <!-- NAVBAR -->
   <nav>
     <a href="#home" class="logo">
-      <span class="logo-text">LARO TAY</span><span class="logo-o">O</span>
+      <span class="logo-o">LARO TAYO</span>
     </a>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
@@ -55,7 +55,7 @@
       <div class="hero-left">
         <span class="badge">🇵🇭 Filipino Street Games</span>
         <h1>Play &amp; Learn<br><span>Filipino Street</span><br><span>Games!</span></h1>
-        <p>Discover the joy of traditional Filipino street games. An interactive educational Android game made for elementary students.</p>
+        <p>Laro Tayo: Development of a 3d mobile based multiplayer game for learning the Filipino street games for elementary students in Cavite.</p>
         <div class="hero-btns">
           <a href="#download" class="btn-orange">📱 Download APK</a>
           <a href="#games" class="btn-ghost">See Games</a>
@@ -87,22 +87,32 @@
     </div>
     <div class="cards-grid">
       <div class="card green reveal">
-        <span class="material-symbols-rounded card-icon">directions_run</span>
+        <span class="material-symbols-rounded card-icon">accessibility</span>
         <h3>Patintero</h3>
-        <p>Cross the lines without getting tagged. It's all about speed and outwitting the other team.</p>
+        <p>Patintero is a traditional Filipino outdoor team game, dating back generations as a popular, low-cost pastime played by children and adults in streets and playgrounds.
+           Derived from the Spanish word tinte ("ink"), it refers to the chalk lines, or sometimes water, used to mark the grid. </p>
         <span class="pill">Team Play</span>
       </div>
       <div class="card blue reveal">
-        <span class="material-symbols-rounded card-icon">pets</span>
+        <span class="material-symbols-rounded card-icon">directions_run</span>
         <h3>Luksong Baka</h3>
-        <p>Jump over your crouching teammate. The higher it gets, the harder the challenge!</p>
+        <p>Luksong Baka is a traditional Filipino game similar to leapfrog, where players jump over a crouching person (“baka”). It has roots in rural communities of the Philippines,
+           where children played it for fun and physical activity long before modern games became popular.</p>
         <span class="pill">Jumping</span>
       </div>
       <div class="card pink reveal">
         <span class="material-symbols-rounded card-icon">cloud</span>
         <h3>Langit Lupa</h3>
-        <p>Stay in the sky or run to the ground — but don't get caught by the tagger!</p>
+        <p>Langit Lupa is a traditional Filipino chasing game ("habulan") stemming from ancestral, oral tradition, popular in 90s Filipino childhood. It requires no equipment,
+           only an elevated surface ("langit" or heaven) to escape a tagged ground ("lupa" or earth)</p>
         <span class="pill">Strategy</span>
+      </div>
+      <div class="card blue reveal">
+        <span class="material-symbols-rounded card-icon">directions_walk directions_run</span>
+        <h3>Ice Ice Water</h3>
+        <p>"Ice Ice Water" (or "Ice Water") is a popular Filipino outdoor chasing game similar to tag, where the "it" player freezes runners by touching them,
+           and they can only be unfrozen by teammates shouting "Water"</p>
+        <span class="pill">Tag game</span>
       </div>
     </div>
   </section>
@@ -141,9 +151,9 @@
         <p>Bright visuals designed for ages 6 to 12.</p>
       </div>
       <div class="feat reveal">
-        <span class="material-symbols-rounded feat-icon">wifi_off</span>
-        <h4>Works Offline</h4>
-        <p>No internet needed. Play anywhere, anytime.</p>
+        <span class="material-symbols-rounded feat-icon">wifi</span>
+        <h4>Works Online</h4>
+        <p>Internet needed. Play with multiplayer</p>
       </div>
     </div>
   </section>
@@ -151,23 +161,58 @@
   <!-- ABOUT -->
   <section id="about">
     <div class="about-wrap">
-      <div class="about-img reveal">
-        <img src="img/luksong baka.png" alt="About Laro Tayo"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-        <div class="about-img-fallback"></div>
+
+      <!-- PHOTO GALLERY -->
+      <div class="about-gallery reveal">
+
+        <!-- MAIN / FEATURED PHOTO -->
+        <div class="gallery-main">
+          <img src="img/Pinoy-Games-3.jpg" alt="Luksong Baka"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="gallery-fallback"></div>
+        </div>
+
+        <!-- THUMBNAIL STRIP — replace src with your own images -->
+        <div class="gallery-thumbs">
+          <div class="gallery-thumb">
+            <img src="img/luksong baka.png" alt="Photo 2"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <div class="gallery-fallback small"></div>
+          </div>
+          <div class="gallery-thumb">
+            <img src="img/langitlupa.jpg" alt="Photo 3"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <div class="gallery-fallback small"></div>
+          </div>
+          <div class="gallery-thumb">
+            <img src="img/patintero.jpg" alt="Photo 4"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <div class="gallery-fallback small"></div>
+          </div>
+          <div class="gallery-thumb">
+            <img src="img/kids.jpg"alt="Photo 5"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <div class="gallery-fallback small"></div>
+          </div>
+        </div>
+
       </div>
+
+      <!-- TEXT -->
       <div class="about-text reveal">
         <span class="tag">About the Game</span>
-        <h2>Keeping Filipino Play Alive</h2>
-        <p>Laro Tayo is a thesis project that brings traditional Filipino street games into the hands of today's kids through an Android app. We want every child to know and love the games that shaped our culture.</p>
+        <h2>LARO TAYO</h2>
+        <p>Laro Tayo is a thesis project focuses on developing an educational game that digitally adapts a few traditional street games from the Philippines,
+           specificall targeted at children and students, and is designed for mobile devices. We create this game to keep our traditional filipino street games alive and give the new generation fun and exciting games</p>
         <ul>
-          <li>✅ Teaches Filipino heritage through play</li>
-          <li>✅ Made for Grades 1 to 6</li>
-          <li>✅ 4 authentic street games</li>
-          <li>✅ Fun for the whole class</li>
-          <li>✅ 100% made by Filipino students</li>
+          <li>★ Teaches Filipino heritage through mobile game</li>
+          <li>★ Made for Elementary Students</li>
+          <li>★ Traditional Filipino Street games</li>
+          <li>★ Fun for the whole class</li>
+          <li>★ made by NCST students</li>
         </ul>
       </div>
+
     </div>
   </section>
 
@@ -180,28 +225,28 @@
     </div>
     <div class="req-grid">
       <div class="req-card reveal">
-        <h4>🥉 Minimum</h4>
+        <span class="material-symbols-rounded card-icon" style="font-size: 2.5rem;">sentiment_dissatisfied</span>
         <div class="req-row"><span>Android</span><span>6.0+</span></div>
         <div class="req-row"><span>RAM</span><span>2 GB</span></div>
         <div class="req-row"><span>Storage</span><span>100 MB</span></div>
         <div class="req-row"><span>FPS</span><span>30 FPS</span></div>
       </div>
       <div class="req-card reveal">
-        <h4>🥈 Recommended</h4>
+        <span class="material-symbols-rounded card-icon" style="font-size: 2.5rem;">sentiment_content</span>
         <div class="req-row"><span>Android</span><span>9.0+</span></div>
         <div class="req-row"><span>RAM</span><span>3 GB</span></div>
         <div class="req-row"><span>Storage</span><span>100 MB</span></div>
         <div class="req-row"><span>FPS</span><span>60 FPS</span></div>
       </div>
       <div class="req-card reveal">
-        <h4>🥇 Best</h4>
+        <span class="material-symbols-rounded card-icon" style="font-size: 2.5rem;">sentiment_very_satisfied</span>
         <div class="req-row"><span>Android</span><span>12+</span></div>
         <div class="req-row"><span>RAM</span><span>4 GB+</span></div>
         <div class="req-row"><span>Storage</span><span>100 MB</span></div>
         <div class="req-row"><span>FPS</span><span>60+ FPS</span></div>
       </div>
     </div>
-    <p class="note">✅ Compatible with most Android phones made after 2017</p>
+    <p class="note">Compatible with most Android phones made after 2017</p>
   </section>
 
   <!-- DOWNLOAD -->
@@ -209,13 +254,13 @@
     <div class="section-head reveal">
       <span class="tag light">Get the App</span>
       <h2 class="white">Download Laro Tayo</h2>
-      <p class="light-text">Free. No sign-up. Just install and play!</p>
+      <p class="light-text">Free sign-up. Just install and play!</p>
     </div>
     <div class="dl-box reveal">
-      <div class="dl-icon">📱</div>
+      <span class="material-symbols-rounded card-icon" style="font-size: 5rem;">stadia_controller</span>
       <h3>Laro Tayo – Android APK</h3>
       <p>Version 1.0 · Free · Android 6.0+</p>
-      <a href="YOUR_GOOGLE_DRIVE_LINK_HERE" class="btn-green">⬇️ PLAY NOW</a>
+      <a href="YOUR_GOOGLE_DRIVE_LINK_HERE" class="btn-green">➜] PLAY NOW</a>
       <small>Enable "Install from unknown sources" in settings first.</small>
     </div>
   </section>
@@ -224,16 +269,16 @@
   <div id="login" class="modal-wrap">
     <div class="modal">
       <a href="#" class="modal-close">✕</a>
-      <span class="modal-icon">👋</span>
+      <span class="material-symbols-rounded modal-icon" style="font-size: 2.5rem;">groups</span>
       <h3>Login As</h3>
       <p>Choose how you want to login</p>
       <div class="role-btns">
         <a href="#admin-login" class="role-btn admin">
-          <span class="role-btn-emoji">🛡️</span>
+          <span class="material-symbols-rounded modal-icon"style="font-size: 2.5rem;">person_shield</span>
           Admin
         </a>
         <a href="#student-login" class="role-btn student">
-          <span class="role-btn-emoji">🎮</span>
+          <span class="material-symbols-rounded modal-icon"style="font-size: 2.5rem;">person_4</span>
           Student
         </a>
       </div>
@@ -244,7 +289,7 @@
   <div id="admin-login" class="modal-wrap">
     <div class="modal modal-admin">
       <a href="#login" class="modal-close">✕</a>
-      <span class="modal-icon">🛡️</span>
+      <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_shield</span>
       <h3>Admin Login</h3>
       <p>Sign in to access the Admin Panel</p>
       <input type="text" id="admin-username" placeholder="Admin Username" autocomplete="off" />
@@ -259,7 +304,7 @@
   <div id="student-login" class="modal-wrap">
     <div class="modal">
       <a href="#login" class="modal-close">✕</a>
-      <span class="modal-icon">🎮</span>
+      <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_4</span>
       <h3>Student Login</h3>
       <p>Sign in to save your progress</p>
       <input type="email" id="student-email" placeholder="Email" autocomplete="off" />

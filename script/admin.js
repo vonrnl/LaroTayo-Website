@@ -1,6 +1,3 @@
-/* ============================================================
-   admin.js – Laro Tayo Admin Panel
-   ============================================================ */
 
 /* ---- MOCK DATA (replace with Firebase calls) ---- */
 const MOCK_USERS = [

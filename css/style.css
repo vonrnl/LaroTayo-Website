@@ -50,20 +50,11 @@ nav .logo {
   flex-shrink: 0;
 }
 
-.logo-text {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.5rem;
-  color: var(--white);
-  -webkit-text-stroke: 2px #1A3A5C;
-  text-shadow: 2px 2px 0 #1A3A5C;
-  letter-spacing: 2px;
-}
-
 .logo-o {
   font-family: 'Fredoka One', cursive;
-  font-size: 2.4rem;
+  font-size: 1.8rem;
   color: var(--yellow);
-  -webkit-text-stroke: 3px #1A3A5C;
+  -webkit-text-stroke: 1.5px #1A3A5C;
   text-shadow: 2px 2px 0 #1A3A5C;
   line-height: 1;
   margin-left: 2px;
@@ -417,6 +408,7 @@ section { padding: 80px 24px; }
 .card.green  { background: linear-gradient(135deg, #e8ffe8, #c0f0c0); border-color: var(--green); }
 .card.blue   { background: linear-gradient(135deg, #e6f4ff, #c0e0ff); border-color: var(--blue); }
 .card.pink   { background: linear-gradient(135deg, #fff0f8, #ffd0e8); border-color: #E91E8C; }
+.card.lblue   { background: linear-gradient(135deg, #f0faff, #e1f6fd); border-color: #3587e5; }
 
 .card h3 {
   font-family: 'Fredoka One', cursive;
@@ -533,34 +525,77 @@ section { padding: 80px 24px; }
   margin: 0 auto;
 }
 
-.about-img {
-  background: linear-gradient(160deg, #87CEEB, #2B7FD4);
-  border-radius: 22px;
-  aspect-ratio: 1;
+/* ---- ABOUT GALLERY ---- */
+
+.about-gallery {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gallery-main {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 20px;
   border: 5px solid var(--orange);
   box-shadow: 0 7px 0 var(--orange-dark);
   overflow: hidden;
   position: relative;
+  background: linear-gradient(160deg, #87CEEB, #2B7FD4);
 }
 
-.about-img img {
+.gallery-main img {
   width: 100%; height: 100%;
   object-fit: cover;
-  border-radius: 16px;
   display: block;
+  transition: transform 0.4s ease;
 }
 
-.about-img-fallback {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 6rem;
+.gallery-main:hover img { transform: scale(1.04); }
+
+.gallery-thumbs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.gallery-thumb {
+  aspect-ratio: 4/3;
+  border-radius: 14px;
+  border: 4px solid var(--orange);
+  box-shadow: 0 4px 0 var(--orange-dark);
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(160deg, #87CEEB, #2B7FD4);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gallery-thumb:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 0 var(--orange-dark);
+  border-color: var(--yellow);
+}
+
+.gallery-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
   position: absolute;
   inset: 0;
 }
+
+.gallery-fallback {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #c8e8ff, #87CEEB);
+}
+
+.gallery-fallback.small { font-size: 1.8rem; }
 
 .about-text h2 {
   font-family: 'Fredoka One', cursive;
@@ -1005,7 +1040,7 @@ footer p + p { margin-top: 6px; }
   .hero-img-box { width: 260px; height: 260px; }
 
   .about-wrap { grid-template-columns: 1fr; gap: 28px; }
-  .about-img { max-width: 400px; margin: 0 auto; width: 100%; }
+  .about-gallery { max-width: 480px; margin: 0 auto; width: 100%; }
 }
 
 @media (max-width: 600px) {
@@ -1036,7 +1071,8 @@ footer p + p { margin-top: 6px; }
   .feat p { font-size: 0.85rem; }
 
   .about-wrap { grid-template-columns: 1fr; gap: 20px; }
-  .about-img { aspect-ratio: 4/3; max-width: 100%; }
+  .about-gallery { max-width: 100%; }
+  .gallery-thumbs { grid-template-columns: repeat(2, 1fr); }
   .about-text h2 { font-size: 1.6rem; }
   .about-text ul li { font-size: 0.88rem; }
 

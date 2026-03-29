@@ -6,24 +6,31 @@
   <title>Dashboard – Laro Tayo</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/store.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-body">
-
+ 
   <!-- TOP NAVBAR -->
   <nav class="dash-nav">
     <a href="index.html" class="logo">
-      <span class="logo-text">LARO TAY</span><span class="logo-o">O</span>
+      <span class="logo-o">LARO TAYO</span>
     </a>
     <div class="dash-nav-user">
       <div class="dash-user-avatar" id="dash-avatar">🎮</div>
       <div class="dash-user-info">
-        <span class="dash-welcome">Welcome back, <strong id="dash-name">Player</strong>!</span>
-        <span class="dash-email" id="dash-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a3d3cfc2dac6d1e3c6cec2cacf8dc0ccce">[email&#160;protected]</a></span>
+        <span class="dash-welcome">Welcome back, <strong id="dash-name">...</strong>!</span>
+        <span class="dash-email" id="dash-email">...</span>
       </div>
+ 
+      <a href="store.html" class="dash-shop-btn">
+        <span class="material-symbols-rounded">storefront</span>
+        Shop
+      </a>
+ 
       <button class="dash-edit-btn" id="dash-edit-profile">
         <span class="material-symbols-rounded">edit</span>
         Edit Profile
@@ -34,7 +41,7 @@
       </button>
     </div>
   </nav>
-
+ 
   <!-- EDIT PROFILE MODAL -->
   <div class="ep-overlay" id="ep-overlay">
     <div class="ep-modal">
@@ -75,85 +82,53 @@
       </button>
     </div>
   </div>
-
+ 
   <!-- MAIN CONTENT -->
   <main class="dash-main">
-
+ 
     <div class="dash-header">
       <div>
-        <h1><span id="dash-header-avatar">🎮</span> <span id="dash-header-name">Player</span>'s Dashboard</h1>
+        <h1><span id="dash-header-avatar">🎮</span> <span id="dash-header-name">...</span>'s Dashboard</h1>
         <p id="dash-date"></p>
       </div>
     </div>
-
+ 
     <!-- STATS CARDS -->
     <section class="dash-section">
       <div class="stats-grid">
         <div class="stat-card orange">
           <div class="stat-icon"><span class="material-symbols-rounded">emoji_events</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-score">0</span><span class="stat-label">Total Score</span></div>
+          <div class="stat-info"><span class="stat-value" id="stat-score">—</span><span class="stat-label">Total Score</span></div>
         </div>
         <div class="stat-card blue">
           <div class="stat-icon"><span class="material-symbols-rounded">sports_esports</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-games">0</span><span class="stat-label">Games Played</span></div>
+          <div class="stat-info"><span class="stat-value" id="stat-games">—</span><span class="stat-label">Games Played</span></div>
         </div>
         <div class="stat-card green">
           <div class="stat-icon"><span class="material-symbols-rounded">military_tech</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-wins">0</span><span class="stat-label">Wins</span></div>
+          <div class="stat-info"><span class="stat-value" id="stat-wins">—</span><span class="stat-label">Wins</span></div>
         </div>
         <div class="stat-card yellow">
           <div class="stat-icon"><span class="material-symbols-rounded">local_fire_department</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-streak">0</span><span class="stat-label">Day Streak</span></div>
+          <div class="stat-info"><span class="stat-value" id="stat-streak">—</span><span class="stat-label">Day Streak</span></div>
         </div>
       </div>
     </section>
-
+ 
     <!-- PROGRESS -->
     <section class="dash-section">
       <div class="section-title">
         <span class="tag">🏆 Game Progress</span>
         <h2>Your Filipino Street Games Progress</h2>
       </div>
-      <div class="progress-grid">
-        <div class="progress-card">
-          <div class="progress-game-info">
-            <span class="progress-icon">🏃</span>
-            <div><h4>Patintero</h4><span class="progress-level">Level 3</span></div>
-            <span class="progress-percent">60%</span>
-          </div>
-          <div class="progress-bar-wrap"><div class="progress-bar orange" style="width:0%" data-width="60%"></div></div>
-          <div class="progress-stats"><span>🎯 Best Score: 320</span><span>⭐ 3/5 Stars</span></div>
-        </div>
-        <div class="progress-card">
-          <div class="progress-game-info">
-            <span class="progress-icon">🐄</span>
-            <div><h4>Luksong Baka</h4><span class="progress-level">Level 2</span></div>
-            <span class="progress-percent">40%</span>
-          </div>
-          <div class="progress-bar-wrap"><div class="progress-bar blue" style="width:0%" data-width="40%"></div></div>
-          <div class="progress-stats"><span>🎯 Best Score: 210</span><span>⭐ 2/5 Stars</span></div>
-        </div>
-        <div class="progress-card">
-          <div class="progress-game-info">
-            <span class="progress-icon">☁️</span>
-            <div><h4>Langit Lupa</h4><span class="progress-level">Level 4</span></div>
-            <span class="progress-percent">80%</span>
-          </div>
-          <div class="progress-bar-wrap"><div class="progress-bar green" style="width:0%" data-width="80%"></div></div>
-          <div class="progress-stats"><span>🎯 Best Score: 450</span><span>⭐ 4/5 Stars</span></div>
-        </div>
-        <div class="progress-card locked">
-          <div class="progress-game-info">
-            <span class="progress-icon">🔒</span>
-            <div><h4>bamsak</h4><span class="progress-level">Locked</span></div>
-            <span class="progress-percent">0%</span>
-          </div>
-          <div class="progress-bar-wrap"><div class="progress-bar gray" style="width:0%"></div></div>
-          <div class="progress-stats"><span>🔓 Reach Level 5 to unlock</span></div>
+      <div class="progress-grid" id="progress-grid">
+        <!-- Filled dynamically from Firestore -->
+        <div class="progress-card" style="grid-column:1/-1;text-align:center;padding:32px;color:#6A8AA0;font-weight:700;">
+          Loading progress...
         </div>
       </div>
     </section>
-
+ 
     <!-- CHARTS -->
     <section class="dash-section">
       <div class="charts-grid">
@@ -167,107 +142,21 @@
         </div>
       </div>
     </section>
-
+ 
     <!-- GAME HISTORY -->
     <section class="dash-section">
       <div class="section-title">
         <span class="tag">🎮 Recent Games</span>
         <h2>Recent Game History</h2>
       </div>
-      <div class="game-history">
-        <div class="history-item">
-          <span class="history-icon">🏃</span>
-          <div class="history-info"><h4>Patintero</h4><span>Today, 3:20 PM</span></div>
-          <div class="history-result win">WIN</div>
-          <div class="history-score">+120 pts</div>
-        </div>
-        <div class="history-item">
-          <span class="history-icon">☁️</span>
-          <div class="history-info"><h4>Langit Lupa</h4><span>Today, 2:45 PM</span></div>
-          <div class="history-result win">WIN</div>
-          <div class="history-score">+200 pts</div>
-        </div>
-        <div class="history-item">
-          <span class="history-icon">🐄</span>
-          <div class="history-info"><h4>Luksong Baka</h4><span>Yesterday, 5:10 PM</span></div>
-          <div class="history-result loss">LOSS</div>
-          <div class="history-score">-50 pts</div>
-        </div>
-        <div class="history-item">
-          <span class="history-icon">🏃</span>
-          <div class="history-info"><h4>Patintero</h4><span>Yesterday, 4:00 PM</span></div>
-          <div class="history-result win">WIN</div>
-          <div class="history-score">+180 pts</div>
-        </div>
-        <div class="history-item">
-          <span class="history-icon">☁️</span>
-          <div class="history-info"><h4>Langit Lupa</h4><span>2 days ago</span></div>
-          <div class="history-result loss">LOSS</div>
-          <div class="history-score">-30 pts</div>
+      <div class="game-history" id="game-history">
+        <!-- Filled dynamically from Firestore -->
+        <div style="padding:32px;text-align:center;color:#6A8AA0;font-weight:700;">
+          Loading history...
         </div>
       </div>
     </section>
-
+ 
   </main>
-
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="script/login.js"></script>
-  <script>
-    document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-PH', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.querySelectorAll('.progress-bar[data-width]').forEach(bar => {
-          bar.style.width = bar.getAttribute('data-width');
-        });
-      }, 300);
-
-      setTimeout(() => {
-        function animateCounter(el, target) {
-          let start = 0;
-          const step = target / (1200 / 16);
-          const timer = setInterval(() => {
-            start += step;
-            if (start >= target) { el.textContent = target; clearInterval(timer); return; }
-            el.textContent = Math.floor(start);
-          }, 16);
-        }
-        animateCounter(document.getElementById('stat-score'), 980);
-        animateCounter(document.getElementById('stat-games'), 12);
-        animateCounter(document.getElementById('stat-wins'), 8);
-        animateCounter(document.getElementById('stat-streak'), 5);
-      }, 400);
-    });
-
-    new Chart(document.getElementById('weeklyChart').getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-        datasets: [{ label: 'Games Played', data: [1,2,0,3,1,4,1],
-          backgroundColor: 'rgba(244,162,52,0.8)', borderColor: '#D4851A', borderWidth: 2, borderRadius: 8 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1, color: '#4A6A8A', font: { family: 'Nunito', weight: '700' } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-          x: { ticks: { color: '#4A6A8A', font: { family: 'Nunito', weight: '700' } }, grid: { display: false } }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('scoreChart').getContext('2d'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Patintero','Luksong Baka','Langit Lupa'],
-        datasets: [{ data: [320,210,450],
-          backgroundColor: ['rgba(244,162,52,0.85)','rgba(43,127,212,0.85)','rgba(76,175,80,0.85)'],
-          borderColor: ['#D4851A','#1A5A9A','#2E7D32'], borderWidth: 3, hoverOffset: 8 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: '#1A3A5C', font: { family: 'Nunito', weight: '700' }, padding: 16 } } }
-      }
-    });
-  </script>
-</body>
+  </body>
 </html>
