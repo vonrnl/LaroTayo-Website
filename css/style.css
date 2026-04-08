@@ -26,7 +26,6 @@ body {
   background: var(--light);
 }
 
-
 /* ---- NAVBAR ---- */
 
 nav {
@@ -109,7 +108,6 @@ nav .logo {
 .nav-item.active span {
   color: #fff;
 }
-
 
 /* ---- HOME ---- */
 
@@ -310,7 +308,6 @@ nav .logo {
   color: var(--yellow);
 }
 
-
 /* ---- SHARED SECTIONS ---- */
 
 section { padding: 80px 24px; }
@@ -371,7 +368,6 @@ section { padding: 80px 24px; }
   opacity: 1;
   transform: translateY(0);
 }
-
 
 /* ---- GAMES ---- */
 
@@ -437,7 +433,6 @@ section { padding: 80px 24px; }
   color: var(--white);
 }
 
-
 /* ---- FEATURES ---- */
 
 #features {
@@ -498,7 +493,6 @@ section { padding: 80px 24px; }
   font-weight: 600;
   line-height: 1.6;
 }
-
 
 /* ---- ABOUT ---- */
 
@@ -624,7 +618,6 @@ section { padding: 80px 24px; }
   font-weight: 700;
 }
 
-
 /* ---- REQUIREMENTS ---- */
 
 #requirements { position: relative; }
@@ -684,7 +677,6 @@ section { padding: 80px 24px; }
   font-weight: 700;
 }
 
-
 /* ---- DOWNLOAD ---- */
 
 #download { position: relative; }
@@ -706,8 +698,6 @@ section { padding: 80px 24px; }
   box-shadow: 0 7px 0 var(--orange-dark);
   margin-top: 8px;
 }
-
-.dl-icon { font-size: 3.5rem; margin-bottom: 14px; }
 
 .dl-box h3 {
   font-family: 'Fredoka One', cursive;
@@ -749,7 +739,6 @@ section { padding: 80px 24px; }
   font-size: 0.77rem;
   font-weight: 600;
 }
-
 
 /* ---- LOGIN MODAL ---- */
 
@@ -891,8 +880,6 @@ section { padding: 80px 24px; }
   border: 3px solid transparent;
 }
 
-.role-btn-emoji { font-size: 2.4rem; line-height: 1; }
-
 .role-btn.admin {
   background: var(--text);
   color: #fff;
@@ -939,7 +926,6 @@ section { padding: 80px 24px; }
 /* Admin input styled darker */
 .modal-admin .modal input:focus { border-color: var(--text); }
 
-
 /* ---- FOOTER ---- */
 
 footer {
@@ -954,7 +940,6 @@ footer {
 
 footer strong { color: var(--yellow); font-family: 'Fredoka One', cursive; }
 footer p + p { margin-top: 6px; }
-
 
 /* ---- HAMBURGER ---- */
 
@@ -986,7 +971,6 @@ footer p + p { margin-top: 6px; }
 .hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
 
 /* ---- RESPONSIVE ---- */
 
@@ -1098,10 +1082,7 @@ footer p + p { margin-top: 6px; }
   .modal input { font-size: 16px; }
   .role-btns { gap: 10px; }
   .role-btn { padding: 18px 10px; font-size: 0.95rem; }
-  .role-btn-emoji { font-size: 2rem; }
-}
-
-@media (max-width: 420px) {
+  @media (max-width: 420px) {
   .hero-left h1 { font-size: 1.9rem; }
   .hero-img-box { width: 160px; height: 160px; }
   .feats-grid { grid-template-columns: 1fr; }
@@ -1110,6 +1091,7 @@ footer p + p { margin-top: 6px; }
   .stats div { padding: 6px 10px; }
   .section-head h2 { font-size: 1.5rem; }
   .tag { font-size: 0.7rem; padding: 3px 10px; }
+}
 }
 
 @media (max-width: 768px) and (orientation: landscape) {

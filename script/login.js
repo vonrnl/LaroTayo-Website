@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -23,7 +23,7 @@ const firebaseConfig = {
   appId: "1:774078773253:web:28a0345c51393e9d9e046c"
 };
 
-const app  = initializeApp(firebaseConfig);
+const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
@@ -85,8 +85,9 @@ if (studentLoginBtn) {
   });
 }
 
-// ---- REGISTRATION ----
+// ---- REGISTRATION (FIXED) ----
 const regBtn = document.getElementById('register-btn');
+
 if (regBtn) {
   regBtn.addEventListener('click', async () => {
     const username    = document.getElementById('reg-username').value.trim();
@@ -98,48 +99,78 @@ if (regBtn) {
       Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Please fill in all fields.' });
       return;
     }
+
     if (password.length < 6) {
       Swal.fire({ icon: 'warning', title: 'Weak Password', text: 'Password must be at least 6 characters.' });
       return;
     }
+
     if (password !== confirmPass) {
-      Swal.fire({ icon: 'error', title: 'Password Mismatch', text: 'Passwords do not match. Please try again.' });
+      Swal.fire({ icon: 'error', title: 'Password Mismatch', text: 'Passwords do not match.' });
       return;
     }
 
     regBtn.textContent = 'Creating account...';
     regBtn.disabled = true;
 
+    const resetBtn = () => {
+      regBtn.textContent = 'Sign up';
+      regBtn.disabled = false;
+    };
+
     try {
+      // 🔹 STEP 1: Create Auth Account
+      console.log('[REG] Step 1...');
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      console.log('[REG] Step 1 OK');
 
+      // 🔹 STEP 2: Update Profile
+      console.log('[REG] Step 2...');
       await updateProfile(user, { displayName: username });
+      console.log('[REG] Step 2 OK');
 
+      // 🔹 STEP 3: Save to Firestore (CRITICAL)
+      console.log('[REG] Step 3...');
       await setDoc(doc(db, 'students', user.uid), {
-        uid:       user.uid,
-        username:  username,
-        email:     email,
-        joined:    new Date().toISOString().split('T')[0],
-        status:    'active',
+        uid: user.uid,
+        username: username,
+        email: email,
+        joined: new Date().toISOString().split('T')[0],
+        status: 'active',
         createdAt: serverTimestamp(),
       });
+      console.log('[REG] Step 3 OK');
 
-      // ✅ Sign out immediately so onAuthStateChanged doesn't auto-redirect to dashboard
-      await signOut(auth);
+      // 🔹 STEP 4: SUCCESS
+      resetBtn();
 
-      await Swal.fire({ icon: 'success', title: 'Account Created!', text: 'Welcome to Laro Tayo! Please log in to continue.' });
+      await Swal.fire({
+        icon: 'success',
+        title: 'Account Created! 🎉',
+        text: 'Welcome to Laro Tayo! Please login to continue.'
+      });
+
+      // 👉 Close registration modal and go to student login modal
       window.location.hash = 'student-login';
 
     } catch (err) {
-      const msgs = {
+      console.error('[REG ERROR]', err.code, err.message);
+
+      const messages = {
         "auth/email-already-in-use": "That email is already registered.",
-        "auth/invalid-email":        "Please enter a valid email address.",
-        "auth/weak-password":        "Password is too weak."
+        "auth/invalid-email": "Invalid email address.",
+        "auth/weak-password": "Password is too weak.",
+        "permission-denied": "Database permission denied. Check Firestore rules."
       };
-      Swal.fire({ icon: 'error', title: 'Registration Failed', text: msgs[err.code] || err.message });
-      regBtn.textContent = 'Sign up';
-      regBtn.disabled = false;
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: messages[err.code] || err.message
+      });
+
+      resetBtn();
     }
   });
 }
@@ -198,7 +229,7 @@ function initEditProfile(user) {
       await updateProfile(user, { displayName: nickname });
       localStorage.setItem('dash-avatar', selectedEmoji);
 
-      const el = (id) => document.getElementById(id);s
+      const el = (id) => document.getElementById(id);
       if (el('dash-name'))          el('dash-name').textContent          = nickname;
       if (el('dash-avatar'))        el('dash-avatar').textContent        = selectedEmoji;
       if (el('dash-header-name'))   el('dash-header-name').textContent   = nickname;
@@ -211,4 +242,52 @@ function initEditProfile(user) {
       saveBtn.disabled = false;
       saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
     }
-  }};
+  };}
+
+// ---- AUTH STATE ----
+onAuthStateChanged(auth, (user) => {
+  const isDashboard = window.location.pathname.includes('dashboard');
+
+  if (isDashboard) {
+    if (!user) { window.location.href = 'index.html'; return; }
+
+    const displayName = user.displayName || user.email.split('@')[0];
+    const savedAvatar = localStorage.getItem('dash-avatar') || '🎮';
+    const el = (id) => document.getElementById(id);
+
+    if (el('dash-name'))          el('dash-name').textContent          = displayName;
+    if (el('dash-email'))         el('dash-email').textContent         = user.email;
+    if (el('dash-header-name'))   el('dash-header-name').textContent   = displayName;
+    if (el('dash-avatar'))        el('dash-avatar').textContent        = savedAvatar;
+    if (el('dash-header-avatar')) el('dash-header-avatar').textContent = savedAvatar;
+
+    const dashLogout = el('dash-logout');
+    if (dashLogout) {
+      dashLogout.onclick = async () => {
+        if (confirm('Are you sure you want to logout?')) {
+          await signOut(auth);
+          window.location.href = 'index.html';
+        }
+      };
+    }
+
+    initEditProfile(user);
+    return;
+  }
+
+  // Index page: swap LOGIN <-> LOGOUT in nav
+  const navLoginItem = document.querySelector('a[href="#login"].nav-item');
+  if (!navLoginItem) return;
+
+  if (user) {
+    navLoginItem.innerHTML = `<span class="material-symbols-rounded">logout</span><span>LOGOUT</span>`;
+    navLoginItem.href = '#';
+    navLoginItem.onclick = async (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        await signOut(auth);
+        window.location.reload();
+      }
+    };
+  }
+});

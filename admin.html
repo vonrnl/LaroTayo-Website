@@ -22,20 +22,12 @@
 
     <!-- TAB LINKS (center) -->
     <div class="admin-nav-tabs" id="admin-nav-tabs">
-      <button class="admin-tab-btn active" data-tab="overview">
-        <span class="material-symbols-rounded">dashboard</span>
-        <span>Overview</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="users">
+<button class="admin-tab-btn active" data-tab="users">
         <span class="material-symbols-rounded">group</span>
         <span>Students</span>
         <span class="tab-count" id="user-count-badge">0</span>
       </button>
-      <button class="admin-tab-btn" data-tab="games">
-        <span class="material-symbols-rounded">sports_esports</span>
-        <span>Game Stats</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="settings">
+<button class="admin-tab-btn" data-tab="settings">
         <span class="material-symbols-rounded">settings</span>
         <span>Settings</span>
       </button>
@@ -60,16 +52,10 @@
 
   <!-- MOBILE DROPDOWN MENU -->
   <div class="admin-mobile-menu" id="admin-mobile-menu">
-    <button class="admin-tab-btn" data-tab="overview">
-      <span class="material-symbols-rounded">dashboard</span> Overview
-    </button>
-    <button class="admin-tab-btn" data-tab="users">
+<button class="admin-tab-btn active" data-tab="users">
       <span class="material-symbols-rounded">group</span> Students
     </button>
-    <button class="admin-tab-btn" data-tab="games">
-      <span class="material-symbols-rounded">sports_esports</span> Game Stats
-    </button>
-    <button class="admin-tab-btn" data-tab="settings">
+<button class="admin-tab-btn" data-tab="settings">
       <span class="material-symbols-rounded">settings</span> Settings
     </button>
   </div>
@@ -77,91 +63,8 @@
   <!-- MAIN CONTENT -->
   <main class="admin-main">
 
-    <!-- OVERVIEW TAB -->
-    <div class="admin-tab-panel active" id="tab-overview">
-      <div class="admin-page-header">
-        <div>
-          <h1>📊 Overview</h1>
-          <p id="admin-date-display"></p>
-        </div>
-        <div class="admin-welcome-chip">
-          <span class="material-symbols-rounded">school</span>
-          Welcome, <strong>Teacher</strong>
-        </div>
-      </div>
-
-      <div class="admin-kpi-grid">
-        <div class="kpi-card blue">
-          <div class="kpi-icon"><span class="material-symbols-rounded">group</span></div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpi-users">0</span>
-            <span class="kpi-label">Registered Students</span>
-          </div>
-        </div>
-        <div class="kpi-card orange">
-          <div class="kpi-icon"><span class="material-symbols-rounded">sports_esports</span></div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpi-sessions">0</span>
-            <span class="kpi-label">Game Sessions</span>
-          </div>
-        </div>
-        <div class="kpi-card green">
-          <div class="kpi-icon"><span class="material-symbols-rounded">emoji_events</span></div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpi-active">0</span>
-            <span class="kpi-label">Active Students</span>
-          </div>
-        </div>
-        <div class="kpi-card yellow">
-          <div class="kpi-icon"><span class="material-symbols-rounded">bar_chart</span></div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpi-games">0</span>
-            <span class="kpi-label">Games Played Today</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-charts-grid">
-        <div class="admin-chart-card">
-          <div class="admin-chart-header">
-            <h3>📅 Weekly Student Activity</h3>
-            <span class="chart-sub">Sessions per day this week</span>
-          </div>
-          <div class="chart-wrap-lg"><canvas id="activityChart"></canvas></div>
-        </div>
-        <div class="admin-chart-card">
-          <div class="admin-chart-header">
-            <h3>🎮 Game Popularity</h3>
-            <span class="chart-sub">Sessions per game</span>
-          </div>
-          <div class="chart-wrap-lg"><canvas id="popularityChart"></canvas></div>
-        </div>
-      </div>
-
-      <div class="admin-table-card">
-        <div class="admin-table-header">
-          <h3>🆕 Recently Registered Students</h3>
-          <button class="admin-view-all-btn" id="view-all-users-btn">View All Students</button>
-        </div>
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Joined</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="recent-reg-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
     <!-- STUDENTS TAB -->
-    <div class="admin-tab-panel" id="tab-users">
+    <div class="admin-tab-panel active" id="tab-users">
       <div class="admin-page-header">
         <div>
           <h1>👥 Student Management</h1>
@@ -172,10 +75,6 @@
             <span class="material-symbols-rounded">person_add</span>
             Register Student
           </button>
-          <button class="admin-action-btn orange" id="export-users-btn">
-            <span class="material-symbols-rounded">download</span>
-            Export CSV
-          </button>
         </div>
       </div>
 
@@ -184,11 +83,7 @@
           <span class="material-symbols-rounded">search</span>
           <input type="text" id="user-search" class="admin-search" placeholder="Search by name or email..." />
         </div>
-        <select class="admin-select" id="user-filter">
-          <option value="all">All Students</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
+
       </div>
 
       <div class="admin-table-card">
@@ -200,101 +95,10 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Joined</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="users-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- GAME STATS TAB -->
-    <div class="admin-tab-panel" id="tab-games">
-      <div class="admin-page-header">
-        <div>
-          <h1>🎮 Game Statistics</h1>
-          <p>Performance and engagement data per game.</p>
-        </div>
-      </div>
-
-      <div class="game-stats-grid">
-        <div class="game-stat-card patintero">
-          <div class="gscard-top">
-            <span class="gscard-emoji">🏃</span>
-            <div>
-              <h3>Patintero</h3>
-              <span class="gscard-tag">Team Play</span>
-            </div>
-            <div class="gscard-sessions"><strong>1,240</strong><small>sessions</small></div>
-          </div>
-          <div class="gscard-stats">
-            <div><span>Avg Score</span><strong>315</strong></div>
-            <div><span>Win Rate</span><strong>62%</strong></div>
-            <div><span>Avg Time</span><strong>8 min</strong></div>
-            <div><span>★ Rating</span><strong>4.7</strong></div>
-          </div>
-          <div class="gscard-bar-wrap"><div class="gscard-bar orange" style="width:0%" data-width="82%"></div></div>
-          <div class="gscard-popularity">Popularity: <strong>82%</strong></div>
-        </div>
-
-        <div class="game-stat-card luksong">
-          <div class="gscard-top">
-            <span class="gscard-emoji">🐄</span>
-            <div>
-              <h3>Luksong Baka</h3>
-              <span class="gscard-tag">Jumping</span>
-            </div>
-            <div class="gscard-sessions"><strong>870</strong><small>sessions</small></div>
-          </div>
-          <div class="gscard-stats">
-            <div><span>Avg Score</span><strong>210</strong></div>
-            <div><span>Win Rate</span><strong>55%</strong></div>
-            <div><span>Avg Time</span><strong>6 min</strong></div>
-            <div><span>★ Rating</span><strong>4.4</strong></div>
-          </div>
-          <div class="gscard-bar-wrap"><div class="gscard-bar blue" style="width:0%" data-width="58%"></div></div>
-          <div class="gscard-popularity">Popularity: <strong>58%</strong></div>
-        </div>
-
-        <div class="game-stat-card langit">
-          <div class="gscard-top">
-            <span class="gscard-emoji">☁️</span>
-            <div>
-              <h3>Langit Lupa</h3>
-              <span class="gscard-tag">Strategy</span>
-            </div>
-            <div class="gscard-sessions"><strong>1,530</strong><small>sessions</small></div>
-          </div>
-          <div class="gscard-stats">
-            <div><span>Avg Score</span><strong>420</strong></div>
-            <div><span>Win Rate</span><strong>70%</strong></div>
-            <div><span>Avg Time</span><strong>10 min</strong></div>
-            <div><span>★ Rating</span><strong>4.8</strong></div>
-          </div>
-          <div class="gscard-bar-wrap"><div class="gscard-bar green" style="width:0%" data-width="100%"></div></div>
-          <div class="gscard-popularity">Popularity: <strong>100%</strong> 🔥</div>
-        </div>
-      </div>
-
-      <div class="admin-table-card" style="margin-top:28px">
-        <div class="admin-table-header">
-          <h3>🏆 Top 10 Students (All-Time)</h3>
-        </div>
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Student</th>
-                <th>🏃 Patintero</th>
-                <th>🐄 Luksong Baka</th>
-                <th>☁️ Langit Lupa</th>
-                <th>🏆 Total Score</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-body"></tbody>
           </table>
         </div>
       </div>
@@ -401,13 +205,7 @@
           <label>Password</label>
           <input type="password" class="admin-input-field" id="modal-password" placeholder="Enter password" />
         </div>
-        <div class="modal-field">
-          <label>Status</label>
-          <select class="admin-select" id="modal-status" style="width:100%">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
+
       </div>
       <div class="modal-footer">
         <button class="admin-action-btn gray" id="modal-cancel-btn">Cancel</button>

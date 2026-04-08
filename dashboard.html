@@ -6,7 +6,6 @@
   <title>Dashboard – Laro Tayo</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
-  <link rel="stylesheet" href="css/store.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -35,10 +34,6 @@
         <span class="dash-welcome">Welcome back, <strong id="dash-name">...</strong>!</span>
         <span class="dash-email" id="dash-email">...</span>
       </div>
-      <a href="store.html" class="dash-shop-btn">
-        <span class="material-symbols-rounded">storefront</span>
-        <span>Shop</span>
-      </a>
       <button class="dash-edit-btn" id="dash-edit-profile">
         <span class="material-symbols-rounded">edit</span>
         <span>Edit Profile</span>
@@ -191,5 +186,6 @@
     const desktopAvatar = document.getElementById('dash-avatar');
     if (desktopAvatar) observer.observe(desktopAvatar, { childList: true, subtree: true, characterData: true });
   </script>
-  </body>
+    <script type="module" src="script/dashboard.js"></script>
+</body>
 </html>

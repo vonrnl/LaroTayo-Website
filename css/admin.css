@@ -220,142 +220,6 @@
   margin-top: 4px;
 }
 
-.admin-welcome-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 2px solid #dde8f0;
-  border-radius: 50px;
-  padding: 6px 16px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #1A3A5C;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.admin-welcome-chip .material-symbols-rounded {
-  font-size: 18px;
-  color: #2B7FD4;
-  font-variation-settings: 'FILL' 1;
-}
-
-/* ============================================================
-   KPI GRID
-   ============================================================ */
-.admin-kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.kpi-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  border-left: 5px solid;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
-
-.kpi-card.blue   { border-color: #2B7FD4; }
-.kpi-card.orange { border-color: #F4A234; }
-.kpi-card.green  { border-color: #4CAF50; }
-.kpi-card.yellow { border-color: #FFD700; }
-
-.kpi-icon {
-  width: 48px; height: 48px;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.kpi-card.blue   .kpi-icon { background: rgba(43,127,212,0.12); color: #2B7FD4; }
-.kpi-card.orange .kpi-icon { background: rgba(244,162,52,0.12);  color: #F4A234; }
-.kpi-card.green  .kpi-icon { background: rgba(76,175,80,0.12);   color: #4CAF50; }
-.kpi-card.yellow .kpi-icon { background: rgba(255,215,0,0.15);   color: #c8a800; }
-
-.kpi-icon .material-symbols-rounded {
-  font-size: 24px;
-  font-variation-settings: 'FILL' 1;
-}
-
-.kpi-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.kpi-value {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.8rem;
-  color: #1A3A5C;
-  line-height: 1;
-}
-
-.kpi-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #6A8AA0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.kpi-trend {
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-.kpi-trend.up   { color: #4CAF50; }
-.kpi-trend.down { color: #e53935; }
-
-/* ============================================================
-   CHARTS GRID
-   ============================================================ */
-.admin-charts-grid {
-  display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.admin-chart-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-}
-
-.admin-chart-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.admin-chart-header h3 {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1rem;
-  color: #1A3A5C;
-}
-
-.chart-sub {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #aaa;
-}
-
-.chart-wrap-lg {
-  position: relative;
-  height: 220px;
-}
-
 /* ============================================================
    TABLES
    ============================================================ */
@@ -380,23 +244,6 @@
   font-family: 'Fredoka One', cursive;
   font-size: 1rem;
   color: #1A3A5C;
-}
-
-.admin-view-all-btn {
-  background: none;
-  border: 2px solid #dde8f0;
-  border-radius: 8px;
-  padding: 5px 14px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #2B7FD4;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-.admin-view-all-btn:hover {
-  background: #f0f5fb;
-  border-color: #2B7FD4;
 }
 
 .admin-table-wrap {
@@ -433,18 +280,6 @@
 }
 
 .admin-table tbody tr:hover { background: #f7fafd; }
-
-/* Status badge */
-.status-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 50px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: capitalize;
-}
-.status-badge.active   { background: #e8f5e9; color: #2E7D32; }
-.status-badge.inactive { background: #f5f5f5; color: #888; }
 
 /* Action buttons */
 .action-btns {
@@ -558,285 +393,6 @@
   box-shadow: 0 4px 0 #dde8f0;
 }
 .admin-action-btn.gray:hover { transform: translateY(2px); box-shadow: 0 2px 0 #dde8f0; }
-
-/* ============================================================
-   GAME STATS TAB
-   ============================================================ */
-.game-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.game-stat-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.game-stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-
-.game-stat-card.locked-card { opacity: 0.6; }
-
-.gscard-top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.gscard-emoji {
-  font-size: 2rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.gscard-top h3 {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.05rem;
-  color: #1A3A5C;
-  line-height: 1.2;
-}
-
-.gscard-tag {
-  display: inline-block;
-  background: #f0f5fb;
-  color: #6A8AA0;
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 2px 8px;
-  border-radius: 50px;
-  margin-top: 3px;
-}
-
-.gscard-sessions {
-  margin-left: auto;
-  text-align: right;
-}
-.gscard-sessions strong {
-  display: block;
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.4rem;
-  color: #1A3A5C;
-  line-height: 1;
-}
-.gscard-sessions small {
-  font-size: 0.68rem;
-  color: #aaa;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.gscard-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.gscard-stats div {
-  background: #f7fafd;
-  border-radius: 10px;
-  padding: 8px 10px;
-}
-.gscard-stats div span {
-  display: block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 2px;
-}
-.gscard-stats div strong {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1rem;
-  color: #1A3A5C;
-}
-
-.gscard-bar-wrap {
-  height: 8px;
-  background: #f0f5fb;
-  border-radius: 50px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.gscard-bar {
-  height: 100%;
-  border-radius: 50px;
-  transition: width 0.9s ease;
-}
-.gscard-bar.blue  { background: linear-gradient(90deg, #2B7FD4, #00BCD4); }
-.gscard-bar.orange{ background: linear-gradient(90deg, #F4A234, #FF7043); }
-.gscard-bar.green { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
-.gscard-bar.gray  { background: #dde8f0; }
-
-.gscard-popularity {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #6A8AA0;
-}
-
-/* ============================================================
-   ANNOUNCEMENTS
-   ============================================================ */
-.ann-compose-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-  margin-bottom: 20px;
-  border-left: 5px solid #F4A234;
-  animation: fadeInUp 0.3s ease;
-}
-
-.ann-compose-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.05rem;
-  color: #1A3A5C;
-  margin-bottom: 16px;
-}
-
-.ann-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.ann-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
-.ann-field label {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #6A8AA0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.admin-input-field, .admin-select-field, .admin-textarea {
-  padding: 10px 14px;
-  border: 2px solid #dde8f0;
-  border-radius: 10px;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1A3A5C;
-  outline: none;
-  background: #fff;
-  transition: border-color 0.2s;
-}
-.admin-input-field:focus,
-.admin-select-field:focus,
-.admin-textarea:focus { border-color: #F4A234; }
-
-.admin-textarea { resize: vertical; min-height: 80px; }
-
-#ann-char-count {
-  font-size: 0.72rem;
-  color: #aaa;
-  font-weight: 700;
-  align-self: flex-end;
-  margin-top: 2px;
-}
-
-.ann-form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-/* Announcement list */
-.ann-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.ann-empty {
-  background: #fff;
-  border-radius: 16px;
-  padding: 36px;
-  text-align: center;
-  color: #aaa;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.ann-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 18px 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  border-left: 5px solid;
-  animation: fadeInUp 0.3s ease;
-}
-.ann-card.ann-type-info        { border-color: #2B7FD4; }
-.ann-card.ann-type-update      { border-color: #4CAF50; }
-.ann-card.ann-type-event       { border-color: #F4A234; }
-.ann-card.ann-type-maintenance { border-color: #e53935; }
-
-.ann-card-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-
-.ann-type-badge {
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 50px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-.ann-type-badge.info        { background: #e3f2fd; color: #2B7FD4; }
-.ann-type-badge.update      { background: #e8f5e9; color: #2E7D32; }
-.ann-type-badge.event       { background: #fff8e1; color: #c8a800; }
-.ann-type-badge.maintenance { background: #fde8e8; color: #e53935; }
-
-.ann-date {
-  font-size: 0.72rem;
-  color: #aaa;
-  font-weight: 700;
-  margin-left: auto;
-}
-
-.ann-delete-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #ccc;
-  padding: 2px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s, background 0.2s;
-  flex-shrink: 0;
-}
-.ann-delete-btn:hover { color: #e53935; background: #fde8e8; }
-.ann-delete-btn .material-symbols-rounded { font-size: 16px; }
-
-.ann-card-title {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1rem;
-  color: #1A3A5C;
-  margin-bottom: 4px;
-}
-
-.ann-card-msg {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #6A8AA0;
-  line-height: 1.6;
-}
 
 /* ============================================================
    SETTINGS
@@ -959,9 +515,6 @@
    ============================================================ */
 @media (max-width: 1100px) {
   .settings-grid { grid-template-columns: 1fr 1fr; }
-  .game-stats-grid { grid-template-columns: 1fr 1fr; }
-  .admin-kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .admin-charts-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
@@ -980,11 +533,7 @@
    ============================================================ */
 @media (max-width: 768px) {
   .admin-main { padding: 20px 16px 40px; }
-  .game-stats-grid { grid-template-columns: 1fr; }
-  .ann-form-grid { grid-template-columns: 1fr; }
   .settings-grid { grid-template-columns: 1fr; }
-  .admin-kpi-grid { gap: 12px; }
-  .kpi-value { font-size: 1.5rem; }
   .admin-page-header { flex-direction: column; gap: 10px; }
 }
 
@@ -995,35 +544,18 @@
   .admin-nav { padding: 0 14px; }
   .admin-main { padding: 16px 12px 36px; }
 
-  .admin-kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .kpi-card { padding: 14px 12px; gap: 10px; }
-  .kpi-icon { width: 38px; height: 38px; }
-  .kpi-value { font-size: 1.3rem; }
-  .kpi-label { font-size: 0.65rem; }
-  .kpi-trend { font-size: 0.65rem; }
-
-  .admin-charts-grid { gap: 12px; }
-  .chart-wrap-lg { height: 180px; }
-
-  .gscard-stats { grid-template-columns: 1fr 1fr; gap: 6px; }
-
   .admin-table th,
   .admin-table td { padding: 9px 12px; font-size: 0.8rem; }
 
-  .ann-card { padding: 14px 16px; }
   .settings-card { padding: 18px 16px; }
 
   .admin-action-btn { font-size: 0.78rem; padding: 8px 14px; }
-  .ann-form-actions { justify-content: stretch; }
-  .ann-form-actions .admin-action-btn { flex: 1; justify-content: center; }
 }
 
 /* ============================================================
    RESPONSIVE – 420px
    ============================================================ */
 @media (max-width: 420px) {
-  .admin-kpi-grid { grid-template-columns: 1fr; }
-  .kpi-card { flex-direction: row; }
   .admin-table th, .admin-table td { font-size: 0.75rem; padding: 8px 10px; }
   .admin-page-header h1 { font-size: 1.3rem; }
 }

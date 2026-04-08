@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDtB1ouns3wY1ljekvHm8h-_V_ChAcNjJw",
@@ -11,7 +11,8 @@ const firebaseConfig = {
   appId: "1:774078773253:web:28a0345c51393e9d9e046c"
 };
 
-const app=initializeApp(firebaseConfig);
+// Reuse existing Firebase app if already initialized (avoids duplicate app error)
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
@@ -108,7 +109,7 @@ function renderHistory(docs){
 
 // MAIN
 onAuthStateChanged(auth,async(user)=>{
-  if(!user){window.location.href='login.html';return;}
+  if(!user){window.location.href='index.html';return;}
   try{
     const userSnap=await getDoc(doc(db,'users',user.uid));
     const u=userSnap.exists()?userSnap.data():{};
@@ -154,7 +155,7 @@ onAuthStateChanged(auth,async(user)=>{
 // LOGOUT
 document.getElementById('dash-logout').addEventListener('click',async()=>{
   const result=await Swal.fire({title:'Logging out?',text:'See you next time! 👋',icon:'question',showCancelButton:true,confirmButtonText:'Yes, logout',cancelButtonText:'Cancel',confirmButtonColor:'#e53935'});
-  if(result.isConfirmed){await signOut(auth);window.location.href='login.html';}
+  if(result.isConfirmed){await signOut(auth);window.location.href='index.html';}
 });
 
 // EDIT PROFILE
