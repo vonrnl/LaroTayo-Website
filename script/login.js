@@ -7,6 +7,12 @@ import {
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDtB1ouns3wY1ljekvHm8h-_V_ChAcNjJw",
@@ -19,7 +25,9 @@ const firebaseConfig = {
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db   = getFirestore(app);
 
+// ⚠️ WARNING: Move admin credentials to a backend — never store them in frontend JS.
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'larotayo2026';
 
@@ -87,13 +95,16 @@ if (regBtn) {
     const confirmPass = document.getElementById('reg-confirm').value.trim();
 
     if (!username || !email || !password || !confirmPass) {
-      alert('Please fill in all fields.'); return;
+      Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Please fill in all fields.' });
+      return;
     }
     if (password.length < 6) {
-      alert('Password must be at least 6 characters.'); return;
+      Swal.fire({ icon: 'warning', title: 'Weak Password', text: 'Password must be at least 6 characters.' });
+      return;
     }
     if (password !== confirmPass) {
-      alert('Passwords do not match. Please try again.'); return;
+      Swal.fire({ icon: 'error', title: 'Password Mismatch', text: 'Passwords do not match. Please try again.' });
+      return;
     }
 
     regBtn.textContent = 'Creating account...';
@@ -101,16 +112,32 @@ if (regBtn) {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, { displayName: username });
-      alert('Account created! Welcome to Laro Tayo! You can now login.');
-      window.location.hash = '';
+      const user = userCredential.user;
+
+      await updateProfile(user, { displayName: username });
+
+      await setDoc(doc(db, 'students', user.uid), {
+        uid:       user.uid,
+        username:  username,
+        email:     email,
+        joined:    new Date().toISOString().split('T')[0],
+        status:    'active',
+        createdAt: serverTimestamp(),
+      });
+
+      // ✅ Sign out immediately so onAuthStateChanged doesn't auto-redirect to dashboard
+      await signOut(auth);
+
+      await Swal.fire({ icon: 'success', title: 'Account Created!', text: 'Welcome to Laro Tayo! Please log in to continue.' });
+      window.location.hash = 'student-login';
+
     } catch (err) {
       const msgs = {
         "auth/email-already-in-use": "That email is already registered.",
         "auth/invalid-email":        "Please enter a valid email address.",
         "auth/weak-password":        "Password is too weak."
       };
-      alert(msgs[err.code] || err.message);
+      Swal.fire({ icon: 'error', title: 'Registration Failed', text: msgs[err.code] || err.message });
       regBtn.textContent = 'Sign up';
       regBtn.disabled = false;
     }
@@ -171,7 +198,7 @@ function initEditProfile(user) {
       await updateProfile(user, { displayName: nickname });
       localStorage.setItem('dash-avatar', selectedEmoji);
 
-      const el = (id) => document.getElementById(id);
+      const el = (id) => document.getElementById(id);s
       if (el('dash-name'))          el('dash-name').textContent          = nickname;
       if (el('dash-avatar'))        el('dash-avatar').textContent        = selectedEmoji;
       if (el('dash-header-name'))   el('dash-header-name').textContent   = nickname;
@@ -184,61 +211,4 @@ function initEditProfile(user) {
       saveBtn.disabled = false;
       saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
     }
-  };
-}
-
-// ---- AUTH STATE ----
-onAuthStateChanged(auth, (user) => {
-  const isDashboard = window.location.pathname.includes('dashboard');
-
-  if (isDashboard) {
-    if (!user) { window.location.href = 'index.html'; return; }
-
-    const displayName = user.displayName || user.email.split('@')[0];
-    const savedAvatar = localStorage.getItem('dash-avatar') || '🎮';
-    const el = (id) => document.getElementById(id);
-
-    if (el('dash-name'))          el('dash-name').textContent          = displayName;
-    if (el('dash-email'))         el('dash-email').textContent         = user.email;
-    if (el('dash-header-name'))   el('dash-header-name').textContent   = displayName;
-    if (el('dash-avatar'))        el('dash-avatar').textContent        = savedAvatar;
-    if (el('dash-header-avatar')) el('dash-header-avatar').textContent = savedAvatar;
-
-    const dashLogout = el('dash-logout');
-    if (dashLogout) {
-      dashLogout.onclick = async () => {
-        if (confirm('Are you sure you want to logout?')) {
-          signOut(auth).then(() => { window.location.href = 'index.html'; });
-        }
-      };
-    }
-
-    initEditProfile(user);
-    return;
-  }
-
-  // Index page: swap LOGIN <-> LOGOUT in nav
-  const navLoginItem = document.querySelector('a[href="#login"].nav-item');
-  if (!navLoginItem) return;
-
-  if (user) {
-    navLoginItem.innerHTML = `
-      <span class="material-symbols-rounded">logout</span>
-      <span>LOGOUT</span>
-    `;
-    navLoginItem.href = "#";
-    navLoginItem.onclick = (e) => {
-      e.preventDefault();
-      if (confirm('Are you sure you want to logout?')) {
-        signOut(auth).then(() => {
-          navLoginItem.innerHTML = `
-            <span class="material-symbols-rounded">lock</span>
-            <span>LOGIN</span>
-          `;
-          navLoginItem.href = "#login";
-          navLoginItem.onclick = null;
-        });
-      }
-    };
-  }
-});
+  }};

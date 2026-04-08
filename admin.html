@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Admin Panel – Laro Tayo</title>
+  <title>Teacher Panel – Laro Tayo</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -14,7 +14,7 @@
 
 <body class="admin-body">
 
-  <!-- TOP NAVBAR (matches dashboard style) -->
+  <!-- TOP NAVBAR -->
   <nav class="admin-nav">
     <a href="index.html" class="logo">
       <span class="logo-o">LARO TAYO</span>
@@ -28,16 +28,12 @@
       </button>
       <button class="admin-tab-btn" data-tab="users">
         <span class="material-symbols-rounded">group</span>
-        <span>Users</span>
+        <span>Students</span>
         <span class="tab-count" id="user-count-badge">0</span>
       </button>
       <button class="admin-tab-btn" data-tab="games">
         <span class="material-symbols-rounded">sports_esports</span>
         <span>Game Stats</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="announcements">
-        <span class="material-symbols-rounded">campaign</span>
-        <span>Announcements</span>
       </button>
       <button class="admin-tab-btn" data-tab="settings">
         <span class="material-symbols-rounded">settings</span>
@@ -48,8 +44,8 @@
     <!-- RIGHT SIDE -->
     <div class="admin-nav-right">
       <div class="admin-nav-badge">
-        <span class="material-symbols-rounded">shield_person</span>
-        <span>ADMIN</span>
+        <span class="material-symbols-rounded">school</span>
+        <span>TEACHER</span>
       </div>
       <button class="admin-logout-btn" id="admin-logout">
         <span class="material-symbols-rounded">logout</span>
@@ -68,13 +64,10 @@
       <span class="material-symbols-rounded">dashboard</span> Overview
     </button>
     <button class="admin-tab-btn" data-tab="users">
-      <span class="material-symbols-rounded">group</span> Users
+      <span class="material-symbols-rounded">group</span> Students
     </button>
     <button class="admin-tab-btn" data-tab="games">
       <span class="material-symbols-rounded">sports_esports</span> Game Stats
-    </button>
-    <button class="admin-tab-btn" data-tab="announcements">
-      <span class="material-symbols-rounded">campaign</span> Announcements
     </button>
     <button class="admin-tab-btn" data-tab="settings">
       <span class="material-symbols-rounded">settings</span> Settings
@@ -92,8 +85,8 @@
           <p id="admin-date-display"></p>
         </div>
         <div class="admin-welcome-chip">
-          <span class="material-symbols-rounded">shield_person</span>
-          Welcome, <strong>Admin</strong>
+          <span class="material-symbols-rounded">school</span>
+          Welcome, <strong>Teacher</strong>
         </div>
       </div>
 
@@ -102,8 +95,7 @@
           <div class="kpi-icon"><span class="material-symbols-rounded">group</span></div>
           <div class="kpi-info">
             <span class="kpi-value" id="kpi-users">0</span>
-            <span class="kpi-label">Registered Users</span>
-            <span class="kpi-trend up">+12% this week</span>
+            <span class="kpi-label">Registered Students</span>
           </div>
         </div>
         <div class="kpi-card orange">
@@ -111,23 +103,20 @@
           <div class="kpi-info">
             <span class="kpi-value" id="kpi-sessions">0</span>
             <span class="kpi-label">Game Sessions</span>
-            <span class="kpi-trend up">+8% this week</span>
           </div>
         </div>
         <div class="kpi-card green">
-          <div class="kpi-icon"><span class="material-symbols-rounded">download</span></div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpi-downloads">0</span>
-            <span class="kpi-label">APK Downloads</span>
-            <span class="kpi-trend up">+20% this week</span>
-          </div>
-        </div>
-        <div class="kpi-card yellow">
           <div class="kpi-icon"><span class="material-symbols-rounded">emoji_events</span></div>
           <div class="kpi-info">
             <span class="kpi-value" id="kpi-active">0</span>
-            <span class="kpi-label">Active Today</span>
-            <span class="kpi-trend down">-3% vs yesterday</span>
+            <span class="kpi-label">Active Students</span>
+          </div>
+        </div>
+        <div class="kpi-card yellow">
+          <div class="kpi-icon"><span class="material-symbols-rounded">bar_chart</span></div>
+          <div class="kpi-info">
+            <span class="kpi-value" id="kpi-games">0</span>
+            <span class="kpi-label">Games Played Today</span>
           </div>
         </div>
       </div>
@@ -135,7 +124,7 @@
       <div class="admin-charts-grid">
         <div class="admin-chart-card">
           <div class="admin-chart-header">
-            <h3>📅 Weekly User Activity</h3>
+            <h3>📅 Weekly Student Activity</h3>
             <span class="chart-sub">Sessions per day this week</span>
           </div>
           <div class="chart-wrap-lg"><canvas id="activityChart"></canvas></div>
@@ -151,8 +140,8 @@
 
       <div class="admin-table-card">
         <div class="admin-table-header">
-          <h3>🆕 Recent Registrations</h3>
-          <button class="admin-view-all-btn" id="view-all-users-btn">View All Users</button>
+          <h3>🆕 Recently Registered Students</h3>
+          <button class="admin-view-all-btn" id="view-all-users-btn">View All Students</button>
         </div>
         <div class="admin-table-wrap">
           <table class="admin-table">
@@ -171,17 +160,23 @@
       </div>
     </div>
 
-    <!-- USERS TAB -->
+    <!-- STUDENTS TAB -->
     <div class="admin-tab-panel" id="tab-users">
       <div class="admin-page-header">
         <div>
-          <h1>👥 User Management</h1>
-          <p>View and manage all registered players.</p>
+          <h1>👥 Student Management</h1>
+          <p>Register, view, and manage all students under your class.</p>
         </div>
-        <button class="admin-action-btn orange" id="export-users-btn">
-          <span class="material-symbols-rounded">download</span>
-          Export CSV
-        </button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="admin-action-btn green" id="register-student-btn">
+            <span class="material-symbols-rounded">person_add</span>
+            Register Student
+          </button>
+          <button class="admin-action-btn orange" id="export-users-btn">
+            <span class="material-symbols-rounded">download</span>
+            Export CSV
+          </button>
+        </div>
       </div>
 
       <div class="admin-toolbar">
@@ -190,7 +185,7 @@
           <input type="text" id="user-search" class="admin-search" placeholder="Search by name or email..." />
         </div>
         <select class="admin-select" id="user-filter">
-          <option value="all">All Users</option>
+          <option value="all">All Students</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
@@ -202,20 +197,16 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Avatar</th>
                 <th>Username</th>
                 <th>Email</th>
-                <th>Grade Level</th>
-                <th>Games Played</th>
                 <th>Joined</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody id="users-body"></tbody>
+            <tbody id="users-table-body"></tbody>
           </table>
         </div>
-        <div class="admin-pagination" id="users-pagination"></div>
       </div>
     </div>
 
@@ -285,37 +276,18 @@
           <div class="gscard-bar-wrap"><div class="gscard-bar green" style="width:0%" data-width="100%"></div></div>
           <div class="gscard-popularity">Popularity: <strong>100%</strong> 🔥</div>
         </div>
-
-        <div class="game-stat-card piko locked-card">
-          <div class="gscard-top">
-            <span class="gscard-emoji">🔒</span>
-            <div>
-              <h3>Piko</h3>
-              <span class="gscard-tag">Coming Soon</span>
-            </div>
-            <div class="gscard-sessions"><strong>—</strong><small>sessions</small></div>
-          </div>
-          <div class="gscard-stats">
-            <div><span>Avg Score</span><strong>—</strong></div>
-            <div><span>Win Rate</span><strong>—</strong></div>
-            <div><span>Avg Time</span><strong>—</strong></div>
-            <div><span>★ Rating</span><strong>—</strong></div>
-          </div>
-          <div class="gscard-bar-wrap"><div class="gscard-bar gray" style="width:0%"></div></div>
-          <div class="gscard-popularity">Not yet released</div>
-        </div>
       </div>
 
       <div class="admin-table-card" style="margin-top:28px">
         <div class="admin-table-header">
-          <h3>🏆 Top 10 Players (All-Time)</h3>
+          <h3>🏆 Top 10 Students (All-Time)</h3>
         </div>
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
                 <th>Rank</th>
-                <th>Player</th>
+                <th>Student</th>
                 <th>🏃 Patintero</th>
                 <th>🐄 Luksong Baka</th>
                 <th>☁️ Langit Lupa</th>
@@ -328,65 +300,18 @@
       </div>
     </div>
 
-    <!-- ANNOUNCEMENTS TAB -->
-    <div class="admin-tab-panel" id="tab-announcements">
-      <div class="admin-page-header">
-        <div>
-          <h1>📢 Announcements</h1>
-          <p>Post and manage announcements shown to players.</p>
-        </div>
-        <button class="admin-action-btn orange" id="new-ann-btn">
-          <span class="material-symbols-rounded">add</span>
-          New Announcement
-        </button>
-      </div>
-
-      <div class="ann-compose-card" id="ann-compose" style="display:none">
-        <h3 class="ann-compose-title">✏️ Create Announcement</h3>
-        <div class="ann-form-grid">
-          <div class="ann-field">
-            <label>Title</label>
-            <input type="text" id="ann-title" class="admin-input-field" placeholder="e.g. New update available!" maxlength="80" />
-          </div>
-          <div class="ann-field">
-            <label>Type</label>
-            <select id="ann-type" class="admin-select-field">
-              <option value="info">ℹ️ Info</option>
-              <option value="update">🆕 Update</option>
-              <option value="event">🎉 Event</option>
-              <option value="maintenance">🔧 Maintenance</option>
-            </select>
-          </div>
-        </div>
-        <div class="ann-field">
-          <label>Message</label>
-          <textarea id="ann-message" class="admin-textarea" placeholder="Write your announcement here..." maxlength="300" rows="3"></textarea>
-          <small id="ann-char-count">0 / 300</small>
-        </div>
-        <div class="ann-form-actions">
-          <button class="admin-action-btn gray" id="ann-cancel-btn">Cancel</button>
-          <button class="admin-action-btn orange" id="ann-post-btn">
-            <span class="material-symbols-rounded">send</span>
-            Post Announcement
-          </button>
-        </div>
-      </div>
-
-      <div class="ann-list" id="ann-list"></div>
-    </div>
-
     <!-- SETTINGS TAB -->
     <div class="admin-tab-panel" id="tab-settings">
       <div class="admin-page-header">
         <div>
-          <h1>⚙️ Admin Settings</h1>
-          <p>Configure admin panel preferences.</p>
+          <h1>⚙️ Settings</h1>
+          <p>Configure panel preferences.</p>
         </div>
       </div>
 
       <div class="settings-grid">
         <div class="settings-card">
-          <h3>🔑 Change Admin Password</h3>
+          <h3>🔑 Change Password</h3>
           <div class="settings-field">
             <label>Current Password</label>
             <input type="password" class="admin-input-field" id="cur-pass" placeholder="Current password" />
@@ -410,7 +335,7 @@
           <div class="settings-toggle-row">
             <div>
               <strong>Maintenance Mode</strong>
-              <p>Temporarily disable user access to the app.</p>
+              <p>Temporarily disable student access to the app.</p>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-maintenance" />
@@ -420,7 +345,7 @@
           <div class="settings-toggle-row">
             <div>
               <strong>New Registrations</strong>
-              <p>Allow new players to sign up.</p>
+              <p>Allow new students to sign up.</p>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-reg" checked />
@@ -430,7 +355,7 @@
           <div class="settings-toggle-row">
             <div>
               <strong>Piko (Coming Soon)</strong>
-              <p>Enable Piko game for players.</p>
+              <p>Enable Piko game for students.</p>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-piko" />
@@ -443,7 +368,7 @@
           <h3>📄 About This Panel</h3>
           <div class="settings-info-row"><span>Project</span><strong>Laro Tayo</strong></div>
           <div class="settings-info-row"><span>Version</span><strong>1.0.0</strong></div>
-          <div class="settings-info-row"><span>Admin Panel</span><strong>v1.0</strong></div>
+          <div class="settings-info-row"><span>Panel</span><strong>Teacher v1.0</strong></div>
           <div class="settings-info-row"><span>School</span><strong>NCST Cavite</strong></div>
           <div class="settings-info-row"><span>Year</span><strong>2026</strong></div>
           <div class="settings-info-row"><span>Firebase</span><strong>Connected ✅</strong></div>
@@ -453,6 +378,47 @@
 
   </main>
 
-  <script src="script/admin.js"></script>
+  <!-- REGISTER / EDIT STUDENT MODAL -->
+  <div class="modal-overlay" id="student-modal-overlay">
+    <div class="modal-card" id="student-modal">
+      <div class="modal-header">
+        <h3 id="modal-title">➕ Register Student</h3>
+        <button class="modal-close-btn" id="modal-close-btn">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="modal-user-id" value="" />
+        <div class="modal-field">
+          <label>Username</label>
+          <input type="text" class="admin-input-field" id="modal-username" placeholder="e.g. juan_dela" />
+        </div>
+        <div class="modal-field">
+          <label>Email</label>
+          <input type="email" class="admin-input-field" id="modal-email" placeholder="e.g. juan@email.com" />
+        </div>
+        <div class="modal-field">
+          <label>Password</label>
+          <input type="password" class="admin-input-field" id="modal-password" placeholder="Enter password" />
+        </div>
+        <div class="modal-field">
+          <label>Status</label>
+          <select class="admin-select" id="modal-status" style="width:100%">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="admin-action-btn gray" id="modal-cancel-btn">Cancel</button>
+        <button class="admin-action-btn orange" id="modal-save-btn">
+          <span class="material-symbols-rounded">save</span>
+          Save Student
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="script/admin.js"></script>
 </body>
 </html>

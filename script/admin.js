@@ -1,19 +1,49 @@
+/* ============================================================
+   FIREBASE CONFIG
+   Replace the config below with YOUR Firebase project config.
+   Go to: Firebase Console → Project Settings → Your Apps → SDK setup
+   ============================================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updatePassword,
+  deleteUser as deleteAuthUser,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* ---- MOCK DATA (replace with Firebase calls) ---- */
-const MOCK_USERS = [
-  { id: 1,  username: 'juan_dela',    email: 'juan@email.com',    joined: '2026-01-05', status: 'active'   },
-  { id: 2,  username: 'maria_santos', email: 'maria@email.com',   joined: '2026-01-08', status: 'active'   },
-  { id: 3,  username: 'pedro_reyes',  email: 'pedro@email.com',   joined: '2026-01-12', status: 'inactive' },
-  { id: 4,  username: 'ana_garcia',   email: 'ana@email.com',     joined: '2026-01-15', status: 'active'   },
-  { id: 5,  username: 'carlos_lim',   email: 'carlos@email.com',  joined: '2026-01-18', status: 'active'   },
-  { id: 6,  username: 'rosa_cruz',    email: 'rosa@email.com',    joined: '2026-01-20', status: 'inactive' },
-  { id: 7,  username: 'ben_torres',   email: 'ben@email.com',     joined: '2026-01-22', status: 'active'   },
-  { id: 8,  username: 'ling_tan',     email: 'ling@email.com',    joined: '2026-01-25', status: 'active'   },
-  { id: 9,  username: 'diego_flores', email: 'diego@email.com',   joined: '2026-01-28', status: 'active'   },
-  { id: 10, username: 'tina_vera',    email: 'tina@email.com',    joined: '2026-02-01', status: 'inactive' },
-  { id: 11, username: 'rudy_pablo',   email: 'rudy@email.com',    joined: '2026-02-05', status: 'active'   },
-  { id: 12, username: 'liza_reyes',   email: 'liza@email.com',    joined: '2026-02-10', status: 'active'   },
-];
+const firebaseConfig = {
+  apiKey: "AIzaSyDtB1ouns3wY1ljekvHm8h-_V_ChAcNjJw",
+  authDomain: "bestinthesis-ef4e4.firebaseapp.com",
+  projectId: "bestinthesis-ef4e4",
+  storageBucket: "bestinthesis-ef4e4.firebasestorage.app",
+  messagingSenderId: "774078773253",
+  appId: "1:774078773253:web:28a0345c51393e9d9e046c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let STUDENTS         = [];   // filled from Firestore in real-time
+let filteredStudents = [];
+let activityChart, popularityChart;
 
 const MOCK_LEADERBOARD = [
   { rank: 1,  player: 'langit_master',  pat: 980,  baka: 870,  langit: 1200, total: 3050 },
@@ -28,8 +58,6 @@ const MOCK_LEADERBOARD = [
   { rank: 10, player: 'ling_tan',       pat: 490,  baka: 580,  langit: 760,  total: 1830 },
 ];
 
-const MOCK_KPI = { users: 248, sessions: 1842, downloads: 576, active: 87 };
-
 const MOCK_ACTIVITY = {
   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   data:   [120, 95, 180, 210, 165, 290, 310],
@@ -40,11 +68,6 @@ const MOCK_POPULARITY = {
   data:   [880, 982, 1530],
 };
 
-/* ---- STATE ---- */
-let announcements = JSON.parse(localStorage.getItem('lt_announcements') || '[]');
-let filteredUsers = [...MOCK_USERS];
-let activityChart, popularityChart;
-
 /* ============================================================
    INIT
    ============================================================ */
@@ -52,20 +75,46 @@ document.addEventListener('DOMContentLoaded', () => {
   setDateDisplay();
   initTabs();
   initHamburger();
-  populateKPIs();
-  populateRecentReg();
   initCharts();
-  populateUsersTable(MOCK_USERS);
   populateLeaderboard();
-  renderAnnouncements();
-  animateKPIs();
   initUserSearch();
   initExportCSV();
-  initAnnouncements();
+  initStudentModal();
   initSettings();
   initLogout();
   animateGSBars();
+
+  // 🔥 Real-time listener: auto-refresh table whenever Firestore changes
+  listenToStudents();
 });
+
+/* ============================================================
+   🔥 FIRESTORE REAL-TIME LISTENER
+   Listens to the "students" collection and keeps STUDENTS in sync.
+   ============================================================ */
+function listenToStudents() {
+  const studentsRef = collection(db, 'students');
+  const q = query(studentsRef, orderBy('joined', 'desc'));
+
+  onSnapshot(q, (snapshot) => {
+    STUDENTS = snapshot.docs.map(docSnap => ({
+      id:       docSnap.id,          // Firestore document ID (string)
+      username: docSnap.data().username,
+      email:    docSnap.data().email,
+      joined:   docSnap.data().joined,
+      status:   docSnap.data().status,
+      uid:      docSnap.data().uid || null,  // Firebase Auth UID (for deleting auth user)
+    }));
+
+    filteredStudents = [...STUDENTS];
+    populateUsersTable(STUDENTS);
+    populateKPIs();
+    populateRecentReg();
+  }, (error) => {
+    console.error('Firestore listener error:', error);
+    Swal.fire({ icon: 'error', title: 'Database Error', text: 'Could not load students. Check your Firebase config.', confirmButtonColor: '#e53935' });
+  });
+}
 
 /* ---- DATE DISPLAY ---- */
 function setDateDisplay() {
@@ -81,7 +130,6 @@ function setDateDisplay() {
    TAB NAVIGATION
    ============================================================ */
 function initTabs() {
-  // Collect all tab buttons (desktop + mobile)
   const allTabBtns = document.querySelectorAll('.admin-tab-btn');
   const panels     = document.querySelectorAll('.admin-tab-panel');
 
@@ -89,15 +137,12 @@ function initTabs() {
     btn.addEventListener('click', () => {
       const target = btn.dataset.tab;
 
-      // Update active state on ALL buttons with same tab
       allTabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === target));
       panels.forEach(p => p.classList.toggle('active', p.id === `tab-${target}`));
 
-      // Close mobile menu after selection
       const mobileMenu = document.getElementById('admin-mobile-menu');
       if (mobileMenu) mobileMenu.classList.remove('open');
 
-      // Lazy re-render charts when switching to overview
       if (target === 'overview') {
         setTimeout(() => {
           activityChart && activityChart.update();
@@ -105,12 +150,10 @@ function initTabs() {
         }, 50);
       }
 
-      // Animate bars when switching to games
       if (target === 'games') setTimeout(animateGSBars, 100);
     });
   });
 
-  // "View All Users" shortcut button
   const viewAllBtn = document.getElementById('view-all-users-btn');
   if (viewAllBtn) {
     viewAllBtn.addEventListener('click', () => {
@@ -133,7 +176,6 @@ function initHamburger() {
     hamburger.classList.toggle('open');
   });
 
-  // Close on outside click
   document.addEventListener('click', e => {
     if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
       mobileMenu.classList.remove('open');
@@ -146,25 +188,12 @@ function initHamburger() {
    KPI CARDS
    ============================================================ */
 function populateKPIs() {
-  document.getElementById('kpi-users').textContent     = MOCK_KPI.users;
-  document.getElementById('kpi-sessions').textContent  = MOCK_KPI.sessions.toLocaleString();
-  document.getElementById('kpi-downloads').textContent = MOCK_KPI.downloads;
-  document.getElementById('kpi-active').textContent    = MOCK_KPI.active;
-  document.getElementById('user-count-badge').textContent = MOCK_USERS.length;
-}
-
-function animateKPIs() {
-  document.querySelectorAll('.kpi-value').forEach(el => {
-    const target = parseInt(el.textContent.replace(/,/g, ''), 10);
-    if (isNaN(target)) return;
-    let current = 0;
-    const step  = Math.ceil(target / 60);
-    const timer = setInterval(() => {
-      current = Math.min(current + step, target);
-      el.textContent = current.toLocaleString();
-      if (current >= target) clearInterval(timer);
-    }, 18);
-  });
+  const activeCount = STUDENTS.filter(s => s.status === 'active').length;
+  document.getElementById('kpi-users').textContent    = STUDENTS.length;
+  document.getElementById('kpi-sessions').textContent = MOCK_ACTIVITY.data.reduce((a, b) => a + b, 0).toLocaleString();
+  document.getElementById('kpi-active').textContent   = activeCount;
+  document.getElementById('kpi-games').textContent    = MOCK_ACTIVITY.data[MOCK_ACTIVITY.data.length - 1];
+  document.getElementById('user-count-badge').textContent = STUDENTS.length;
 }
 
 /* ============================================================
@@ -173,12 +202,13 @@ function animateKPIs() {
 function populateRecentReg() {
   const tbody = document.getElementById('recent-reg-body');
   if (!tbody) return;
-  const recent = [...MOCK_USERS].slice(-5).reverse();
+  // STUDENTS is already ordered by joined desc from Firestore, take first 5
+  const recent = STUDENTS.slice(0, 5);
   tbody.innerHTML = recent.map((u, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td><strong>${u.username}</strong></td>
-      <td>${u.email}</td>
+      <td><strong>${escapeHtml(u.username)}</strong></td>
+      <td>${escapeHtml(u.email)}</td>
       <td>${formatDate(u.joined)}</td>
       <td><span class="status-badge ${u.status}">${u.status}</span></td>
     </tr>
@@ -193,11 +223,9 @@ function initCharts() {
   const ctxP = document.getElementById('popularityChart');
   if (!ctxA || !ctxP) return;
 
-  // Shared chart defaults
   Chart.defaults.font.family = "'Nunito', sans-serif";
   Chart.defaults.font.weight = '700';
 
-  // Activity Bar Chart
   activityChart = new Chart(ctxA, {
     type: 'bar',
     data: {
@@ -223,7 +251,6 @@ function initCharts() {
     }
   });
 
-  // Popularity Doughnut Chart
   popularityChart = new Chart(ctxP, {
     type: 'doughnut',
     data: {
@@ -251,30 +278,30 @@ function initCharts() {
 }
 
 /* ============================================================
-   USERS TABLE
+   STUDENTS TABLE
    ============================================================ */
-function populateUsersTable(users) {
+function populateUsersTable(students) {
   const tbody = document.getElementById('users-table-body');
   if (!tbody) return;
 
-  if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:#aaa">No users found.</td></tr>`;
+  if (students.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:#aaa">No students found.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = users.map(u => `
+  tbody.innerHTML = students.map((u, i) => `
     <tr>
-      <td>${u.id}</td>
-      <td><strong>${u.username}</strong></td>
-      <td>${u.email}</td>
+      <td>${i + 1}</td>
+      <td><strong>${escapeHtml(u.username)}</strong></td>
+      <td>${escapeHtml(u.email)}</td>
       <td>${formatDate(u.joined)}</td>
       <td><span class="status-badge ${u.status}">${u.status}</span></td>
       <td>
         <div class="action-btns">
-          <button class="tbl-btn view"   onclick="viewUser(${u.id})"   title="View">
-            <span class="material-symbols-rounded">visibility</span>
+          <button class="tbl-btn edit" onclick="openEditModal('${u.id}')" title="Edit">
+            <span class="material-symbols-rounded">edit</span>
           </button>
-          <button class="tbl-btn delete" onclick="deleteUser(${u.id})" title="Delete">
+          <button class="tbl-btn delete" onclick="deleteUser('${u.id}')" title="Delete">
             <span class="material-symbols-rounded">delete</span>
           </button>
         </div>
@@ -291,55 +318,181 @@ function initUserSearch() {
   function applyFilters() {
     const q      = searchInput.value.toLowerCase().trim();
     const status = filterSelect.value;
-    filteredUsers = MOCK_USERS.filter(u => {
+    filteredStudents = STUDENTS.filter(u => {
       const matchQ = !q || u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
       const matchS = status === 'all' || u.status === status;
       return matchQ && matchS;
     });
-    populateUsersTable(filteredUsers);
+    populateUsersTable(filteredStudents);
   }
 
   searchInput.addEventListener('input', applyFilters);
   filterSelect.addEventListener('change', applyFilters);
 }
 
-function viewUser(id) {
-  const u = MOCK_USERS.find(x => x.id === id);
-  if (!u) return;
-  Swal.fire({
-    title: `👤 ${u.username}`,
-    html: `
-      <div style="text-align:left;line-height:2">
-        <b>Email:</b> ${u.email}<br>
-        <b>Joined:</b> ${formatDate(u.joined)}<br>
-        <b>Status:</b> <span style="color:${u.status==='active'?'#4CAF50':'#aaa'}">${u.status}</span>
-      </div>`,
-    confirmButtonText: 'Close',
-    confirmButtonColor: '#2B7FD4',
-    customClass: { popup: 'swal-popup' }
-  });
+/* ============================================================
+   STUDENT MODAL – REGISTER & EDIT
+   ============================================================ */
+function initStudentModal() {
+  const overlay     = document.getElementById('student-modal-overlay');
+  const registerBtn = document.getElementById('register-student-btn');
+  const closeBtn    = document.getElementById('modal-close-btn');
+  const cancelBtn   = document.getElementById('modal-cancel-btn');
+  const saveBtn     = document.getElementById('modal-save-btn');
+
+  if (registerBtn) registerBtn.addEventListener('click', () => openRegisterModal());
+  [closeBtn, cancelBtn].forEach(btn => { if (btn) btn.addEventListener('click', closeModal); });
+  if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+  if (saveBtn) saveBtn.addEventListener('click', saveStudent);
 }
 
-function deleteUser(id) {
-  const u = MOCK_USERS.find(x => x.id === id);
-  if (!u) return;
+function openRegisterModal() {
+  document.getElementById('modal-title').textContent    = '➕ Register Student';
+  document.getElementById('modal-user-id').value        = '';
+  document.getElementById('modal-username').value       = '';
+  document.getElementById('modal-email').value          = '';
+  document.getElementById('modal-password').value       = '';
+  document.getElementById('modal-status').value         = 'active';
+  document.getElementById('modal-password').placeholder = 'Enter password';
+  document.getElementById('modal-password').closest('.modal-field').style.display = 'flex';
+
+  const saveBtn = document.getElementById('modal-save-btn');
+  saveBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register';
+
+  document.getElementById('student-modal-overlay').classList.add('open');
+}
+
+function openEditModal(firestoreId) {
+  const student = STUDENTS.find(s => s.id === firestoreId);
+  if (!student) return;
+
+  document.getElementById('modal-title').textContent    = '✏️ Edit Student';
+  document.getElementById('modal-user-id').value        = student.id;
+  document.getElementById('modal-username').value       = student.username;
+  document.getElementById('modal-email').value          = student.email;
+  document.getElementById('modal-password').value       = '';
+  document.getElementById('modal-password').placeholder = 'Leave blank to keep current';
+  document.getElementById('modal-status').value         = student.status;
+  document.getElementById('modal-password').closest('.modal-field').style.display = 'flex';
+
+  const saveBtn = document.getElementById('modal-save-btn');
+  saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
+
+  document.getElementById('student-modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('student-modal-overlay').classList.remove('open');
+}
+
+/* ============================================================
+   🔥 SAVE STUDENT — Creates Firebase Auth user + Firestore doc
+   ============================================================ */
+async function saveStudent() {
+  const firestoreId = document.getElementById('modal-user-id').value;
+  const username    = document.getElementById('modal-username').value.trim();
+  const email       = document.getElementById('modal-email').value.trim();
+  const password    = document.getElementById('modal-password').value.trim();
+  const status      = document.getElementById('modal-status').value;
+
+  if (!username || !email) {
+    Swal.fire({ icon: 'warning', title: 'Incomplete', text: 'Please fill in the username and email.', confirmButtonColor: '#F4A234' });
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#e53935' });
+    return;
+  }
+
+  const saveBtn = document.getElementById('modal-save-btn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span> Saving...';
+
+  try {
+    if (firestoreId === '') {
+      /* ---- REGISTER NEW STUDENT ---- */
+      if (!password) {
+        Swal.fire({ icon: 'warning', title: 'Password Required', text: 'Please set a password for the new student.', confirmButtonColor: '#F4A234' });
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register';
+        return;
+      }
+      if (password.length < 6) {
+        Swal.fire({ icon: 'error', title: 'Too Short', text: 'Password must be at least 6 characters.', confirmButtonColor: '#e53935' });
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register';
+        return;
+      }
+
+      // 1. Create Firebase Auth account for the student
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCred.user.uid;
+
+      // 2. Save student profile to Firestore "students" collection
+      await setDoc(doc(db, 'students', uid), {
+        uid,
+        username,
+        email,
+        joined:    new Date().toISOString().split('T')[0],
+        status,
+        createdAt: serverTimestamp(),
+      });
+
+      closeModal();
+      Swal.fire({ icon: 'success', title: 'Registered! 🎉', text: `${username} has been added as a student.`, timer: 2000, showConfirmButton: false });
+
+    } else {
+      /* ---- EDIT EXISTING STUDENT ---- */
+      const studentRef = doc(db, 'students', firestoreId);
+      await updateDoc(studentRef, { username, email, status });
+
+      closeModal();
+      Swal.fire({ icon: 'success', title: 'Updated!', text: `${username}'s details have been saved.`, timer: 2000, showConfirmButton: false });
+    }
+
+  } catch (err) {
+    console.error('saveStudent error:', err);
+    let msg = err.message;
+    if (err.code === 'auth/email-already-in-use') msg = 'That email is already registered.';
+    if (err.code === 'auth/weak-password')        msg = 'Password must be at least 6 characters.';
+    Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#e53935' });
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = firestoreId
+      ? '<span class="material-symbols-rounded">save</span> Save Changes'
+      : '<span class="material-symbols-rounded">person_add</span> Register';
+  }
+}
+
+/* ============================================================
+   🔥 DELETE STUDENT — removes Firestore doc (+ optional Auth delete)
+   ============================================================ */
+function deleteUser(firestoreId) {
+  const student = STUDENTS.find(s => s.id === firestoreId);
+  if (!student) return;
+
   Swal.fire({
-    title: 'Delete User?',
-    html: `Are you sure you want to remove <strong>${u.username}</strong>?`,
+    title: 'Remove Student?',
+    html: `Are you sure you want to remove <strong>${escapeHtml(student.username)}</strong>?`,
     icon: 'warning',
     showCancelButton:   true,
-    confirmButtonText:  'Yes, delete',
+    confirmButtonText:  'Yes, remove',
     cancelButtonText:   'Cancel',
     confirmButtonColor: '#e53935',
     cancelButtonColor:  '#6A8AA0',
-  }).then(result => {
+  }).then(async result => {
     if (result.isConfirmed) {
-      const idx = MOCK_USERS.findIndex(x => x.id === id);
-      if (idx !== -1) MOCK_USERS.splice(idx, 1);
-      populateUsersTable(MOCK_USERS);
-      populateKPIs();
-      populateRecentReg();
-      Swal.fire({ icon: 'success', title: 'Deleted!', text: `${u.username} has been removed.`, timer: 2000, showConfirmButton: false });
+      try {
+        // Delete Firestore document
+        await deleteDoc(doc(db, 'students', firestoreId));
+
+        Swal.fire({ icon: 'success', title: 'Removed!', text: `${student.username} has been removed.`, timer: 2000, showConfirmButton: false });
+      } catch (err) {
+        console.error('deleteUser error:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message, confirmButtonColor: '#e53935' });
+      }
     }
   });
 }
@@ -352,13 +505,15 @@ function initExportCSV() {
   if (!btn) return;
   btn.addEventListener('click', () => {
     const rows = [['ID', 'Username', 'Email', 'Joined', 'Status']];
-    filteredUsers.forEach(u => rows.push([u.id, u.username, u.email, u.joined, u.status]));
-    const csv     = rows.map(r => r.join(',')).join('\n');
-    const blob    = new Blob([csv], { type: 'text/csv' });
-    const url     = URL.createObjectURL(blob);
-    const a       = document.createElement('a');
-    a.href        = url;
-    a.download    = 'laro-tayo-users.csv';
+    (filteredStudents.length ? filteredStudents : STUDENTS).forEach(u =>
+      rows.push([u.id, u.username, u.email, u.joined, u.status])
+    );
+    const csv  = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'laro-tayo-students.csv';
     a.click();
     URL.revokeObjectURL(url);
   });
@@ -397,121 +552,9 @@ function animateGSBars() {
 }
 
 /* ============================================================
-   ANNOUNCEMENTS
-   ============================================================ */
-function initAnnouncements() {
-  const newBtn    = document.getElementById('new-ann-btn');
-  const cancelBtn = document.getElementById('ann-cancel-btn');
-  const postBtn   = document.getElementById('ann-post-btn');
-  const compose   = document.getElementById('ann-compose');
-  const msgArea   = document.getElementById('ann-message');
-  const charCount = document.getElementById('ann-char-count');
-
-  if (newBtn) newBtn.addEventListener('click', () => {
-    compose.style.display = 'block';
-    compose.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-
-  if (cancelBtn) cancelBtn.addEventListener('click', () => {
-    compose.style.display = 'none';
-    clearAnnForm();
-  });
-
-  if (msgArea) msgArea.addEventListener('input', () => {
-    charCount.textContent = `${msgArea.value.length} / 300`;
-  });
-
-  if (postBtn) postBtn.addEventListener('click', postAnnouncement);
-}
-
-function postAnnouncement() {
-  const title   = document.getElementById('ann-title').value.trim();
-  const type    = document.getElementById('ann-type').value;
-  const message = document.getElementById('ann-message').value.trim();
-
-  if (!title || !message) {
-    Swal.fire({ icon: 'warning', title: 'Incomplete', text: 'Please fill in the title and message.', confirmButtonColor: '#F4A234' });
-    return;
-  }
-
-  const ann = {
-    id:      Date.now(),
-    title,
-    type,
-    message,
-    date:    new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
-  };
-
-  announcements.unshift(ann);
-  localStorage.setItem('lt_announcements', JSON.stringify(announcements));
-  renderAnnouncements();
-  clearAnnForm();
-  document.getElementById('ann-compose').style.display = 'none';
-
-  Swal.fire({ icon: 'success', title: 'Posted!', text: 'Announcement published successfully.', timer: 2000, showConfirmButton: false });
-}
-
-function clearAnnForm() {
-  ['ann-title', 'ann-message'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const charCount = document.getElementById('ann-char-count');
-  if (charCount) charCount.textContent = '0 / 300';
-  const typeEl = document.getElementById('ann-type');
-  if (typeEl) typeEl.value = 'info';
-}
-
-const ANN_ICONS = { info: 'ℹ️', update: '🆕', event: '🎉', maintenance: '🔧' };
-const ANN_LABELS = { info: 'Info', update: 'Update', event: 'Event', maintenance: 'Maintenance' };
-
-function renderAnnouncements() {
-  const list = document.getElementById('ann-list');
-  if (!list) return;
-
-  if (announcements.length === 0) {
-    list.innerHTML = `<div class="ann-empty">No announcements yet. Click <strong>New Announcement</strong> to get started!</div>`;
-    return;
-  }
-
-  list.innerHTML = announcements.map(a => `
-    <div class="ann-card ann-type-${a.type}" id="ann-${a.id}">
-      <div class="ann-card-top">
-        <span class="ann-type-badge ${a.type}">${ANN_ICONS[a.type]} ${ANN_LABELS[a.type]}</span>
-        <span class="ann-date">${a.date}</span>
-        <button class="ann-delete-btn" onclick="deleteAnn(${a.id})" title="Delete">
-          <span class="material-symbols-rounded">close</span>
-        </button>
-      </div>
-      <h4 class="ann-card-title">${escapeHtml(a.title)}</h4>
-      <p class="ann-card-msg">${escapeHtml(a.message)}</p>
-    </div>
-  `).join('');
-}
-
-function deleteAnn(id) {
-  Swal.fire({
-    title: 'Delete Announcement?',
-    text: 'This cannot be undone.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Delete',
-    confirmButtonColor: '#e53935',
-    cancelButtonColor: '#6A8AA0',
-  }).then(r => {
-    if (r.isConfirmed) {
-      announcements = announcements.filter(a => a.id !== id);
-      localStorage.setItem('lt_announcements', JSON.stringify(announcements));
-      renderAnnouncements();
-    }
-  });
-}
-
-/* ============================================================
    SETTINGS
    ============================================================ */
 function initSettings() {
-  // Change password
   const changePassBtn = document.getElementById('change-pass-btn');
   if (changePassBtn) changePassBtn.addEventListener('click', () => {
     const cur  = document.getElementById('cur-pass').value;
@@ -530,15 +573,13 @@ function initSettings() {
       Swal.fire({ icon: 'error', title: 'Too Short', text: 'Password must be at least 6 characters.', confirmButtonColor: '#e53935' });
       return;
     }
-    // Simulate success (hook into Firebase Auth here)
     Swal.fire({ icon: 'success', title: 'Password Updated', text: 'Your password has been changed.', timer: 2000, showConfirmButton: false });
     ['cur-pass', 'new-pass', 'conf-pass'].forEach(id => document.getElementById(id).value = '');
   });
 
-  // Toggle switches with SweetAlert feedback
   const toggleMaint = document.getElementById('toggle-maintenance');
   if (toggleMaint) toggleMaint.addEventListener('change', () => {
-    const msg = toggleMaint.checked ? 'Maintenance mode ON. Users cannot access the app.' : 'Maintenance mode OFF. App is live.';
+    const msg = toggleMaint.checked ? 'Maintenance mode ON. Students cannot access the app.' : 'Maintenance mode OFF. App is live.';
     Swal.fire({ icon: 'info', title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
   });
 
@@ -550,7 +591,7 @@ function initSettings() {
 
   const togglePiko = document.getElementById('toggle-piko');
   if (togglePiko) togglePiko.addEventListener('change', () => {
-    const msg = togglePiko.checked ? 'Piko is now enabled for players!' : 'Piko has been disabled.';
+    const msg = togglePiko.checked ? 'Piko is now enabled for students!' : 'Piko has been disabled.';
     Swal.fire({ icon: 'info', title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
   });
 }
@@ -581,11 +622,16 @@ function initLogout() {
    HELPERS
    ============================================================ */
 function formatDate(dateStr) {
+  if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 function escapeHtml(str) {
   const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str));
+  div.appendChild(document.createTextNode(str || ''));
   return div.innerHTML;
 }
+
+// Expose for inline onclick handlers
+window.openEditModal = openEditModal;
+window.deleteUser    = deleteUser;
