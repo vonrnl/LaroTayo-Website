@@ -29,8 +29,8 @@
 .dash-user-avatar {
   width: 44px; height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--orange), var(--yellow));
-  border: 3px solid var(--orange-dark);
+  background: linear-gradient(135deg, var(--white), var(--light));
+  border: 3px solid var(--text);
   display: flex;
   align-items: center;
   justify-content: center;

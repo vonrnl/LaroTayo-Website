@@ -65,34 +65,6 @@ function renderCharts(weeklyData,scores){
   });
 }
 
-// PROGRESS
-const GAMES=[
-  {key:'pat',name:'Patintero',icon:'🏃',color:'orange'},
-  {key:'baka',name:'Luksong Baka',icon:'🐄',color:'blue'},
-  {key:'langit',name:'Langit Lupa',icon:'☁️',color:'green'}
-];
-
-function renderProgress(scores,levels){
-  const grid=document.getElementById('progress-grid');
-  const cards=GAMES.map(g=>{
-    const level=levels?.[g.key]||0;
-    const best=scores?.[g.key]||0;
-    const pct=progressFromLevel(level);
-    const stars=starsFromLevel(level);
-    return `<div class="progress-card"><div class="progress-game-info"><span class="progress-icon">${g.icon}</span><div><h4>${g.name}</h4><span class="progress-level">Level ${level}</span></div><span class="progress-percent">${pct}%</span></div><div class="progress-bar-wrap"><div class="progress-bar ${g.color}" style="width:0%" data-width="${pct}%"></div></div><div class="progress-stats"><span>🎯 Best Score: ${best}</span><span>${stars}</span></div></div>`;
-  });
-
-  cards.push(`<div class="progress-card locked"><div class="progress-game-info"><span class="progress-icon">🔒</span><div><h4>Bamsak</h4><span class="progress-level">Locked</span></div><span class="progress-percent">0%</span></div><div class="progress-bar-wrap"><div class="progress-bar gray" style="width:0%"></div></div><div class="progress-stats"><span>🔓 Reach Level 5 to unlock</span></div></div>`);
-
-  grid.innerHTML=cards.join('');
-
-  setTimeout(()=>{
-    grid.querySelectorAll('.progress-bar[data-width]').forEach(bar=>{
-      bar.style.width=bar.getAttribute('data-width');
-    });
-  },100);
-}
-
 // HISTORY
 function renderHistory(docs){
   const container=document.getElementById('game-history');
