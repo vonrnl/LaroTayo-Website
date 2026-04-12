@@ -24,7 +24,7 @@
     <div class="admin-nav-tabs" id="admin-nav-tabs">
 <button class="admin-tab-btn active" data-tab="users">
         <span class="material-symbols-rounded">group</span>
-        <span>Students</span>
+        <span>Users</span>
         <span class="tab-count" id="user-count-badge">0</span>
       </button>
 <button class="admin-tab-btn" data-tab="settings">
@@ -37,7 +37,7 @@
     <div class="admin-nav-right">
       <div class="admin-nav-badge">
         <span class="material-symbols-rounded">school</span>
-        <span>TEACHER</span>
+        <span>ADMIN</span>
       </div>
       <button class="admin-logout-btn" id="admin-logout">
         <span class="material-symbols-rounded">logout</span>
@@ -63,17 +63,16 @@
   <!-- MAIN CONTENT -->
   <main class="admin-main">
 
-    <!-- STUDENTS TAB -->
+    <!-- USER TAB -->
     <div class="admin-tab-panel active" id="tab-users">
       <div class="admin-page-header">
         <div>
-          <h1>👥 Student Management</h1>
-          <p>Register, view, and manage all students under your class.</p>
+          <h1>👥 User Management</h1>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="admin-action-btn green" id="register-student-btn">
             <span class="material-symbols-rounded">person_add</span>
-            Register Student
+            Register User
           </button>
         </div>
       </div>
@@ -115,7 +114,7 @@
 
       <div class="settings-grid">
         <div class="settings-card">
-          <h3>🔑 Change Password</h3>
+          <h3>Change Password</h3>
           <div class="settings-field">
             <label>Current Password</label>
             <input type="password" class="admin-input-field" id="cur-pass" placeholder="Current password" />
@@ -135,7 +134,7 @@
         </div>
 
         <div class="settings-card">
-          <h3>🎮 Game Settings</h3>
+          <h3>Game Settings</h3>
           <div class="settings-toggle-row">
             <div>
               <strong>Maintenance Mode</strong>
@@ -169,13 +168,10 @@
         </div>
 
         <div class="settings-card">
-          <h3>📄 About This Panel</h3>
+          <h3>About This Panel</h3>
           <div class="settings-info-row"><span>Project</span><strong>Laro Tayo</strong></div>
           <div class="settings-info-row"><span>Version</span><strong>1.0.0</strong></div>
-          <div class="settings-info-row"><span>Panel</span><strong>Teacher v1.0</strong></div>
           <div class="settings-info-row"><span>School</span><strong>NCST Cavite</strong></div>
-          <div class="settings-info-row"><span>Year</span><strong>2026</strong></div>
-          <div class="settings-info-row"><span>Firebase</span><strong>Connected ✅</strong></div>
         </div>
       </div>
     </div>
