@@ -3,7 +3,6 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile,
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
@@ -175,119 +174,29 @@ if (regBtn) {
   });
 }
 
-// ---- EDIT PROFILE MODAL (dashboard) ----
-function initEditProfile(user) {
-  const overlay    = document.getElementById('ep-overlay');
-  const closeBtn   = document.getElementById('ep-close');
-  const editBtn    = document.getElementById('dash-edit-profile');
-  const saveBtn    = document.getElementById('ep-save');
-  const nicknameIn = document.getElementById('ep-nickname');
-  const avatarGrid = document.getElementById('ep-avatar-grid');
-  const preview    = document.getElementById('ep-avatar-preview');
-  const msg        = document.getElementById('ep-msg');
-
-  if (!overlay) return;
-
-  let selectedEmoji = localStorage.getItem('dash-avatar') || '🎮';
-
-  function openModal() {
-    nicknameIn.value = user.displayName || '';
-    selectedEmoji = localStorage.getItem('dash-avatar') || '🎮';
-    preview.textContent = selectedEmoji;
-    document.querySelectorAll('.ep-avatar-opt').forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.emoji === selectedEmoji);
-    });
-    if (msg) { msg.textContent = ''; msg.className = 'ep-msg'; }
-    overlay.classList.add('open');
-  }
-
-  function closeModal() { overlay.classList.remove('open'); }
-
-  editBtn.onclick = openModal;
-  closeBtn.onclick = closeModal;
-  overlay.onclick = (e) => { if (e.target === overlay) closeModal(); };
-
-  avatarGrid.onclick = (e) => {
-    const btn = e.target.closest('.ep-avatar-opt');
-    if (!btn) return;
-    selectedEmoji = btn.dataset.emoji;
-    preview.textContent = selectedEmoji;
-    document.querySelectorAll('.ep-avatar-opt').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-  };
-
-  saveBtn.onclick = async () => {
-    const nickname = nicknameIn.value.trim();
-    if (!nickname) {
-      if (msg) { msg.textContent = 'Please enter a nickname!'; msg.className = 'ep-msg error'; }
-      return;
-    }
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span class="material-symbols-rounded">hourglass_empty</span> Saving...';
-
-    try {
-      await updateProfile(user, { displayName: nickname });
-      localStorage.setItem('dash-avatar', selectedEmoji);
-
-      const el = (id) => document.getElementById(id);
-      if (el('dash-name'))          el('dash-name').textContent          = nickname;
-      if (el('dash-avatar'))        el('dash-avatar').textContent        = selectedEmoji;
-      if (el('dash-header-name'))   el('dash-header-name').textContent   = nickname;
-      if (el('dash-header-avatar')) el('dash-header-avatar').textContent = selectedEmoji;
-
-      closeModal();
-    } catch (err) {
-      if (msg) { msg.textContent = 'Failed to save. Please try again.'; msg.className = 'ep-msg error'; }
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
-    }
-  };}
-
 // ---- AUTH STATE ----
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   const isDashboard = window.location.pathname.includes('dashboard');
 
   if (isDashboard) {
-    if (!user) { window.location.href = 'index.html'; return; }
-
-    const displayName = user.displayName || user.email.split('@')[0];
-    const savedAvatar = localStorage.getItem('dash-avatar') || '🎮';
-    const el = (id) => document.getElementById(id);
-
-    if (el('dash-name'))          el('dash-name').textContent          = displayName;
-    if (el('dash-email'))         el('dash-email').textContent         = user.email;
-    if (el('dash-header-name'))   el('dash-header-name').textContent   = displayName;
-    if (el('dash-avatar'))        el('dash-avatar').textContent        = savedAvatar;
-    if (el('dash-header-avatar')) el('dash-header-avatar').textContent = savedAvatar;
-
-    const dashLogout = el('dash-logout');
-    if (dashLogout) {
-      dashLogout.onclick = async () => {
-        if (confirm('Are you sure you want to logout?')) {
-          await signOut(auth);
-          window.location.href = 'index.html';
-        }
-      };
-    }
-
-    initEditProfile(user);
+    if (!user) { window.location.href = 'index.html'; }
     return;
   }
 
-  // Index page: swap LOGIN <-> LOGOUT in nav
-  const navLoginItem = document.querySelector('a[href="#login"].nav-item');
+  const navLoginItem = document.querySelector('a[href="#login"].nav-item, a.nav-item[data-auth]');
   if (!navLoginItem) return;
 
   if (user) {
-    navLoginItem.innerHTML = `<span class="material-symbols-rounded">logout</span><span>LOGOUT</span>`;
-    navLoginItem.href = '#';
-    navLoginItem.onclick = async (e) => {
-      e.preventDefault();
-      if (confirm('Are you sure you want to logout?')) {
-        await signOut(auth);
-        window.location.reload();
-      }
-    };
+    // Logged in: show DASHBOARD button
+    navLoginItem.innerHTML = `<span class="material-symbols-rounded">dashboard</span><span>DASHBOARD</span>`;
+    navLoginItem.href = 'dashboard.html';
+    navLoginItem.setAttribute('data-auth', 'in');
+    navLoginItem.onclick = null;
+  } else {
+    // Not logged in: show LOGIN button
+    navLoginItem.innerHTML = `<span class="material-symbols-rounded">lock</span><span>LOGIN</span>`;
+    navLoginItem.href = '#login';
+    navLoginItem.setAttribute('data-auth', 'out');
+    navLoginItem.onclick = null;
   }
 });

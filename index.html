@@ -63,7 +63,7 @@
         </div>
         <div class="stats">
           <div><strong>3D</strong><small>Mobile Game</small></div>
-          <div><strong>6-12</strong><small>Age</small></div>
+          <div><strong>8-12</strong><small>Age</small></div>
           <div><strong>Free</strong><small>Download</small></div>
         </div>
       </div>
@@ -87,6 +87,7 @@
       <p>Bring back the games our lolos and lolas grew up with.</p>
     </div>
     <div class="cards-grid">
+
       <div class="card green reveal">
         <span class="material-symbols-rounded card-icon">accessibility</span>
         <h3>Patintero</h3>
@@ -107,6 +108,41 @@
         <p>"Ice Ice Water" (or "Ice Water") is a popular Filipino outdoor chasing game similar to tag, where the "it" player freezes runners by touching them,
            and they can only be unfrozen by teammates shouting "Water"</p>
         <span class="pill">Tag game</span>
+      </div>
+    </div>
+
+    <!-- SCREENSHOT GALLERY -->
+    <div class="gallery-viewer reveal" style="margin-top:52px;">
+      <div class="gallery-featured">
+        <img id="featured-img" src="img/background.png" alt="Screenshot" style="display:none;" />
+        <div class="gallery-empty-main" id="gallery-empty-main">
+          <img src="img/background.png" alt="Screenshot 1" />
+        </div>
+        <button class="gallery-arrow left" id="gallery-prev" aria-label="Previous">&#8249;</button>
+        <button class="gallery-arrow right" id="gallery-next" aria-label="Next">&#8250;</button>
+      </div>
+      <div class="gallery-thumbs-row" id="gallery-thumbs">
+        <div class="gthumb active" data-index="0" data-src="img/p1.jpg">
+          <img src="img/p1.jpg" alt="Screenshot 1" />
+        </div>
+        <div class="gthumb" data-index="1" data-src="img/p2.jpg">
+          <img src="img/p2.jpg" alt="Screenshot 2" />
+        </div>
+        <div class="gthumb" data-index="2" data-src="img/p3.jpg">
+          <img src="img/p3.jpg" alt="Screenshot 3" />
+        </div>
+        <div class="gthumb" data-index="3" data-src="img/p4.jpg">
+          <img src="img/p4.jpg" alt="Screenshot 4" />
+        </div>
+        <div class="gthumb" data-index="4" data-src="img/p5.jpg">
+          <img src="img/p5.jpg" alt="Screenshot 5" />
+        </div>
+        <div class="gthumb" data-index="5" data-src="img/p6.jpg">
+          <img src="img/p6.jpg" alt="Screenshot 6" />
+        </div>
+        <div class="gthumb" data-index="6" data-src="img/p7.jpg">
+          <img src="img/p7.jpg" alt="Screenshot 7" />
+        </div>
       </div>
     </div>
   </section>
@@ -244,7 +280,7 @@
       <span class="material-symbols-rounded card-icon" style="font-size: 5rem;">stadia_controller</span>
       <h3>Laro Tayo – Android APK</h3>
       <p>Version 1.0 · Free · Android 6.0+</p>
-      <a href="YOUR_GOOGLE_DRIVE_LINK_HERE" class="btn-green">➜] PLAY NOW</a>
+      <a href="larotayo5.apk" class="btn-green">➜] PLAY NOW</a>
       <small>Enable "Install from unknown sources" in settings first.</small>
     </div>
   </section>
@@ -309,7 +345,7 @@
       <h3>Register Now</h3>
       <p>Create your account</p>
       <input type="text" id="reg-username" placeholder="Username" />
-      <input type="email" id="reg-email" placeholder="Email" />
+      <input type="email" id="reg-email" placeholder="Email: e.g. juan@email.com" />
       <input type="password" id="reg-password" placeholder="Password" />
       <input type="password" id="reg-confirm" placeholder="Confirm Password" />
       <button class="btn-orange full" id="register-btn">Sign up</button>

@@ -52,17 +52,24 @@ function renderCharts(weeklyData,scores){
   if(weeklyChart)weeklyChart.destroy();
   if(scoreChart)scoreChart.destroy();
 
-  weeklyChart=new Chart(document.getElementById('weeklyChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Games Played',data:weeklyData,backgroundColor:'rgba(244,162,52,0.8)',borderColor:'#D4851A',borderWidth:2,borderRadius:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,color:'#4A6A8A',font:{family:'Nunito',weight:'700'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{color:'#4A6A8A',font:{family:'Nunito',weight:'700'}},grid:{display:false}}}}
-  });
+  const weeklyEl = document.getElementById('weeklyChart');
+  const scoreEl  = document.getElementById('scoreChart');
 
-  scoreChart=new Chart(document.getElementById('scoreChart').getContext('2d'),{
-    type:'doughnut',
-    data:{labels:['Patintero','Luksong Baka','Langit Lupa'],datasets:[{data:[scores.pat||0,scores.baka||0,scores.langit||0],backgroundColor:['rgba(244,162,52,0.85)','rgba(43,127,212,0.85)','rgba(76,175,80,0.85)'],borderColor:['#D4851A','#1A5A9A','#2E7D32'],borderWidth:3,hoverOffset:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#1A3A5C',font:{family:'Nunito',weight:'700'},padding:16}}}}
-  });
+  if(weeklyEl){
+    weeklyChart=new Chart(weeklyEl.getContext('2d'),{
+      type:'bar',
+      data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:[{label:'Games Played',data:weeklyData,backgroundColor:'rgba(244,162,52,0.8)',borderColor:'#D4851A',borderWidth:2,borderRadius:8}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1,color:'#4A6A8A',font:{family:'Nunito',weight:'700'}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{color:'#4A6A8A',font:{family:'Nunito',weight:'700'}},grid:{display:false}}}}
+    });
+  }
+
+  if(scoreEl){
+    scoreChart=new Chart(scoreEl.getContext('2d'),{
+      type:'doughnut',
+      data:{labels:['Patintero','Luksong Baka','Langit Lupa'],datasets:[{data:[scores.pat||0,scores.baka||0,scores.langit||0],backgroundColor:['rgba(244,162,52,0.85)','rgba(43,127,212,0.85)','rgba(76,175,80,0.85)'],borderColor:['#D4851A','#1A5A9A','#2E7D32'],borderWidth:3,hoverOffset:8}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#1A3A5C',font:{family:'Nunito',weight:'700'},padding:16}}}}
+    });
+  }
 }
 
 // HISTORY
@@ -76,6 +83,40 @@ function renderHistory(docs){
     const data=d.data();
     const sign=data.result==='win'?'+':'-';
     return `<div class="history-item"><span class="history-icon">${data.icon||'🎮'}</span><div class="history-info"><h4>${data.game}</h4><span>${formatDate(data.playedAt)}</span></div><div class="history-result ${data.result}">${data.result.toUpperCase()}</div><div class="history-score">${sign}${Math.abs(data.points)} pts</div></div>`;
+  }).join('');
+}
+
+// SAMPLE DATA (remove once real game data is connected)
+const SAMPLE_DATA = {
+  totalScore: 4850,
+  gamesPlayed: 24,
+  wins: 15,
+  streak: 7,
+};
+
+const SAMPLE_HISTORY = [
+  { game: 'Patintero',    icon: '🏃', result: 'win',  points: 320, playedAt: (() => { const d = new Date(); d.setMinutes(d.getMinutes() - 30); return d; })() },
+  { game: 'Luksong Baka', icon: '🐄', result: 'win',  points: 280, playedAt: (() => { const d = new Date(); d.setHours(d.getHours() - 2); return d; })() },
+  { game: 'Ice Ice Water', icon: '🧊', result: 'loss', points: 120, playedAt: (() => { const d = new Date(); d.setDate(d.getDate() - 1); return d; })() },
+  { game: 'Patintero',    icon: '🏃', result: 'win',  points: 350, playedAt: (() => { const d = new Date(); d.setDate(d.getDate() - 1); d.setHours(d.getHours() - 3); return d; })() },
+  { game: 'Luksong Baka', icon: '🐄', result: 'loss', points: 90,  playedAt: (() => { const d = new Date(); d.setDate(d.getDate() - 2); return d; })() },
+  { game: 'Ice Ice Water', icon: '🧊', result: 'win',  points: 310, playedAt: (() => { const d = new Date(); d.setDate(d.getDate() - 2); d.setHours(d.getHours() - 4); return d; })() },
+  { game: 'Patintero',    icon: '🏃', result: 'win',  points: 290, playedAt: (() => { const d = new Date(); d.setDate(d.getDate() - 3); return d; })() },
+];
+
+function renderSampleHistory(items) {
+  const container = document.getElementById('game-history');
+  if (!container) return;
+  container.innerHTML = items.map(d => {
+    const sign = d.result === 'win' ? '+' : '-';
+    const time = d.playedAt.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const dateStr = isToday(d.playedAt) ? `Today, ${time}` : isYesterday(d.playedAt) ? `Yesterday, ${time}` : d.playedAt.toLocaleDateString('en-PH');
+    return `<div class="history-item">
+      <span class="history-icon">${d.icon}</span>
+      <div class="history-info"><h4>${d.game}</h4><span>${dateStr}</span></div>
+      <div class="history-result ${d.result}">${d.result.toUpperCase()}</div>
+      <div class="history-score">${sign}${Math.abs(d.points)} pts</div>
+    </div>`;
   }).join('');
 }
 
@@ -97,29 +138,42 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('ep-nickname').value=name;
     document.getElementById('ep-avatar-preview').textContent=avatar;
 
+    // Use sample data until real game data is connected
+    const totalScore = u.totalScore || SAMPLE_DATA.totalScore;
+    const gamesPlayed = u.gamesPlayed || SAMPLE_DATA.gamesPlayed;
+    const wins = u.wins || SAMPLE_DATA.wins;
+    const streak = u.streak || SAMPLE_DATA.streak;
+
     setTimeout(()=>{
-      animateCounter(document.getElementById('stat-score'),u.totalScore||0);
-      animateCounter(document.getElementById('stat-games'),u.gamesPlayed||0);
-      animateCounter(document.getElementById('stat-wins'),u.wins||0);
-      animateCounter(document.getElementById('stat-streak'),u.streak||0);
+      animateCounter(document.getElementById('stat-score'), totalScore);
+      animateCounter(document.getElementById('stat-games'), gamesPlayed);
+      animateCounter(document.getElementById('stat-wins'), wins);
+      animateCounter(document.getElementById('stat-streak'), streak);
     },400);
 
     const scoreSnap=await getDoc(doc(db,'scores',user.uid));
-    const scores=scoreSnap.exists()?scoreSnap.data():{};
-    const levelSnap=await getDoc(doc(db,'levels',user.uid));
-    const levels=levelSnap.exists()?levelSnap.data():{};
-
-    renderProgress(scores,levels);
+    const scores=scoreSnap.exists()?scoreSnap.data():{pat:1820,baka:1640,langit:1390};
 
     const weeklySnap=await getDoc(doc(db,'weeklyActivity',user.uid));
     const weekly=weeklySnap.exists()?weeklySnap.data():{};
     const weeklyData=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>weekly[d]||0);
+    // Use sample weekly data if none from DB
+    const finalWeekly = weeklyData.some(v=>v>0) ? weeklyData : [2,4,1,5,3,6,3];
 
-    renderCharts(weeklyData,scores);
+    renderCharts(finalWeekly, scores);
 
-    const historyQ=query(collection(db,'gameHistory'),where('userId','==',user.uid),orderBy('playedAt','desc'),limit(5));
-    const historySnap=await getDocs(historyQ);
-    renderHistory(historySnap.docs);
+    // Try real history first, fall back to sample
+    try {
+      const historyQ=query(collection(db,'gameHistory'),where('userId','==',user.uid),orderBy('playedAt','desc'),limit(7));
+      const historySnap=await getDocs(historyQ);
+      if (historySnap.docs.length > 0) {
+        renderHistory(historySnap.docs);
+      } else {
+        renderSampleHistory(SAMPLE_HISTORY);
+      }
+    } catch {
+      renderSampleHistory(SAMPLE_HISTORY);
+    }
 
   }catch(err){console.error('Dashboard load error:',err);}
 });

@@ -64,7 +64,46 @@ navItems.forEach(item => {
 });
 
 
-// ---- HAMBURGER MENU ----
+// ---- SCREENSHOT GALLERY ----
+(function () {
+  const thumbs = document.querySelectorAll('.gthumb');
+  const featuredImg = document.getElementById('featured-img');
+  const emptyMain = document.getElementById('gallery-empty-main');
+  const prevBtn = document.getElementById('gallery-prev');
+  const nextBtn = document.getElementById('gallery-next');
+  if (!thumbs.length || !featuredImg) return;
+
+  let current = 0;
+
+  function setActive(index) {
+    current = (index + thumbs.length) % thumbs.length;
+    thumbs.forEach(t => t.classList.remove('active'));
+    thumbs[current].classList.add('active');
+
+    const src = thumbs[current].dataset.src;
+
+    if (src) {
+      featuredImg.style.opacity = '0';
+      setTimeout(() => {
+        featuredImg.src = src;
+        featuredImg.style.display = 'block';
+        if (emptyMain) emptyMain.style.display = 'none';
+        featuredImg.style.opacity = '1';
+      }, 150);
+    } else {
+      featuredImg.style.display = 'none';
+      if (emptyMain) emptyMain.style.display = 'flex';
+    }
+  }
+
+  thumbs.forEach((thumb, i) => {
+    thumb.addEventListener('click', () => setActive(i));
+  });
+
+  if (prevBtn) prevBtn.addEventListener('click', () => setActive(current - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => setActive(current + 1));
+})();
+
 const hamburger = document.getElementById('hamburger');
 const navLinks  = document.getElementById('nav-links');
 

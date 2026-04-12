@@ -88,18 +88,23 @@
 
 .mission-img {
   border-radius: 22px;
-  aspect-ratio: unset;
-  height: auto;
   border: 5px solid var(--orange);
   box-shadow: 0 7px 0 var(--orange-dark);
   overflow: hidden;
   position: relative;
-  background: #e8f4fd;
+  background: #d6eaf8;
+  width: 100%;
+  padding-top: 62%;
+  height: 0;
 }
 
 .mission-img img {
-  width: 100%; height: 100%;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  object-position: center center;
   display: block;
 }
 
@@ -233,7 +238,7 @@
 @media (max-width: 768px) {
   .about-hero { padding: 120px 20px 70px; }
   .mission-inner { grid-template-columns: 1fr; gap: 32px; }
-  .mission-img { max-width: 380px; margin: 0 auto; width: 100%; }
+  .mission-img { max-width: 420px; margin: 0 auto; }
   .member-card { padding: 22px 20px; gap: 20px; }
   .member-photo-wrap { width: 90px; height: 90px; }
 }
@@ -247,7 +252,7 @@
   .mission-inner { gap: 24px; }
   .mission-text h2 { font-size: 1.6rem; }
   .mission-text p { font-size: 0.92rem; }
-  .mission-img { max-width: 100%; aspect-ratio: 4/3; }
+  .mission-img { max-width: 100%; }
 
   .team-section { padding: 56px 16px; }
   .members-grid { gap: 18px; }

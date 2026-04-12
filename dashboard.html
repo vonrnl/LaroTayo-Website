@@ -19,13 +19,13 @@
       <span class="logo-o">LARO TAYO</span>
     </a>
 
-    <!-- Avatar shown on mobile beside hamburger -->
-    <div class="dash-user-avatar dash-avatar-mobile" id="dash-avatar-mobile">🎮</div>
-
-    <!-- Hamburger (mobile only) -->
-    <button class="dash-hamburger" id="dash-hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <!-- Hamburger + avatar grouped together on mobile -->
+    <div class="dash-hamburger-group">
+      <div class="dash-user-avatar dash-avatar-mobile" id="dash-avatar-mobile">🎮</div>
+      <button class="dash-hamburger" id="dash-hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
 
     <!-- Nav menu -->
     <div class="dash-nav-user" id="dash-nav-user">
@@ -34,6 +34,10 @@
         <span class="dash-welcome">Welcome back, <strong id="dash-name">...</strong>!</span>
         <span class="dash-email" id="dash-email">...</span>
       </div>
+      <button class="dash-home-btn" id="dash-home-btn" onclick="window.location.href='index.html'">
+        <span class="material-symbols-rounded">home</span>
+        <span>Home</span>
+      </button>
       <button class="dash-edit-btn" id="dash-edit-profile">
         <span class="material-symbols-rounded">edit</span>
         <span>Edit Profile</span>
@@ -117,7 +121,18 @@
         </div>
       </div>
     </section>
- 
+
+    <!-- GAME HISTORY -->
+    <section class="dash-section">
+      <div class="section-title">
+        <span class="tag">Recent Activity</span>
+        <h2>Game History</h2>
+      </div>
+      <div class="history-list" id="game-history">
+        <!-- filled by JS -->
+      </div>
+    </section>
+
   </main>
 
   <script>

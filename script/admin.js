@@ -61,11 +61,14 @@ function listenToStudents() {
       email:    docSnap.data().email,
       joined:   docSnap.data().joined,
       uid:      docSnap.data().uid || null,
+      lastSeen: docSnap.data().lastSeen || null,
+      isOnline: docSnap.data().isOnline || false,
     }));
 
     filteredStudents = [...STUDENTS];
     populateUsersTable(STUDENTS);
     document.getElementById('user-count-badge').textContent = STUDENTS.length;
+    updateOnlineCount();
 
   }, (error) => {
     console.error('Firestore listener error:', error);
@@ -124,12 +127,18 @@ function populateUsersTable(students) {
     return;
   }
 
-  tbody.innerHTML = students.map((u, i) => `
+  tbody.innerHTML = students.map((u, i) => {
+    const online = isUserOnline(u);
+    const statusHtml = online
+      ? `<span class="status-pill online"><span class="online-dot"></span>Online</span>`
+      : `<span class="status-pill offline">Offline</span>`;
+    return `
     <tr>
       <td>${i + 1}</td>
       <td><strong>${escapeHtml(u.username)}</strong></td>
       <td>${escapeHtml(u.email)}</td>
       <td>${formatDate(u.joined)}</td>
+      <td>${statusHtml}</td>
       <td>
         <div class="action-btns">
           <button class="tbl-btn edit" onclick="openEditModal('${u.id}')" title="Edit">
@@ -140,8 +149,8 @@ function populateUsersTable(students) {
           </button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 /* ============================================================
@@ -164,42 +173,79 @@ function initUserSearch() {
    STUDENT MODAL — REGISTER & EDIT
    ============================================================ */
 function initStudentModal() {
-  const overlay     = document.getElementById('student-modal-overlay');
+  // Register tab form
   const registerBtn = document.getElementById('register-student-btn');
-  const closeBtn    = document.getElementById('modal-close-btn');
-  const cancelBtn   = document.getElementById('modal-cancel-btn');
-  const saveBtn     = document.getElementById('modal-save-btn');
+  if (registerBtn) registerBtn.addEventListener('click', registerFromTab);
 
-  if (registerBtn) registerBtn.addEventListener('click', openRegisterModal);
+  // Edit modal
+  const overlay   = document.getElementById('student-modal-overlay');
+  const closeBtn  = document.getElementById('modal-close-btn');
+  const cancelBtn = document.getElementById('modal-cancel-btn');
+  const saveBtn   = document.getElementById('modal-save-btn');
   [closeBtn, cancelBtn].forEach(btn => { if (btn) btn.addEventListener('click', closeModal); });
   if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  if (saveBtn) saveBtn.addEventListener('click', saveStudent);
+  if (saveBtn) saveBtn.addEventListener('click', saveEditStudent);
 }
 
-function openRegisterModal() {
-  document.getElementById('modal-title').textContent    = 'Register Student';
-  document.getElementById('modal-user-id').value        = '';
-  document.getElementById('modal-username').value       = '';
-  document.getElementById('modal-email').value          = '';
-  document.getElementById('modal-password').value       = '';
-  document.getElementById('modal-password').placeholder = 'Enter password';
-  document.getElementById('modal-password').closest('.modal-field').style.display = 'flex';
-  document.getElementById('modal-save-btn').innerHTML   = '<span class="material-symbols-rounded">person_add</span> Register';
-  document.getElementById('student-modal-overlay').classList.add('open');
+async function registerFromTab() {
+  const username = document.getElementById('reg-username').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value.trim();
+  const confirm  = document.getElementById('reg-confirm').value.trim();
+  const btn      = document.getElementById('register-student-btn');
+
+  if (!username || !email || !password || !confirm) {
+    Swal.fire({ icon: 'warning', title: 'Incomplete', text: 'Please fill in all fields.', confirmButtonColor: '#F4A234' });
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#e53935' });
+    return;
+  }
+  if (password.length < 6) {
+    Swal.fire({ icon: 'error', title: 'Too Short', text: 'Password must be at least 6 characters.', confirmButtonColor: '#e53935' });
+    return;
+  }
+  if (password !== confirm) {
+    Swal.fire({ icon: 'error', title: 'Mismatch', text: 'Passwords do not match.', confirmButtonColor: '#e53935' });
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span> Registering...';
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCred.user.uid;
+    await setDoc(doc(db, 'students', uid), {
+      uid, username, email,
+      joined:    new Date().toISOString().split('T')[0],
+      createdAt: serverTimestamp(),
+    });
+    // Clear form
+    ['reg-username','reg-email','reg-password','reg-confirm'].forEach(id => document.getElementById(id).value = '');
+    Swal.fire({ icon: 'success', title: 'Registered!', text: `${username} has been added as a student.`, timer: 2000, showConfirmButton: false });
+    // Switch to students tab
+    document.querySelector('[data-tab="users"]').click();
+  } catch (err) {
+    let msg = err.message;
+    if (err.code === 'auth/email-already-in-use') msg = 'That email is already registered.';
+    if (err.code === 'auth/weak-password')        msg = 'Password must be at least 6 characters.';
+    Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#e53935' });
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register Student';
+  }
 }
 
 function openEditModal(firestoreId) {
   const student = STUDENTS.find(s => s.id === firestoreId);
   if (!student) return;
 
-  document.getElementById('modal-title').textContent    = 'Edit Student';
-  document.getElementById('modal-user-id').value        = student.id;
-  document.getElementById('modal-username').value       = student.username;
-  document.getElementById('modal-email').value          = student.email;
-  document.getElementById('modal-password').value       = '';
-  document.getElementById('modal-password').placeholder = 'Leave blank to keep current';
-  document.getElementById('modal-password').closest('.modal-field').style.display = 'flex';
-  document.getElementById('modal-save-btn').innerHTML   = '<span class="material-symbols-rounded">save</span> Save Changes';
+  document.getElementById('modal-user-id').value  = student.id;
+  document.getElementById('modal-username').value = student.username;
+  document.getElementById('modal-email').value    = student.email;
   document.getElementById('student-modal-overlay').classList.add('open');
 }
 
@@ -208,13 +254,12 @@ function closeModal() {
 }
 
 /* ============================================================
-   SAVE STUDENT (Register or Edit)
+   SAVE EDIT STUDENT
    ============================================================ */
-async function saveStudent() {
+async function saveEditStudent() {
   const firestoreId = document.getElementById('modal-user-id').value;
   const username    = document.getElementById('modal-username').value.trim();
   const email       = document.getElementById('modal-email').value.trim();
-  const password    = document.getElementById('modal-password').value.trim();
   const saveBtn     = document.getElementById('modal-save-btn');
 
   if (!username || !email) {
@@ -222,63 +267,19 @@ async function saveStudent() {
     return;
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#e53935' });
-    return;
-  }
-
   saveBtn.disabled = true;
   saveBtn.innerHTML = '<span class="material-symbols-rounded">hourglass_top</span> Saving...';
 
   try {
-    if (firestoreId === '') {
-      // ---- REGISTER NEW STUDENT ----
-      if (!password) {
-        Swal.fire({ icon: 'warning', title: 'Password Required', text: 'Please set a password for the new student.', confirmButtonColor: '#F4A234' });
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register';
-        return;
-      }
-      if (password.length < 6) {
-        Swal.fire({ icon: 'error', title: 'Too Short', text: 'Password must be at least 6 characters.', confirmButtonColor: '#e53935' });
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<span class="material-symbols-rounded">person_add</span> Register';
-        return;
-      }
-
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCred.user.uid;
-
-      await setDoc(doc(db, 'students', uid), {
-        uid,
-        username,
-        email,
-        joined:    new Date().toISOString().split('T')[0],
-        createdAt: serverTimestamp(),
-      });
-
-      closeModal();
-      Swal.fire({ icon: 'success', title: 'Registered!', text: `${username} has been added as a student.`, timer: 2000, showConfirmButton: false });
-
-    } else {
-      // ---- EDIT EXISTING STUDENT ----
-      await updateDoc(doc(db, 'students', firestoreId), { username, email });
-      closeModal();
-      Swal.fire({ icon: 'success', title: 'Updated!', text: `${username}'s details have been saved.`, timer: 2000, showConfirmButton: false });
-    }
-
+    await updateDoc(doc(db, 'students', firestoreId), { username, email });
+    closeModal();
+    Swal.fire({ icon: 'success', title: 'Updated!', text: `${username}'s details have been saved.`, timer: 2000, showConfirmButton: false });
   } catch (err) {
-    console.error('saveStudent error:', err);
-    let msg = err.message;
-    if (err.code === 'auth/email-already-in-use') msg = 'That email is already registered.';
-    if (err.code === 'auth/weak-password')        msg = 'Password must be at least 6 characters.';
-    Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#e53935' });
+    console.error('saveEditStudent error:', err);
+    Swal.fire({ icon: 'error', title: 'Error', text: err.message, confirmButtonColor: '#e53935' });
   } finally {
     saveBtn.disabled = false;
-    saveBtn.innerHTML = firestoreId
-      ? '<span class="material-symbols-rounded">save</span> Save Changes'
-      : '<span class="material-symbols-rounded">person_add</span> Register';
+    saveBtn.innerHTML = '<span class="material-symbols-rounded">save</span> Save Changes';
   }
 }
 
@@ -337,21 +338,9 @@ function initSettings() {
     ['cur-pass', 'new-pass', 'conf-pass'].forEach(id => document.getElementById(id).value = '');
   });
 
-  const toggleMaint = document.getElementById('toggle-maintenance');
-  if (toggleMaint) toggleMaint.addEventListener('change', () => {
-    const msg = toggleMaint.checked ? 'Maintenance mode ON. Students cannot access the app.' : 'Maintenance mode OFF. App is live.';
-    Swal.fire({ icon: 'info', title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
-  });
-
   const toggleReg = document.getElementById('toggle-reg');
   if (toggleReg) toggleReg.addEventListener('change', () => {
     const msg = toggleReg.checked ? 'New registrations are now allowed.' : 'New registrations are now disabled.';
-    Swal.fire({ icon: 'info', title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
-  });
-
-  const togglePiko = document.getElementById('toggle-piko');
-  if (togglePiko) togglePiko.addEventListener('change', () => {
-    const msg = togglePiko.checked ? 'Piko is now enabled for students!' : 'Piko has been disabled.';
     Swal.fire({ icon: 'info', title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
   });
 }
@@ -379,6 +368,22 @@ function initLogout() {
 }
 
 /* ============================================================
+   PRESENCE HELPERS
+   ============================================================ */
+function isUserOnline(user) {
+  if (!user.lastSeen) return false;
+  const lastSeen = user.lastSeen.toDate ? user.lastSeen.toDate() : new Date(user.lastSeen);
+  const diffMs = Date.now() - lastSeen.getTime();
+  return diffMs < 2 * 60 * 1000; // online if seen within last 2 minutes
+}
+
+function updateOnlineCount() {
+  const count = STUDENTS.filter(isUserOnline).length;
+  const el = document.getElementById('online-count');
+  if (el) el.textContent = count;
+}
+
+/* ============================================================
    HELPERS
    ============================================================ */
 function formatDate(dateStr) {
@@ -394,4 +399,4 @@ function escapeHtml(str) {
 
 // Expose for inline onclick handlers in the table
 window.openEditModal = openEditModal;
-window.deleteUser    = deleteUser;
+window.deleteUser    = deleteUser;z
