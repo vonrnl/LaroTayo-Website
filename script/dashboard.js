@@ -69,11 +69,30 @@ function renderCharts(weeklyData, scores) {
   }
 }
 
+// SAMPLE HISTORY (one placeholder entry shown when no real data exists)
+const SAMPLE_HISTORY = [
+  { game: 'Patintero', icon: '🏃', result: '-', points: 0, playedAt: new Date() }
+];
+
+function renderSampleHistory() {
+  const container = document.getElementById('game-history');
+  if (!container) return;
+  const d = SAMPLE_HISTORY[0];
+  const time = d.playedAt.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', hour12: true });
+  container.innerHTML = `
+    <div class="history-item" style="opacity:0.6;">
+      <span class="history-icon">${d.icon}</span>
+      <div class="history-info"><h4>${d.game}</h4><span>Today, ${time} — Sample</span></div>
+      <div class="history-result ${d.result}">${d.result.toUpperCase()}</div>
+      <div class="history-score">+${d.points} pts</div>
+    </div>`;
+}
+
 // HISTORY
 function renderHistory(docs) {
   const container = document.getElementById('game-history');
   if (!docs.length) {
-    container.innerHTML = `<div style="padding:40px;text-align:center;color:#6A8AA0;font-weight:700;">No games played yet. Start playing! 🎮</div>`;
+    renderSampleHistory();
     return;
   }
   container.innerHTML = docs.map(d => {
@@ -127,7 +146,7 @@ onAuthStateChanged(auth, async (user) => {
       const historySnap = await getDocs(historyQ);
       renderHistory(historySnap.docs);
     } catch {
-      renderHistory([]);
+      renderSampleHistory();
     }
 
   } catch (err) { console.error('Dashboard load error:', err); }
