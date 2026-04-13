@@ -71,7 +71,7 @@ function renderCharts(weeklyData, scores) {
 
 // SAMPLE HISTORY (one placeholder entry shown when no real data exists)
 const SAMPLE_HISTORY = [
-  { game: 'Patintero', icon: '🏃', result: '-', points: 0, playedAt: new Date() }
+  { game: '-', icon: '-', result: '-', points: 0, playedAt: new Date() }
 ];
 
 function renderSampleHistory() {
@@ -82,7 +82,7 @@ function renderSampleHistory() {
   container.innerHTML = `
     <div class="history-item" style="opacity:0.6;">
       <span class="history-icon">${d.icon}</span>
-      <div class="history-info"><h4>${d.game}</h4><span>Today, ${time} — Sample</span></div>
+      <div class="history-info"><h4>${d.game}</h4><span>Today, ${time}</span></div>
       <div class="history-result ${d.result}">${d.result.toUpperCase()}</div>
       <div class="history-score">+${d.points} pts</div>
     </div>`;
