@@ -387,24 +387,66 @@ section { padding: 80px 24px; }
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  gap: 26px;
   max-width: 1080px;
   margin: 0 auto;
+  margin-bottom: 56px;
 }
 
+.cards-grid:last-of-type {
+  margin-bottom: 0;
+}
+
+.games-subhead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 1080px;
+  margin: 0 auto 24px;
+}
+
+.games-subhead .material-symbols-rounded {
+  font-size: 1.6rem;
+  color: var(--orange);
+}
+
+.games-subhead h3 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  color: var(--text);
+  text-align: center;
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.games-subhead h3::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 4px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, var(--orange) 0, var(--orange) 8px, var(--yellow) 8px, var(--yellow) 16px);
+}
+
+/* Wooden frame like the Story menu in the game:
+   thick wood border + dark outline outside + dark edge inside */
 .card {
-  border-radius: 20px;
-  padding: 28px 22px;
-  border: 4px solid transparent;
-  box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+  background: #FAE9A3;            /* cream panel, same as the game's Story menu */
+  border-radius: 22px;
+  padding: 24px 18px;
+  border: 8px solid #826c57;
+  box-shadow:
+    0 0 0 3px #5f4a3b,          /* dark outline around the wood */
+    inset 0 0 0 3px #7e5b45,    /* dark edge where the wood meets the panel */
+    0 9px 0 3px #4a382d;        /* chunky shadow underneath */
   transition: transform 0.25s;
 }
 
 .card:hover { transform: translateY(-5px); }
-.card.green  { background: linear-gradient(135deg, #e8ffe8, #c0f0c0); border-color: var(--green); }
-.card.blue   { background: linear-gradient(135deg, #e6f4ff, #c0e0ff); border-color: var(--blue); }
-.card.pink   { background: linear-gradient(135deg, #fff0f8, #ffd0e8); border-color: #E91E8C; }
-.card.lblue   { background: linear-gradient(135deg, #f0faff, #e1f6fd); border-color: #3587e5; }
 
 .card h3 {
   font-family: 'Fredoka One', cursive;
@@ -945,7 +987,8 @@ section { padding: 80px 24px; }
   box-shadow: 0 6px 24px rgba(43,127,212,0.13);
 }
 
-.gallery-featured img {
+.gallery-featured img,
+.gallery-featured video {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
@@ -1188,7 +1231,9 @@ footer p + p { margin-top: 6px; }
   .stats div { padding: 8px 12px; flex: 1; min-width: 72px; }
   .stats strong { font-size: 1.4rem; }
 
-  .cards-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cards-grid { grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+  .games-subhead { margin-bottom: 16px; }
+  .games-subhead h3 { font-size: 1.1rem; }
   .card { padding: 22px 18px; }
 
   .feats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }

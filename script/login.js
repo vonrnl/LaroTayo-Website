@@ -4,12 +4,18 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
+  getDoc,
   setDoc,
+  collection,
+  getDocs,
+  query,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
@@ -26,30 +32,53 @@ const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ⚠️ WARNING: Move admin credentials to a backend — never store them in frontend JS.
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'larotayo2026';
-
-// ---- ADMIN LOGIN ----
+// ---- ADMIN / TEACHER LOGIN ----
+// No more hardcoded credentials. This is now a real Firebase Auth login,
+// checked against a 'teachers' Firestore doc (uid -> {role: 'admin' | 'teacher'}).
+// NOTE: the "admin-username" field must now collect an EMAIL address, since
+// Firebase Auth signs in with email/password. Update the label/placeholder
+// in your login form's HTML from "Username" to "Email".
 const adminLoginBtn = document.getElementById('admin-login-btn');
 if (adminLoginBtn) {
-  adminLoginBtn.addEventListener('click', () => {
-    const user = document.getElementById('admin-username').value.trim();
-    const pass = document.getElementById('admin-password').value.trim();
-    const err  = document.getElementById('admin-err');
+  adminLoginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('admin-username').value.trim();
+    const pass  = document.getElementById('admin-password').value.trim();
+    const err   = document.getElementById('admin-err');
 
-    if (!user || !pass) { err.textContent = 'Please fill in both fields.'; return; }
-    if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
-      err.textContent = 'Invalid admin credentials.';
-      document.getElementById('admin-password').value = '';
-      return;
-    }
+    if (!email || !pass) { err.textContent = 'Please fill in both fields.'; return; }
 
     err.textContent = '';
-    sessionStorage.setItem('admin-logged-in', 'yes');
-    adminLoginBtn.textContent = 'Redirecting...';
+    adminLoginBtn.textContent = 'Signing in...';
     adminLoginBtn.disabled = true;
-    setTimeout(() => { window.location.href = 'admin.html'; }, 800);
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+      const teacherSnap = await getDoc(doc(db, 'teachers', cred.user.uid));
+
+      if (!teacherSnap.exists() || !['admin', 'teacher'].includes(teacherSnap.data().role)) {
+        // Valid Firebase account, but not a teacher/admin account — reject.
+        await signOut(auth);
+        err.textContent = 'This account is not authorized for the teacher panel.';
+        adminLoginBtn.textContent = 'Login';
+        adminLoginBtn.disabled = false;
+        return;
+      }
+
+      adminLoginBtn.textContent = 'Redirecting...';
+      window.location.href = 'admin.html';
+
+    } catch (e) {
+      const msgs = {
+        "auth/user-not-found":     "No account found with that email.",
+        "auth/wrong-password":     "Incorrect password. Please try again.",
+        "auth/invalid-email":      "Please enter a valid email address.",
+        "auth/invalid-credential": "Wrong email or password.",
+        "auth/too-many-requests":  "Too many attempts. Please wait and try again."
+      };
+      err.textContent = msgs[e.code] || e.message;
+      adminLoginBtn.textContent = 'Login';
+      adminLoginBtn.disabled = false;
+    }
   });
 }
 
@@ -84,6 +113,35 @@ if (studentLoginBtn) {
   });
 }
 
+// ---- POPULATE "SELECT YOUR TEACHER" DROPDOWN ----
+// Runs once on page load. Requires a Firestore rule that lets anyone
+// (even signed-out visitors) read the 'teachers' collection — see the
+// updated firestore.rules.
+const regTeacherSelect = document.getElementById('reg-teacher');
+if (regTeacherSelect) {
+  (async () => {
+    try {
+      const snap = await getDocs(query(collection(db, 'teachers'), where('role', '==', 'teacher')));
+      snap.forEach(docSnap => {
+        const t = docSnap.data();
+        const opt = document.createElement('option');
+        opt.value = t.uid;
+        opt.textContent = t.username;
+        regTeacherSelect.appendChild(opt);
+      });
+      if (snap.empty) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No teachers available yet';
+        opt.disabled = true;
+        regTeacherSelect.appendChild(opt);
+      }
+    } catch (e) {
+      console.error('Could not load teacher list:', e);
+    }
+  })();
+}
+
 // ---- REGISTRATION (FIXED) ----
 const regBtn = document.getElementById('register-btn');
 
@@ -93,9 +151,15 @@ if (regBtn) {
     const email       = document.getElementById('reg-email').value.trim();
     const password    = document.getElementById('reg-password').value.trim();
     const confirmPass = document.getElementById('reg-confirm').value.trim();
+    const teacherId   = regTeacherSelect ? regTeacherSelect.value : '';
 
     if (!username || !email || !password || !confirmPass) {
       Swal.fire({ icon: 'warning', title: 'Missing Fields', text: 'Please fill in all fields.' });
+      return;
+    }
+
+    if (regTeacherSelect && !teacherId) {
+      Swal.fire({ icon: 'warning', title: 'Select a Teacher', text: 'Please choose your teacher before signing up.' });
       return;
     }
 
@@ -137,6 +201,7 @@ if (regBtn) {
         email: email,
         joined: new Date().toISOString().split('T')[0],
         status: 'active',
+        teacherId: teacherId || null,
         createdAt: serverTimestamp(),
       });
       console.log('[REG] Step 3 OK');

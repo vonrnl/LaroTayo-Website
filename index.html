@@ -8,6 +8,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* Fallback styling for the teacher-select dropdown in the registration
+       modal, in case style.css doesn't already style <select> elements the
+       same way it styles the <input> fields in .modal. Safe to delete this
+       block and add equivalent rules to style.css instead. */
+    .modal select.reg-teacher-select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 2px solid #dde8f0;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1A3A5C;
+      background: #fff;
+      cursor: pointer;
+    }
+    .modal select.reg-teacher-select:focus { outline: none; border-color: #2B7FD4; }
+  </style>
 </head>
 <body>
 
@@ -55,7 +76,7 @@
       <div class="hero-left">
         <span class="badge">🇵🇭 Filipino Street Games</span>
         <h1>Play &amp; Learn<br><span>Filipino Street</span><br><span>Games!</span></h1>
-        <p>Play and learn our traditional Filipino Street games through our immersive thesis game.
+        <p>Play and learn our traditional Filipino Street games through our immersive game.
           Bringing the spirit of Filipino street games to the next generation.</p>
         <div class="hero-btns">
           <a href="#download" class="btn-orange">Download APK</a>
@@ -63,7 +84,7 @@
         </div>
         <div class="stats">
           <div><strong>3D</strong><small>Mobile Game</small></div>
-          <div><strong>8-12</strong><small>Age</small></div>
+          <div><strong>Multiplayer</strong><small>Games</small></div>
           <div><strong>Free</strong><small>Download</small></div>
         </div>
       </div>
@@ -86,62 +107,94 @@
       <h2>Classic Filipino Street Games</h2>
       <p>Bring back the games our lolos and lolas grew up with.</p>
     </div>
+    <div class="games-subhead reveal">
+      <span class="material-symbols-rounded">person</span>
+      <h3>Single Player</h3>
+    </div>
     <div class="cards-grid">
 
-      <div class="card green reveal">
-        <span class="material-symbols-rounded card-icon">accessibility</span>
-        <h3>Patintero</h3>
-        <p>Patintero is a traditional Filipino outdoor team game, dating back generations as a popular, low-cost pastime played by children and adults in streets and playgrounds.
-           Derived from the Spanish word tinte ("ink"), it refers to the chalk lines, or sometimes water, used to mark the grid. </p>
-        <span class="pill">Team Play</span>
+      <div class="card pink reveal">
+        <h3>Sipa</h3>
+        <p>Keep the sipa in the air and show off your skills!</p>
+        <span class="pill">Kick & keep up</span>
       </div>
       <div class="card blue reveal">
-        <span class="material-symbols-rounded card-icon">directions_run</span>
         <h3>Luksong Baka</h3>
-        <p>Luksong Baka is a traditional Filipino game similar to leapfrog, where players jump over a crouching person (“baka”). It has roots in rural communities of the Philippines,
-           where children played it for fun and physical activity long before modern games became popular.</p>
-        <span class="pill">Jumping</span>
+        <p>Jump over the “baka” without getting caught!</p>
+        <span class="pill">Jump & dodge</span>
       </div>
       <div class="card pink reveal">
-        <span class="material-symbols-rounded card-icon">directions_walk directions_run</span>
-        <h3>Ice Ice Water</h3>
-        <p>"Ice Ice Water" (or "Ice Water") is a popular Filipino outdoor chasing game similar to tag, where the "it" player freezes runners by touching them,
-           and they can only be unfrozen by teammates shouting "Water"</p>
-        <span class="pill">Tag game</span>
+        <h3>Hulihan Baboy</h3>
+        <p>Chase, dodge, and catch your opponents!</p>
+        <span class="pill">Run & catch</span>
+      </div>
+      <div class="card blue reveal">
+        <h3>Palosebo</h3>
+        <p>Climb the slippery pole and reach the prize at the top!</p>
+        <span class="pill">Climbing game</span>
       </div>
     </div>
+
+    <div class="games-subhead reveal">
+      <span class="material-symbols-rounded">group</span>
+      <h3>Multiplayer</h3>
+    </div>
+    <div class="cards-grid">
+
+      <div class="card blue reveal">
+        <h3>Patintero</h3>
+        <p>Dodge the lines and make it safely to the other side!</p>
+        <span class="pill">Tag game</span>
+      </div>
+      <div class="card pink reveal">
+        <h3>Bamsak</h3>
+        <p>Chase your opponents and be the last player standing!</p>
+        <span class="pill">Hide</span>
+      </div>
+      <div class="card blue reveal">
+        <h3>Sekyu Base</h3>
+        <p>Protect your base while trying to capture the enemy!</p>
+        <span class="pill">Protect the base</span>
+      </div>
+    </div>
+
+
 
     <!-- SCREENSHOT GALLERY -->
     <div class="gallery-viewer reveal" style="margin-top:52px;">
       <div class="gallery-featured">
-        <img id="featured-img" src="img/background.png" alt="Screenshot" style="display:none;" />
-        <div class="gallery-empty-main" id="gallery-empty-main">
-          <img src="img/background.png" alt="Screenshot 1" />
-        </div>
+        <!-- Video (shown by default) -->
+        <video id="featured-video" src="img/ftr.mp4"
+               autoplay muted loop playsinline controls></video>
+
+        <!-- Image (shown when an image thumbnail is picked) -->
+        <img id="featured-img" src="" alt="Screenshot" style="display:none;" />
+
         <button class="gallery-arrow left" id="gallery-prev" aria-label="Previous">&#8249;</button>
         <button class="gallery-arrow right" id="gallery-next" aria-label="Next">&#8250;</button>
       </div>
       <div class="gallery-thumbs-row" id="gallery-thumbs">
-        <div class="gthumb active" data-index="0" data-src="img/p1.jpg">
-          <img src="img/p1.jpg" alt="Screenshot 1" />
+        <!-- Thumb 0 = the video. Its thumbnail is a still image. -->
+        <div class="gthumb active" data-index="0" data-src="img/pic15.png">
+          <img src="img/pic15.png" alt="Featured video" />
         </div>
-        <div class="gthumb" data-index="1" data-src="img/p2.jpg">
-          <img src="img/p2.jpg" alt="Screenshot 2" />
+        <div class="gthumb" data-index="1" data-src="img/pic13.png">
+          <img src="img/pic13.png" alt="Screenshot 2" />
         </div>
-        <div class="gthumb" data-index="2" data-src="img/p3.jpg">
-          <img src="img/p3.jpg" alt="Screenshot 3" />
+        <div class="gthumb" data-index="2" data-src="img/pic14.png">
+          <img src="img/pic14.png" alt="Screenshot 3" />
         </div>
-        <div class="gthumb" data-index="3" data-src="img/p4.jpg">
-          <img src="img/p4.jpg" alt="Screenshot 4" />
+        <div class="gthumb" data-index="3" data-src="img/pic19.jfif">
+          <img src="img/pic19.jfif" alt="Screenshot 4" />
         </div>
-        <div class="gthumb" data-index="4" data-src="img/p5.jpg">
-          <img src="img/p5.jpg" alt="Screenshot 5" />
+        <div class="gthumb" data-index="4" data-src="img/pic16.png">
+          <img src="img/pic16.png" alt="Screenshot 5" />
         </div>
-        <div class="gthumb" data-index="5" data-src="img/p6.jpg">
-          <img src="img/p6.jpg" alt="Screenshot 6" />
+        <div class="gthumb" data-index="5" data-src="img/pic17.png">
+          <img src="img/pic17.png" alt="Screenshot 6" />
         </div>
-        <div class="gthumb" data-index="6" data-src="img/p7.jpg">
-          <img src="img/p7.jpg" alt="Screenshot 7" />
+        <div class="gthumb" data-index="6" data-src="img/pic18.jfif">
+          <img src="img/pic18.jfif" alt="Screenshot 7" />
         </div>
       </div>
     </div>
@@ -197,7 +250,7 @@
 
         <!-- MAIN / FEATURED PHOTO -->
         <div class="gallery-main">
-          <img src="img/patintero.jpg" alt="Luksong Baka"
+          <img src="img/ab1.jfif" alt="Photo 1"
             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
           <div class="gallery-fallback"></div>
         </div>
@@ -205,12 +258,12 @@
         <!-- THUMBNAIL STRIP — replace src with your own images -->
         <div class="gallery-thumbs">
           <div class="gallery-thumb">
-            <img src="img/luksong baka.png" alt="Photo 2"
+            <img src="img/ab2.jfif" alt="Photo 2"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
             <div class="gallery-fallback small"></div>
           </div>
           <div class="gallery-thumb">
-            <img src="img/langitlupa.jpg" alt="Photo 3"
+            <img src="img/ab3.jfif" alt="Photo 3"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
             <div class="gallery-fallback small"></div>
           </div>
@@ -310,12 +363,12 @@
     <div class="modal modal-admin">
       <a href="#login" class="modal-close">✕</a>
       <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_shield</span>
-      <h3>Admin Login</h3>
-      <p>Sign in to access the Admin Panel</p>
-      <input type="text" id="admin-username" placeholder="Admin Username" autocomplete="off" />
-      <input type="password" id="admin-password" placeholder="Admin Password" />
+      <h3>Teacher / Admin Login</h3>
+      <p>Sign in to access the Teacher Panel</p>
+      <input type="email" id="admin-username" placeholder="Email" autocomplete="off" />
+      <input type="password" id="admin-password" placeholder="Password" />
       <p id="admin-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
-      <button class="btn-orange full" id="admin-login-btn" style="background:var(--text);border-color:#0d1f3c;box-shadow:0 5px 0 #0d1f3c;">Sign In as Admin</button>
+      <button class="btn-orange full" id="admin-login-btn" style="background:var(--text);border-color:#0d1f3c;box-shadow:0 5px 0 #0d1f3c;">Sign In</button>
       <small><a href="#login">← Back</a></small>
     </div>
   </div>
@@ -348,6 +401,9 @@
       <input type="email" id="reg-email" placeholder="Email: e.g. juan@email.com" />
       <input type="password" id="reg-password" placeholder="Password" />
       <input type="password" id="reg-confirm" placeholder="Confirm Password" />
+      <select id="reg-teacher" class="reg-teacher-select">
+        <option value="">— Select your teacher —</option>
+      </select>
       <button class="btn-orange full" id="register-btn">Sign up</button>
       <small>Already have an account? <a href="#student-login">Login</a></small>
     </div>

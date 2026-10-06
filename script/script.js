@@ -66,12 +66,12 @@ navItems.forEach(item => {
 
 // ---- SCREENSHOT GALLERY ----
 (function () {
-  const thumbs = document.querySelectorAll('.gthumb');
-  const featuredImg = document.getElementById('featured-img');
-  const emptyMain = document.getElementById('gallery-empty-main');
-  const prevBtn = document.getElementById('gallery-prev');
-  const nextBtn = document.getElementById('gallery-next');
-  if (!thumbs.length || !featuredImg) return;
+  const thumbs        = document.querySelectorAll('.gthumb');
+  const featuredImg   = document.getElementById('featured-img');
+  const featuredVideo = document.getElementById('featured-video');
+  const prevBtn       = document.getElementById('gallery-prev');
+  const nextBtn       = document.getElementById('gallery-next');
+  if (!thumbs.length || !featuredImg || !featuredVideo) return;
 
   let current = 0;
 
@@ -81,19 +81,29 @@ navItems.forEach(item => {
     thumbs[current].classList.add('active');
 
     const src = thumbs[current].dataset.src;
+    if (!src) return;
 
-    if (src) {
-      featuredImg.style.opacity = '0';
-      setTimeout(() => {
+    const isVideo = /\.(mp4|webm|ogg)$/i.test(src);
+
+    // fade out whichever is visible
+    featuredImg.style.opacity = '0';
+    featuredVideo.style.opacity = '0';
+
+    setTimeout(() => {
+      if (isVideo) {
+        featuredImg.style.display = 'none';
+        featuredVideo.style.display = 'block';
+        if (!featuredVideo.src.endsWith(src)) featuredVideo.src = src;
+        featuredVideo.play().catch(() => {});
+        featuredVideo.style.opacity = '1';
+      } else {
+        featuredVideo.pause();
+        featuredVideo.style.display = 'none';
         featuredImg.src = src;
         featuredImg.style.display = 'block';
-        if (emptyMain) emptyMain.style.display = 'none';
         featuredImg.style.opacity = '1';
-      }, 150);
-    } else {
-      featuredImg.style.display = 'none';
-      if (emptyMain) emptyMain.style.display = 'flex';
-    }
+      }
+    }, 150);
   }
 
   thumbs.forEach((thumb, i) => {
@@ -104,6 +114,8 @@ navItems.forEach(item => {
   if (nextBtn) nextBtn.addEventListener('click', () => setActive(current + 1));
 })();
 
+
+// ---- HAMBURGER MENU ----
 const hamburger = document.getElementById('hamburger');
 const navLinks  = document.getElementById('nav-links');
 
