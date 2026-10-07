@@ -26,9 +26,9 @@ document.getElementById('dash-date').textContent = new Date().toLocaleDateString
    AVATARS — only three choices
    ============================================================ */
 const AVATARS = {
-  bata:  { label: 'Bata',       src: 'img/avatar-bata.png'  },
+  bata:  { label: 'Kid',       src: 'img/avatar-bata.png'  },
   lolo:  { label: 'Mang Tomas', src: 'img/avatar-lolo.png'  },
-  libro: { label: 'Libro',      src: 'img/avatar-libro.png' }
+  libro: { label: 'Book',      src: 'img/avatar-libro.png' }
 };
 const DEFAULT_AVATAR = 'bata';
 
@@ -97,10 +97,10 @@ function showBio(text){
 // completedStage 0 = nothing done, 1 = Hulihin ang Baboy done,
 // 2 = Sipa done, 3 = Palosebo done, 4 = Luksong Baka done (all done).
 const STORY_CHAPTERS = [
-  { id: 1, icon: '🐖', title: 'Hulihin ang Baboy', blurb: 'Habulin at hulihin ang mga tumatakbong baboy.' },
-  { id: 2, icon: '🪁', title: 'Sipa',              blurb: 'Panatilihing nasa hangin ang sipa hangga\'t kaya.' },
-  { id: 3, icon: '🥥', title: 'Palosebo',          blurb: 'Akyatin ang madulas na poste para sa gantimpala.' },
-  { id: 4, icon: '🐄', title: 'Luksong Baka',      blurb: 'Talunin ang pinakamataas na baka sa nayon.' },
+  { id: 1, icon: '🐖', title: 'Hulihin ang Baboy', blurb: 'Chase and catch the running pigs.' },
+  { id: 2, icon: '🪁', title: 'Sipa',              blurb: 'Keep the sipa in the air for as long as you can.' },
+  { id: 3, icon: '🥥', title: 'Palosebo',          blurb: 'Climb the slippery pole to win the prize.' },
+  { id: 4, icon: '🐄', title: 'Luksong Baka',      blurb: 'Jump over the tallest cow in the village.' },
 ];
 
 function renderStory(completed){
@@ -112,24 +112,18 @@ function renderStory(completed){
   document.getElementById('story-subtitle').textContent = `${done} of ${total} chapters completed`;
   setTimeout(()=>{ document.getElementById('story-bar').style.width = `${pct}%`; }, 300);
 
-  const next = STORY_CHAPTERS[done];
-  const nextLabel = document.getElementById('story-next-label');
-  nextLabel.textContent = next
-    ? `Up next: Chapter ${next.id} — ${next.title}`
-    : 'Tapos na ang buong kwento! 🎉';
-
   document.getElementById('chapter-list').innerHTML = STORY_CHAPTERS.map(ch => {
     let state = 'locked', badge = 'Locked', icon = 'lock';
     if (ch.id <= done)        { state = 'done';    badge = 'Completed'; icon = 'check_circle'; }
-    else if (ch.id === done+1){ state = 'current'; badge = 'Playing';   icon = 'play_circle'; }
+    else if (ch.id === done+1){ state = 'current'; badge = 'Locked';    icon = 'lock'; }
     return `<div class="chapter-card ${state}">
       <span class="chapter-num">Ch. ${ch.id}</span>
       <span class="chapter-icon">${ch.icon}</span>
       <div class="chapter-info">
         <h4>${ch.title}</h4>
-        <p>${state === 'locked' ? 'Tapusin muna ang naunang kabanata.' : ch.blurb}</p>
+        <p>${state === 'locked' ? 'Complete the previous chapter first.' : ch.blurb}</p>
       </div>
-      <span class="chapter-badge ${state}">
+      <span class="chapter-badge ${state === 'current' ? 'locked' : state}">
         <span class="material-symbols-rounded">${icon}</span>${badge}
       </span>
     </div>`;
@@ -161,6 +155,16 @@ const ACHIEVEMENTS = [
     icon: '🐄',
     title: 'Luksong Baka',
     desc: 'Unlocked by completing the Luksong Baka stage.'
+  },
+
+  // Story-based badges: unlocked from story progress (storySaves),
+  // so no Firestore changes are needed. 'stage' = chapters required.
+  {
+    id: 'story_complete',
+    icon: '🏆',
+    title: 'Story Complete',
+    desc: 'Unlocked by completing all story chapters.',
+    stage: STORY_CHAPTERS.length
   }
 
 ];
@@ -269,7 +273,7 @@ function getBestTime(data) {
 // RENDER ACHIEVEMENTS
 // ============================================================
 
-function renderAchievements(achievementData) {
+function renderAchievements(achievementData, chaptersCompleted = 0) {
 
   const grid =
     document.getElementById('ach-grid');
@@ -310,11 +314,12 @@ function renderAchievements(achievementData) {
       // (Unity also saves failed runs with completed = false).
       // Other badges keep the original rule.
 
-      const unlocked =
-        !!data &&
-        (achievement.id === 'luksong_baka'
-          ? data.completed === true
-          : data.unlocked !== false);
+      const unlocked = achievement.stage
+        ? chaptersCompleted >= achievement.stage
+        : (!!data &&
+          (achievement.id === 'luksong_baka'
+            ? data.completed === true
+            : data.unlocked !== false));
 
 
       if (unlocked) {
@@ -455,6 +460,36 @@ function renderAchievements(achievementData) {
       }
 
 
+      // ========================================================
+      // STORY BADGES
+      // Show story progress
+      // ========================================================
+
+      if (achievement.stage && unlocked) {
+
+        extraInfo = `
+
+          <div class="ach-result">
+
+            <span class="ach-result-label">
+              Story Progress
+            </span>
+
+            <strong class="ach-result-value">
+              ${Math.min(chaptersCompleted, STORY_CHAPTERS.length)}/${STORY_CHAPTERS.length}
+            </strong>
+
+            <span class="ach-result-small">
+              chapters completed
+            </span>
+
+          </div>
+
+        `;
+
+      }
+
+
       // --------------------------------------------------------
       // CARD
       // --------------------------------------------------------
@@ -533,7 +568,7 @@ function renderAchievements(achievementData) {
 // LOAD ACHIEVEMENTS FROM FIRESTORE
 // ============================================================
 
-async function loadAchievements(uid) {
+async function loadAchievements(uid, chaptersCompleted = 0) {
 
   const achievementData =
     new Map();
@@ -613,7 +648,8 @@ async function loadAchievements(uid) {
   // ----------------------------------------------------------
 
   renderAchievements(
-    achievementData
+    achievementData,
+    chaptersCompleted
   );
 
 }
@@ -1014,7 +1050,7 @@ onAuthStateChanged(auth, async (user) => {
 
     renderStory(stats.chaptersCompleted);
 
-    loadAchievements(user.uid);
+    loadAchievements(user.uid, stats.chaptersCompleted);
     loadRank(user.uid);
 
     // friends
