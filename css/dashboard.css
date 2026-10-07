@@ -825,6 +825,29 @@
 .chapter-badge.current { background: #fff3e0; color: var(--orange-dark); border: 2px solid var(--orange); }
 .chapter-badge.locked  { background: #eef2f6; color: #9AAABB; border: 2px solid #dde8f0; }
 
+/* Chapter rows on mobile: icon on the left, text gets the full middle width,
+   chapter number sits above the title and the badge sits below the text. */
+@media (max-width: 600px) {
+  .chapter-card {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-areas:
+      "icon num"
+      "icon info"
+      "icon badge";
+    column-gap: 14px;
+    row-gap: 4px;
+    align-items: start;
+    padding: 14px 16px;
+  }
+  .chapter-icon  { grid-area: icon; align-self: center; }
+  .chapter-num   { grid-area: num; min-width: 0; }
+  .chapter-info  { grid-area: info; }
+  .chapter-badge { grid-area: badge; justify-self: start; margin-top: 4px; }
+  .chapter-info h4 { font-size: 1rem; line-height: 1.25; }
+  .chapter-info p  { font-size: 0.8rem; line-height: 1.4; }
+}
+
 /* ---- PLAYER ACHIEVEMENTS ---- */
 
 .ach-grid {

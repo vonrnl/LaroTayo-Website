@@ -262,6 +262,33 @@ nav .logo {
   letter-spacing: 1px;
 }
 
+.genre-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.genre-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--white);
+  margin-right: 2px;
+}
+
+.genre-pill {
+  background: #14497F;
+  border: 3px solid #0B2E55;
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 7px 20px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
 .hero-right {
   flex: 0 0 auto;
   display: flex;
@@ -1206,7 +1233,7 @@ footer p + p { margin-top: 6px; }
   .hero-inner { flex-direction: column; text-align: center; padding: 40px 24px 56px; gap: 32px; }
   .hero-left { max-width: 100%; }
   .hero-left p { margin: 0 auto 28px; max-width: 480px; }
-  .hero-btns, .stats { justify-content: center; }
+  .hero-btns, .stats, .genre-row { justify-content: center; }
   .hero-img-box { width: 260px; height: 260px; }
 
   .about-wrap { grid-template-columns: 1fr; gap: 28px; }
@@ -1286,7 +1313,7 @@ footer p + p { margin-top: 6px; }
   #home { min-height: auto; padding-top: 72px; padding-bottom: 40px; }
   .hero-inner { flex-direction: row; text-align: left; padding: 24px 24px 32px; }
   .hero-left p { margin: 0 0 20px; }
-  .hero-btns, .stats { justify-content: flex-start; }
+  .hero-btns, .stats, .genre-row { justify-content: flex-start; }
   .hero-img-box { width: 180px; height: 180px; flex-shrink: 0; }
 }
 
