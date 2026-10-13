@@ -97,10 +97,10 @@ function showBio(text){
 // completedStage 0 = nothing done, 1 = Hulihin ang Baboy done,
 // 2 = Sipa done, 3 = Palosebo done, 4 = Luksong Baka done (all done).
 const STORY_CHAPTERS = [
-  { id: 1, icon: '🐖', title: 'Hulihin ang Baboy', blurb: 'Chase and catch the running pigs.' },
-  { id: 2, icon: '🪁', title: 'Sipa',              blurb: 'Keep the sipa in the air for as long as you can.' },
-  { id: 3, icon: '🥥', title: 'Palosebo',          blurb: 'Climb the slippery pole to win the prize.' },
-  { id: 4, icon: '🐄', title: 'Luksong Baka',      blurb: 'Jump over the tallest cow in the village.' },
+  { id: 1, title: 'Hulihin ang Baboy', blurb: 'Chase and catch the running pigs.' },
+  { id: 2, title: 'Sipa',              blurb: 'Keep the sipa in the air for as long as you can.' },
+  { id: 3, title: 'Palosebo',          blurb: 'Climb the slippery pole to win the prize.' },
+  { id: 4, title: 'Luksong Baka',      blurb: 'Jump over the tallest cow in the village.' },
 ];
 
 function renderStory(completed){
@@ -113,18 +113,17 @@ function renderStory(completed){
   setTimeout(()=>{ document.getElementById('story-bar').style.width = `${pct}%`; }, 300);
 
   document.getElementById('chapter-list').innerHTML = STORY_CHAPTERS.map(ch => {
-    let state = 'locked', badge = 'Locked', icon = 'lock';
-    if (ch.id <= done)        { state = 'done';    badge = 'Completed'; icon = 'check_circle'; }
-    else if (ch.id === done+1){ state = 'current'; badge = 'Locked';    icon = 'lock'; }
+    let state = 'locked', badge = 'Locked';
+    if (ch.id <= done)        { state = 'done';    badge = 'Completed'; }
+    else if (ch.id === done+1){ state = 'current'; badge = 'Locked'; }
     return `<div class="chapter-card ${state}">
       <span class="chapter-num">Ch. ${ch.id}</span>
-      <span class="chapter-icon">${ch.icon}</span>
       <div class="chapter-info">
         <h4>${ch.title}</h4>
         <p>${state === 'locked' ? 'Complete the previous chapter first.' : ch.blurb}</p>
       </div>
       <span class="chapter-badge ${state === 'current' ? 'locked' : state}">
-        <span class="material-symbols-rounded">${icon}</span>${badge}
+        ${badge}
       </span>
     </div>`;
   }).join('');
@@ -138,21 +137,18 @@ const ACHIEVEMENTS = [
 
   {
     id: 'sipa',
-    icon: '🦶',
     title: 'Sipa',
     desc: 'Unlocked by completing the Sipa stage.'
   },
 
   {
     id: 'hulihin_ang_baboy',
-    icon: '🐷',
     title: 'Hulihin ang Baboy',
     desc: 'Unlocked by completing the Hulihin ang Baboy stage.'
   },
 
   {
     id: 'luksong_baka',
-    icon: '🐄',
     title: 'Luksong Baka',
     desc: 'Unlocked by completing the Luksong Baka stage.'
   },
@@ -161,7 +157,6 @@ const ACHIEVEMENTS = [
   // so no Firestore changes are needed. 'stage' = chapters required.
   {
     id: 'story_complete',
-    icon: '🏆',
     title: 'Story Complete',
     desc: 'Unlocked by completing all story chapters.',
     stage: STORY_CHAPTERS.length
@@ -499,17 +494,6 @@ function renderAchievements(achievementData, chaptersCompleted = 0) {
         <div class="ach-card ${unlocked ? 'unlocked' : 'locked'}">
 
 
-          <div class="ach-icon">
-
-            ${
-              unlocked
-                ? achievement.icon
-                : '<span class="material-symbols-rounded">lock</span>'
-            }
-
-          </div>
-
-
           <h4>
             ${achievement.title}
           </h4>
@@ -675,8 +659,8 @@ async function loadRank(uid){
 
     const rank = position + 1;
     text.textContent = rank === 1
-      ? `You're #1 overall! 🏆`
-      : `You're #${rank} overall 🏆`;
+      ? `You're #1 overall!`
+      : `You're #${rank} overall`;
     pill.hidden = false;
   }catch(err){
     console.error('loadRank:', err);
@@ -752,10 +736,10 @@ function renderResults(){
     const name  = escapeHtml(u.username || 'Player');
     const state = friendState(u.uid);
     let action;
-    if (state === 'friend')        action = '<span class="fr-state friend">Friends ✓</span>';
+    if (state === 'friend')        action = '<span class="fr-state friend">Friends</span>';
     else if (state === 'sent')     action = `<span class="fr-state pending">Request sent</span><button class="fr-btn ghost" data-act="cancel" data-uid="${u.uid}">Cancel</button>`;
-    else if (state === 'incoming') action = `<button class="fr-btn accept" data-act="accept" data-uid="${u.uid}"><span class="material-symbols-rounded">check</span>Accept</button>`;
-    else action = `<button class="fr-btn add" data-act="add" data-uid="${u.uid}" data-name="${name}"><span class="material-symbols-rounded">person_add</span>Add</button>`;
+    else if (state === 'incoming') action = `<button class="fr-btn accept" data-act="accept" data-uid="${u.uid}">Accept</button>`;
+    else action = `<button class="fr-btn add" data-act="add" data-uid="${u.uid}" data-name="${name}">Add</button>`;
 
     return `<div class="fr-card">
       <img class="fr-avatar" src="${avatarSrc(u.avatar)}" alt="">
@@ -778,10 +762,10 @@ async function sendRequest(toUid, toName){
     });
     outgoingUids.add(toUid);
     renderResults();
-    Swal.fire({icon:'success', title:'Request sent!', text:`Hinintay na lang natin si ${toName}. 🤞`, timer:1600, showConfirmButton:false});
+    Swal.fire({title:'Request sent!', text:`Hinintay na lang natin si ${toName}.`, timer:1600, showConfirmButton:false});
   }catch(err){
     console.error('sendRequest:', err);
-    Swal.fire({icon:'error', title:'Hindi naipadala', text:err.message, confirmButtonColor:'#e53935'});
+    Swal.fire({title:'Hindi naipadala', text:err.message, confirmButtonColor:'#e53935'});
   }
 }
 
@@ -803,10 +787,10 @@ async function acceptRequest(fromUid){
       since: serverTimestamp()
     });
     await deleteDoc(doc(db,'friendRequests', `${fromUid}__${me.uid}`));
-    Swal.fire({icon:'success', title:'Magkaibigan na kayo! 🎉', timer:1500, showConfirmButton:false});
+    Swal.fire({title:'Magkaibigan na kayo!', timer:1500, showConfirmButton:false});
   }catch(err){
     console.error('acceptRequest:', err);
-    Swal.fire({icon:'error', title:'Hindi ma-accept', text:err.message, confirmButtonColor:'#e53935'});
+    Swal.fire({title:'Hindi ma-accept', text:err.message, confirmButtonColor:'#e53935'});
   }
 }
 
@@ -820,13 +804,13 @@ async function cancelRequest(toUid){
   try{ await deleteDoc(doc(db,'friendRequests', `${me.uid}__${toUid}`)); }
   catch(err){
     console.error('cancelRequest:', err);
-    Swal.fire({icon:'error', title:'Hindi ma-cancel', text:err.message, confirmButtonColor:'#e53935'});
+    Swal.fire({title:'Hindi ma-cancel', text:err.message, confirmButtonColor:'#e53935'});
   }
 }
 
 async function removeFriend(uid, name){
   const res = await Swal.fire({
-    title:'Remove friend?', text:`Aalisin si ${name} sa friend list mo.`, icon:'warning',
+    title:'Remove friend?', text:`Aalisin si ${name} sa friend list mo.`, 
     showCancelButton:true, confirmButtonText:'Yes, remove', confirmButtonColor:'#e53935'
   });
   if(!res.isConfirmed) return;
@@ -844,7 +828,7 @@ async function removeFriend(uid, name){
     }catch(e){ console.error('removeFriend request cleanup:', e); }
   }catch(err){
     console.error('removeFriend:', err);
-    Swal.fire({icon:'error', title:'Hindi maalis', text:err.message, confirmButtonColor:'#e53935'});
+    Swal.fire({title:'Hindi maalis', text:err.message, confirmButtonColor:'#e53935'});
   }
 }
 
@@ -868,7 +852,7 @@ function watchFriends(){
             <div class="fr-info"><h4>${name}</h4><p>Kaibigan</p></div>
             <div class="fr-actions">
               <button class="fr-btn danger" data-act="remove" data-uid="${f.uid}" data-name="${name}">
-                <span class="material-symbols-rounded">person_remove</span>Remove
+                Remove
               </button>
             </div>
           </div>`;
@@ -909,7 +893,7 @@ function watchIncoming(){
             <img class="fr-avatar" src="${avatarSrc(r.fromAvatar)}" alt="">
             <div class="fr-info"><h4>${name}</h4><p>Gustong maging kaibigan mo</p></div>
             <div class="fr-actions">
-              <button class="fr-btn accept" data-act="accept" data-uid="${r.from}"><span class="material-symbols-rounded">check</span>Accept</button>
+              <button class="fr-btn accept" data-act="accept" data-uid="${r.from}">Accept</button>
               <button class="fr-btn ghost"  data-act="decline" data-uid="${r.from}">Decline</button>
             </div>
           </div>`;
@@ -1034,17 +1018,11 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     const stats = {
-      totalScore:        num(u.totalScore),
-      gamesPlayed:       num(u.gamesPlayed),
-      wins:              num(u.wins),
       chaptersCompleted: chaptersCompleted,
       totalChapters:     STORY_CHAPTERS.length,
       friendCount:       0
     };
     setTimeout(()=>{
-      animateCounter(document.getElementById('stat-score'), stats.totalScore);
-      animateCounter(document.getElementById('stat-games'), stats.gamesPlayed);
-      animateCounter(document.getElementById('stat-wins'),  stats.wins);
       document.getElementById('stat-chapters').textContent = `${stats.chaptersCompleted}/${stats.totalChapters}`;
     },400);
 
@@ -1067,7 +1045,7 @@ onAuthStateChanged(auth, async (user) => {
    LOGOUT
    ============================================================ */
 document.getElementById('dash-logout').addEventListener('click', async()=>{
-  const result = await Swal.fire({title:'Logging out?',text:'See you next time! 👋',icon:'question',showCancelButton:true,confirmButtonText:'Yes, logout',cancelButtonText:'Cancel',confirmButtonColor:'#e53935'});
+  const result = await Swal.fire({title:'Logging out?',text:'See you next time!',showCancelButton:true,confirmButtonText:'Yes, logout',cancelButtonText:'Cancel',confirmButtonColor:'#e53935'});
   if(result.isConfirmed){ await signOut(auth); window.location.href='index.html'; }
 });
 
@@ -1114,7 +1092,7 @@ document.getElementById('ep-save').addEventListener('click', async()=>{
     showBio(bio);
     if (me){ me.username = nickname; me.avatar = selectedAvatar; }
 
-    msgEl.textContent='✅ Saved!';
+    msgEl.textContent='Saved!';
     msgEl.className='ep-msg success';
     setTimeout(()=>overlay.classList.remove('open'),1000);
   }catch(err){

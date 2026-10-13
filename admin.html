@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Teacher Panel – Laro Tayo</title>
+  <title>Admin Panel – Laro Tayo</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/admin.css" />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
@@ -23,10 +23,6 @@
       </button>
       <button class="admin-tab-btn" data-tab="register">
         <span>Register</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="teachers" data-admin-only>
-        <span>Teachers</span>
-        <span class="tab-count" id="teacher-count-badge">0</span>
       </button>
       <button class="admin-tab-btn" data-tab="settings">
         <span>Settings</span>
@@ -52,9 +48,6 @@
     </button>
     <button class="admin-tab-btn" data-tab="register">
       Register
-    </button>
-    <button class="admin-tab-btn" data-tab="teachers" data-admin-only>
-      Teachers
     </button>
     <button class="admin-tab-btn" data-tab="settings">
       Settings
@@ -85,7 +78,6 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Joined</th>
-                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -136,66 +128,6 @@
       </div>
     </div>
 
-    <!-- TEACHERS TAB (admin only) -->
-    <div class="admin-tab-panel" id="tab-teachers" data-admin-only>
-      <div class="admin-page-header">
-        <div>
-          <h1>Teacher Accounts</h1>
-          <p>Create teacher logins and see who has access to the panel.</p>
-        </div>
-      </div>
-
-      <div class="register-form-card" style="margin-bottom: 24px;">
-        <div class="register-form-inner">
-          <div class="register-field">
-            <label class="register-label">
-              Teacher Name
-            </label>
-            <input type="text" class="admin-input-field" id="reg-teacher-username" placeholder="e.g. Maria Santos" maxlength="40" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Email Address
-            </label>
-            <input type="email" class="admin-input-field" id="reg-teacher-email" placeholder="e.g. maria@school.edu" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Password
-            </label>
-            <input type="password" class="admin-input-field" id="reg-teacher-password" placeholder="Minimum 6 characters" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Confirm Password
-            </label>
-            <input type="password" class="admin-input-field" id="reg-teacher-confirm" placeholder="Re-enter password" />
-          </div>
-          <button class="admin-action-btn green register-submit-btn" id="register-teacher-btn">
-            Register Teacher
-          </button>
-        </div>
-      </div>
-
-      <div class="admin-table-card">
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="teachers-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
     <!-- SETTINGS TAB -->
     <div class="admin-tab-panel" id="tab-settings">
       <div class="admin-page-header">
@@ -223,62 +155,10 @@
             Update Password
           </button>
         </div>
-        <div class="settings-card">
-          <h3>Game Settings</h3>
-          <div class="settings-toggle-row">
-            <div>
-              <strong>New Registrations</strong>
-              <p>Allow new students to sign up.</p>
-            </div>
-            <label class="toggle-switch">
-              <input type="checkbox" id="toggle-reg" checked />
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-        <div class="settings-card">
-          <h3>About This Panel</h3>
-          <div class="settings-info-row"><span>Project</span><strong>Laro Tayo</strong></div>
-          <div class="settings-info-row"><span>Panel</span><strong>Admin / Teacher Panel</strong></div>
-          <div class="settings-info-row"><span>School</span><strong>NCST Cavite</strong></div>
-        </div>
       </div>
     </div>
 
   </main>
-
-  <!-- EDIT STUDENT MODAL -->
-  <div class="modal-overlay" id="student-modal-overlay">
-    <div class="modal-card" id="student-modal">
-      <div class="modal-header">
-        <h3 id="modal-title">Edit Student</h3>
-        <button class="modal-close-btn" id="modal-close-btn">
-          Close
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="modal-user-id" value="" />
-        <div class="modal-field">
-          <label>Username</label>
-          <input type="text" class="admin-input-field" id="modal-username" placeholder="e.g. juan_dela" />
-        </div>
-        <div class="modal-field">
-          <label>Email</label>
-          <input type="email" class="admin-input-field" id="modal-email" placeholder="e.g. juan@email.com" />
-        </div>
-        <div class="modal-field" id="modal-teacher-field" style="display:none;">
-          <label>Assigned Teacher</label>
-          <select class="admin-input-field admin-select" id="modal-teacher"></select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="admin-action-btn gray" id="modal-cancel-btn">Cancel</button>
-        <button class="admin-action-btn orange" id="modal-save-btn">
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- STUDENT PROGRESS MODAL -->
   <div class="modal-overlay" id="progress-modal-overlay">

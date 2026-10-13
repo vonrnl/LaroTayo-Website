@@ -830,17 +830,16 @@
 @media (max-width: 600px) {
   .chapter-card {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      "icon num"
-      "icon info"
-      "icon badge";
+      "num"
+      "info"
+      "badge";
     column-gap: 14px;
     row-gap: 4px;
     align-items: start;
     padding: 14px 16px;
   }
-  .chapter-icon  { grid-area: icon; align-self: center; }
   .chapter-num   { grid-area: num; min-width: 0; }
   .chapter-info  { grid-area: info; }
   .chapter-badge { grid-area: badge; justify-self: start; margin-top: 4px; }

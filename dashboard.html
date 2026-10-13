@@ -36,7 +36,6 @@
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-body">
@@ -67,15 +66,12 @@
         <span class="dash-email" id="dash-email">...</span>
       </div>
       <button class="dash-home-btn" id="dash-home-btn" onclick="window.location.href='index.html'">
-        <span class="material-symbols-rounded">home</span>
         <span>Home</span>
       </button>
       <button class="dash-edit-btn" id="dash-edit-profile">
-        <span class="material-symbols-rounded">edit</span>
         <span>Edit Profile</span>
       </button>
       <button class="dash-logout-btn" id="dash-logout">
-        <span class="material-symbols-rounded">logout</span>
         <span>Logout</span>
       </button>
     </div>
@@ -84,10 +80,8 @@
   <!-- EDIT PROFILE MODAL -->
   <div class="ep-overlay" id="ep-overlay">
     <div class="ep-modal">
-      <button class="ep-close" id="ep-close">
-        <span class="material-symbols-rounded">close</span>
-      </button>
-      <h2 class="ep-title">✏️ Edit Profile</h2>
+      <button class="ep-close" id="ep-close">Close</button>
+      <h2 class="ep-title">Edit Profile</h2>
       <div class="ep-avatar-section">
         <div class="ep-avatar-preview">
           <img id="ep-avatar-preview" src="" alt="Selected avatar" />
@@ -119,7 +113,6 @@
       </div>
       <p class="ep-msg" id="ep-msg"></p>
       <button class="ep-save-btn" id="ep-save">
-        <span class="material-symbols-rounded">save</span>
         Save Changes
       </button>
     </div>
@@ -128,14 +121,11 @@
   <!-- FRIENDS MODAL -->
   <div class="fr-overlay" id="fr-overlay">
     <div class="fr-modal">
-      <button class="ep-close" id="fr-close">
-        <span class="material-symbols-rounded">close</span>
-      </button>
-      <h2 class="ep-title">👥 Friends</h2>
+      <button class="ep-close" id="fr-close">Close</button>
+      <h2 class="ep-title">Friends</h2>
       <p class="fr-modal-sub" id="fr-count">—</p>
 
       <div class="fr-search-wrap">
-        <span class="material-symbols-rounded fr-search-icon">search</span>
         <input type="text" id="fr-search-input" class="fr-search-input"
                placeholder="Search a username to add…" maxlength="20" autocomplete="off" />
         <button class="fr-search-btn" id="fr-search-btn">Search</button>
@@ -145,7 +135,6 @@
       <div class="fr-grid">
         <div class="fr-panel">
           <h3 class="fr-panel-title">
-            <span class="material-symbols-rounded">person_add</span>
             Friend Requests
             <span class="fr-pill" id="fr-req-count">0</span>
           </h3>
@@ -156,7 +145,6 @@
 
         <div class="fr-panel">
           <h3 class="fr-panel-title">
-            <span class="material-symbols-rounded">group</span>
             My Friends
             <span class="fr-pill" id="fr-friend-count">0</span>
           </h3>
@@ -189,7 +177,6 @@
       </div>
 
       <button class="add-friend-btn" id="open-friends">
-        <span class="material-symbols-rounded">group_add</span>
         <span>Add Friend</span>
         <span class="add-friend-badge" id="fr-badge" hidden>0</span>
       </button>
@@ -198,24 +185,10 @@
     <!-- STATS CARDS -->
     <section class="dash-section">
       <div class="rank-pill" id="rank-pill" hidden>
-        <span class="material-symbols-rounded">emoji_events</span>
         <span id="rank-pill-text">—</span>
       </div>
       <div class="stats-grid">
-        <div class="stat-card orange">
-          <div class="stat-icon"><span class="material-symbols-rounded">emoji_events</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-score">—</span><span class="stat-label">Total Score</span></div>
-        </div>
-        <div class="stat-card blue">
-          <div class="stat-icon"><span class="material-symbols-rounded">sports_esports</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-games">—</span><span class="stat-label">Games Played</span></div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-icon"><span class="material-symbols-rounded">military_tech</span></div>
-          <div class="stat-info"><span class="stat-value" id="stat-wins">—</span><span class="stat-label">Wins</span></div>
-        </div>
         <div class="stat-card yellow">
-          <div class="stat-icon"><span class="material-symbols-rounded">auto_stories</span></div>
           <div class="stat-info"><span class="stat-value" id="stat-chapters">—</span><span class="stat-label">Story Chapters</span></div>
         </div>
       </div>

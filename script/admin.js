@@ -43,7 +43,7 @@ const db   = getFirestore(app);
    ------------------------------------------------------------
    createUserWithEmailAndPassword() signs the browser in as the
    NEW account on whatever `auth` instance you call it with.
-   That means if a teacher registers a student using the same
+   That means if the admin registers a student using the same
    `auth` as their own session, they get bumped out and replaced
    by the new student. To avoid that, every "create another
    person's account" action runs on a short-lived secondary
@@ -67,15 +67,12 @@ async function createAccountWithoutSwitchingSession(email, password) {
    ============================================================ */
 let STUDENTS         = [];
 let filteredStudents = [];
-let TEACHERS          = [];
 let CURRENT_UID        = null;
-let CURRENT_ROLE       = null; // 'admin' | 'teacher'
 let CURRENT_USERNAME   = '';
 let studentsUnsub       = null;
-let teachersUnsub        = null;
 
 /* ============================================================
-   INIT — gate everything behind a confirmed teacher/admin session
+   INIT — gate everything behind a confirmed admin session
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
   onAuthStateChanged(auth, async (user) => {
@@ -86,15 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const teacherSnap = await getDoc(doc(db, 'teachers', user.uid));
-      if (!teacherSnap.exists() || !['admin', 'teacher'].includes(teacherSnap.data().role)) {
-        // Signed in with Firebase, but not an authorized teacher/admin account
+      if (!teacherSnap.exists() || teacherSnap.data().role !== 'admin') {
+        // Signed in with Firebase, but not an admin account
         await signOut(auth);
         window.location.href = 'index.html';
         return;
       }
 
       CURRENT_UID      = user.uid;
-      CURRENT_ROLE     = teacherSnap.data().role;
       CURRENT_USERNAME = teacherSnap.data().username || user.email;
 
       initTabs();
@@ -104,12 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       initProgressModal();
       initSettings();
       initLogout();
-      initTeacherRoleUI();
       listenToStudents();
-      if (CURRENT_ROLE === 'admin') {
-        initTeachersTab();
-        listenToTeachers();
-      }
     } catch (err) {
       console.error('Auth check failed:', err);
       window.location.href = 'index.html';
@@ -118,25 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ============================================================
-   ROLE-BASED UI
-   ============================================================ */
-function initTeacherRoleUI() {
-  const badge = document.querySelector('.admin-nav-badge span:last-child');
-  if (badge) badge.textContent = CURRENT_ROLE === 'admin' ? 'ADMIN' : 'TEACHER';
-
-  // Anything marked data-admin-only is hidden from plain teachers
-  document.querySelectorAll('[data-admin-only]').forEach(el => {
-    el.style.display = CURRENT_ROLE === 'admin' ? '' : 'none';
-  });
-
-  initUsersTableHeaderForRole();
-}
-
-/* ============================================================
    FIRESTORE REAL-TIME LISTENER
    ------------------------------------------------------------
-   Admins see every student. Teachers only see students whose
-   teacherId matches their own uid.
+   The admin sees every student.
 
    NOTE: we deliberately do NOT use orderBy('joined') here.
    Firestore's orderBy() silently EXCLUDES any document that is
@@ -148,9 +123,7 @@ function initTeacherRoleUI() {
    ============================================================ */
 function listenToStudents() {
   const studentsRef = collection(db, 'students');
-  const q = CURRENT_ROLE === 'admin'
-    ? query(studentsRef)
-    : query(studentsRef, where('teacherId', '==', CURRENT_UID));
+  const q = query(studentsRef);
 
   if (studentsUnsub) studentsUnsub();
   studentsUnsub = onSnapshot(q, (snapshot) => {
@@ -161,9 +134,6 @@ function listenToStudents() {
       joined:    docSnap.data().joined || null,
       createdAt: docSnap.data().createdAt || null,
       uid:       docSnap.data().uid || null,
-      teacherId: docSnap.data().teacherId || null,
-      lastSeen:  docSnap.data().lastSeen || null,
-      isOnline:  docSnap.data().isOnline || false,
     }));
 
     // Sort newest first: prefer 'joined' (a plain date string), fall back
@@ -174,7 +144,6 @@ function listenToStudents() {
     filteredStudents = [...STUDENTS];
     populateUsersTable(STUDENTS);
     document.getElementById('user-count-badge').textContent = STUDENTS.length;
-    updateOnlineCount();
 
   }, (error) => {
     console.error('Firestore listener error:', error);
@@ -191,32 +160,6 @@ function sortableTime(record) {
     return record.createdAt.toMillis();
   }
   return 0; // no usable date — sinks to the bottom, but still shows up
-}
-
-/* ============================================================
-   TEACHERS LISTENER (admin only) — used for the Teachers tab
-   and for the "Assigned Teacher" dropdown in the edit modal.
-   Same reasoning as above: no server-side orderBy, sort client-side.
-   ============================================================ */
-function listenToTeachers() {
-  const q = query(collection(db, 'teachers'));
-  if (teachersUnsub) teachersUnsub();
-  teachersUnsub = onSnapshot(q, (snapshot) => {
-    TEACHERS = snapshot.docs.map(docSnap => ({
-      id:       docSnap.id,
-      uid:      docSnap.data().uid,
-      username: docSnap.data().username || '(no username)',
-      email:    docSnap.data().email || '(no email)',
-      role:     docSnap.data().role,
-      joined:   docSnap.data().joined || null,
-    }));
-    TEACHERS.sort((a, b) => sortableTime(b) - sortableTime(a));
-    populateTeachersTable(TEACHERS);
-    const badge = document.getElementById('teacher-count-badge');
-    if (badge) badge.textContent = TEACHERS.length;
-  }, (error) => {
-    console.error('Teachers listener error:', error);
-  });
 }
 
 /* ============================================================
@@ -265,8 +208,7 @@ function populateUsersTable(students) {
   const tbody = document.getElementById('users-table-body');
   if (!tbody) return;
 
-  const isAdmin  = CURRENT_ROLE === 'admin';
-  const colCount = isAdmin ? 7 : 6;
+  const colCount = 5;
 
   if (students.length === 0) {
     tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:28px;color:#aaa">No students found.</td></tr>`;
@@ -274,54 +216,21 @@ function populateUsersTable(students) {
   }
 
   tbody.innerHTML = students.map((u, i) => {
-    const online = isUserOnline(u);
-    const statusHtml = online
-      ? `<span class="status-pill online"><span class="online-dot"></span>Online</span>`
-      : `<span class="status-pill offline">Offline</span>`;
-    const teacherCell = isAdmin
-      ? `<td>${escapeHtml(teacherNameForId(u.teacherId))}</td>`
-      : '';
     return `
     <tr>
       <td>${i + 1}</td>
       <td><strong>${escapeHtml(u.username)}</strong></td>
       <td>${escapeHtml(u.email)}</td>
-      ${teacherCell}
       <td>${formatDate(u.joined)}</td>
-      <td>${statusHtml}</td>
       <td>
         <div class="action-btns">
           <button class="tbl-btn view" onclick="openProgressModal('${u.id}')" title="View progress">
             Progress
           </button>
-          <button class="tbl-btn edit" onclick="openEditModal('${u.id}')" title="Edit">
-            Edit
-          </button>
-          <button class="tbl-btn delete" onclick="deleteUser('${u.id}')" title="Delete">
-            Delete
-          </button>
         </div>
       </td>
     </tr>`;
   }).join('');
-}
-
-function teacherNameForId(teacherId) {
-  if (!teacherId) return '— Unassigned —';
-  const t = TEACHERS.find(t => t.uid === teacherId);
-  return t ? t.username : '— Unknown —';
-}
-
-/* Adds the "Teacher" header column when viewing as admin */
-function initUsersTableHeaderForRole() {
-  const headRow = document.querySelector('.admin-table thead tr');
-  if (!headRow || CURRENT_ROLE !== 'admin') return;
-  if (headRow.querySelector('[data-col="teacher"]')) return; // already added
-  const th = document.createElement('th');
-  th.textContent = 'Teacher';
-  th.setAttribute('data-col', 'teacher');
-  const joinedTh = [...headRow.children].find(th => th.textContent.trim() === 'Joined');
-  headRow.insertBefore(th, joinedTh || null);
 }
 
 /* ============================================================
@@ -341,21 +250,12 @@ function initUserSearch() {
 }
 
 /* ============================================================
-   STUDENT MODAL — REGISTER & EDIT
+   REGISTER STUDENT
    ============================================================ */
 function initStudentModal() {
   // Register tab form
   const registerBtn = document.getElementById('register-student-btn');
   if (registerBtn) registerBtn.addEventListener('click', registerFromTab);
-
-  // Edit modal
-  const overlay   = document.getElementById('student-modal-overlay');
-  const closeBtn  = document.getElementById('modal-close-btn');
-  const cancelBtn = document.getElementById('modal-cancel-btn');
-  const saveBtn   = document.getElementById('modal-save-btn');
-  [closeBtn, cancelBtn].forEach(btn => { if (btn) btn.addEventListener('click', closeModal); });
-  if (overlay) overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-  if (saveBtn) saveBtn.addEventListener('click', saveEditStudent);
 }
 
 async function registerFromTab() {
@@ -392,7 +292,6 @@ async function registerFromTab() {
       uid, username, email,
       joined:    new Date().toISOString().split('T')[0],
       status:    'active',
-      teacherId: CURRENT_UID, // owned by whichever teacher/admin registered them
       createdAt: serverTimestamp(),
     });
     // Clear form
@@ -411,209 +310,6 @@ async function registerFromTab() {
   }
 }
 
-function openEditModal(firestoreId) {
-  const student = STUDENTS.find(s => s.id === firestoreId);
-  if (!student) return;
-
-  document.getElementById('modal-user-id').value  = student.id;
-  document.getElementById('modal-username').value = student.username;
-  document.getElementById('modal-email').value    = student.email;
-
-  const teacherField = document.getElementById('modal-teacher-field');
-  const teacherSelect = document.getElementById('modal-teacher');
-  if (teacherField && teacherSelect) {
-    if (CURRENT_ROLE === 'admin') {
-      teacherField.style.display = '';
-      teacherSelect.innerHTML = '<option value="">— Unassigned —</option>' +
-        TEACHERS.map(t => `<option value="${t.uid}">${escapeHtml(t.username)}</option>`).join('');
-      teacherSelect.value = student.teacherId || '';
-    } else {
-      teacherField.style.display = 'none';
-    }
-  }
-
-  document.getElementById('student-modal-overlay').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('student-modal-overlay').classList.remove('open');
-}
-
-/* ============================================================
-   SAVE EDIT STUDENT
-   ============================================================ */
-async function saveEditStudent() {
-  const firestoreId = document.getElementById('modal-user-id').value;
-  const username    = document.getElementById('modal-username').value.trim();
-  const email       = document.getElementById('modal-email').value.trim();
-  const saveBtn     = document.getElementById('modal-save-btn');
-
-  if (!username || !email) {
-    Swal.fire({ title: 'Incomplete', text: 'Please fill in the username and email.', confirmButtonColor: '#F4A234' });
-    return;
-  }
-
-  saveBtn.disabled = true;
-  saveBtn.innerHTML = 'Saving...';
-
-  const updates = { username, email };
-  if (CURRENT_ROLE === 'admin') {
-    const teacherSelect = document.getElementById('modal-teacher');
-    if (teacherSelect) updates.teacherId = teacherSelect.value || null;
-  }
-
-  try {
-    await updateDoc(doc(db, 'students', firestoreId), updates);
-    closeModal();
-    Swal.fire({ title: 'Updated!', text: `${username}'s details have been saved.`, timer: 2000, showConfirmButton: false });
-  } catch (err) {
-    console.error('saveEditStudent error:', err);
-    Swal.fire({ title: 'Error', text: err.message, confirmButtonColor: '#e53935' });
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.innerHTML = 'Save Changes';
-  }
-}
-
-/* ============================================================
-   DELETE STUDENT
-   ============================================================ */
-function deleteUser(firestoreId) {
-  const student = STUDENTS.find(s => s.id === firestoreId);
-  if (!student) return;
-
-  Swal.fire({
-    title: 'Remove Student?',
-    html:  `Are you sure you want to remove <strong>${escapeHtml(student.username)}</strong>?`,
-    showCancelButton:   true,
-    confirmButtonText:  'Yes, remove',
-    cancelButtonText:   'Cancel',
-    confirmButtonColor: '#e53935',
-    cancelButtonColor:  '#6A8AA0',
-  }).then(async result => {
-    if (result.isConfirmed) {
-      try {
-        await deleteDoc(doc(db, 'students', firestoreId));
-        Swal.fire({ title: 'Removed!', text: `${student.username} has been removed.`, timer: 2000, showConfirmButton: false });
-      } catch (err) {
-        console.error('deleteUser error:', err);
-        Swal.fire({ title: 'Error', text: err.message, confirmButtonColor: '#e53935' });
-      }
-    }
-  });
-}
-
-/* ============================================================
-   TEACHERS TAB (admin only)
-   ============================================================ */
-function initTeachersTab() {
-  const registerBtn = document.getElementById('register-teacher-btn');
-  if (registerBtn) registerBtn.addEventListener('click', registerTeacher);
-}
-
-function populateTeachersTable(teachers) {
-  const tbody = document.getElementById('teachers-table-body');
-  if (!tbody) return;
-
-  if (teachers.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:28px;color:#aaa">No teacher accounts yet.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = teachers.map((t, i) => `
-    <tr>
-      <td>${i + 1}</td>
-      <td><strong>${escapeHtml(t.username)}</strong></td>
-      <td>${escapeHtml(t.email)}</td>
-      <td>${t.role === 'admin' ? '<span class="status-pill online">Admin</span>' : '<span class="status-pill offline">Teacher</span>'}</td>
-      <td>${formatDate(t.joined)}</td>
-      <td>
-        <div class="action-btns">
-          <button class="tbl-btn delete" onclick="deleteTeacher('${t.id}')" title="Remove" ${t.uid === CURRENT_UID ? 'disabled style="opacity:.3;cursor:not-allowed"' : ''}>
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-async function registerTeacher() {
-  const username = document.getElementById('reg-teacher-username').value.trim();
-  const email    = document.getElementById('reg-teacher-email').value.trim();
-  const password = document.getElementById('reg-teacher-password').value.trim();
-  const confirm  = document.getElementById('reg-teacher-confirm').value.trim();
-  const btn      = document.getElementById('register-teacher-btn');
-
-  if (!username || !email || !password || !confirm) {
-    Swal.fire({ title: 'Incomplete', text: 'Please fill in all fields.', confirmButtonColor: '#F4A234' });
-    return;
-  }
-  if (!/^\S+@\S+\.\S+$/.test(email)) {
-    Swal.fire({ title: 'Invalid Email', text: 'Please enter a valid email address.', confirmButtonColor: '#e53935' });
-    return;
-  }
-  if (password.length < 6) {
-    Swal.fire({ title: 'Too Short', text: 'Password must be at least 6 characters.', confirmButtonColor: '#e53935' });
-    return;
-  }
-  if (password !== confirm) {
-    Swal.fire({ title: 'Mismatch', text: 'Passwords do not match.', confirmButtonColor: '#e53935' });
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = 'Creating...';
-
-  try {
-    const uid = await createAccountWithoutSwitchingSession(email, password);
-    await setDoc(doc(db, 'teachers', uid), {
-      uid, username, email,
-      role:      'teacher',
-      joined:    new Date().toISOString().split('T')[0],
-      createdAt: serverTimestamp(),
-    });
-    ['reg-teacher-username', 'reg-teacher-email', 'reg-teacher-password', 'reg-teacher-confirm']
-      .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    Swal.fire({ title: 'Teacher Added!', text: `${username} can now log in to their own teacher panel.`, timer: 2500, showConfirmButton: false });
-  } catch (err) {
-    let msg = err.message;
-    if (err.code === 'auth/email-already-in-use') msg = 'That email is already registered.';
-    if (err.code === 'auth/weak-password')        msg = 'Password must be at least 6 characters.';
-    Swal.fire({ title: 'Error', text: msg, confirmButtonColor: '#e53935' });
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = 'Register Teacher';
-  }
-}
-
-function deleteTeacher(firestoreId) {
-  const teacher = TEACHERS.find(t => t.id === firestoreId);
-  if (!teacher) return;
-  if (teacher.uid === CURRENT_UID) return; // can't remove yourself
-
-  Swal.fire({
-    title: 'Remove Teacher?',
-    html:  `Are you sure you want to remove <strong>${escapeHtml(teacher.username)}</strong>? Their students will remain but become unassigned.`,
-    showCancelButton:   true,
-    confirmButtonText:  'Yes, remove',
-    cancelButtonText:   'Cancel',
-    confirmButtonColor: '#e53935',
-    cancelButtonColor:  '#6A8AA0',
-  }).then(async result => {
-    if (!result.isConfirmed) return;
-    try {
-      // Removes their Firestore profile (revokes teacher-panel access).
-      // Their Firebase Auth account still exists; deleting that requires
-      // the Admin SDK on a backend, which this frontend-only app doesn't have.
-      await deleteDoc(doc(db, 'teachers', firestoreId));
-      Swal.fire({ title: 'Removed!', text: `${teacher.username} no longer has teacher-panel access.`, timer: 2500, showConfirmButton: false });
-    } catch (err) {
-      console.error('deleteTeacher error:', err);
-      Swal.fire({ title: 'Error', text: err.message, confirmButtonColor: '#e53935' });
-    }
-  });
-}
-
 /* ============================================================
    STUDENT PROGRESS (story + stats + badges)
    ------------------------------------------------------------
@@ -630,19 +326,37 @@ const STORY_CHAPTERS = [
   { id: 4, title: 'Luksong Baka' },
 ];
 
+// Same badges as the student dashboard (dashboard.js).
+// Sipa / Hulihin ang Baboy / Luksong Baka are saved by Unity in
+// students/{uid}/achievements/{id}. 'Tapos ang Kwento' is worked
+// out from the story saves (all chapters completed).
 const ACHIEVEMENTS = [
-  { id:'firstGame',   title:'Unang Laro',       desc:'Play your very first game.',       check:s => s.gamesPlayed >= 1,        goal:s => `${Math.min(s.gamesPlayed,1)}/1 games` },
-  { id:'firstWin',    title:'Panalo!',          desc:'Win your first match.',            check:s => s.wins >= 1,               goal:s => `${Math.min(s.wins,1)}/1 wins` },
-  { id:'fiveWins',    title:'Sunod-sunod',      desc:'Reach 5 total wins.',              check:s => s.wins >= 5,               goal:s => `${Math.min(s.wins,5)}/5 wins` },
-  { id:'tenGames',    title:'Palaruan Regular', desc:'Play 10 games.',                   check:s => s.gamesPlayed >= 10,       goal:s => `${Math.min(s.gamesPlayed,10)}/10 games` },
-  { id:'score1000',   title:'Libong Puntos',    desc:'Earn 1,000 total points.',         check:s => s.totalScore >= 1000,      goal:s => `${Math.min(s.totalScore,1000)}/1000 pts` },
-  { id:'score5000',   title:'Iskor Hari',       desc:'Earn 5,000 total points.',         check:s => s.totalScore >= 5000,      goal:s => `${Math.min(s.totalScore,5000)}/5000 pts` },
-  { id:'story1',      title:'Mambabasa',        desc:'Finish your first story chapter.', check:s => s.chaptersCompleted >= 1,  goal:s => `${Math.min(s.chaptersCompleted,1)}/1 chapter` },
-  { id:'storyHalf',   title:'Kalahating Daan',  desc:'Finish half of the story.',        check:s => s.chaptersCompleted >= Math.ceil(s.totalChapters/2), goal:s => `${s.chaptersCompleted}/${Math.ceil(s.totalChapters/2)} chapters` },
-  { id:'storyAll',    title:'Kampeon ng Bayan', desc:'Complete every story chapter.',    check:s => s.chaptersCompleted >= s.totalChapters, goal:s => `${s.chaptersCompleted}/${s.totalChapters} chapters` },
-  { id:'firstFriend', title:'Bagong Kaibigan',  desc:'Add your first friend.',           check:s => s.friendCount >= 1,        goal:s => `${Math.min(s.friendCount,1)}/1 friend` },
-  { id:'fiveFriends', title:'Barkada',          desc:'Reach 5 friends.',                 check:s => s.friendCount >= 5,        goal:s => `${Math.min(s.friendCount,5)}/5 friends` },
+  { id:'sipa',              title:'Sipa',              desc:'Unlocked by completing the Sipa stage.',
+    detail:(d)    => `Best score: ${num(d && d.bestScore)}` },
+  { id:'hulihin_ang_baboy', title:'Hulihin ang Baboy', desc:'Unlocked by completing the Hulihin ang Baboy stage.',
+    detail:(d)    => `Best time: ${getBestTime(d)}` },
+  { id:'luksong_baka',      title:'Luksong Baka',      desc:'Unlocked by completing the Luksong Baka stage.',
+    detail:(d)    => `Best score: ${num(d && d.bestScore)} - Best level: ${num(d && d.bestLevel)}` },
+  { id:'story_complete',    title:'Tapos ang Kwento',  desc:'Unlocked by completing all story chapters.',
+    stage: STORY_CHAPTERS.length,
+    detail:(d, s) => `${s.chaptersCompleted}/${s.totalChapters} chapters completed`,
+    goal:(s)      => `${s.chaptersCompleted}/${s.totalChapters} chapters` },
 ];
+
+function formatAchievementTime(ms) {
+  if (typeof ms !== 'number' || !isFinite(ms)) return '--:--.---';
+  const t = Math.max(0, Math.round(ms));
+  return String(Math.floor(t / 60000)).padStart(2, '0') + ':' +
+         String(Math.floor((t % 60000) / 1000)).padStart(2, '0') + '.' +
+         String(t % 1000).padStart(3, '0');
+}
+
+function getBestTime(d) {
+  if (!d) return '--:--.---';
+  if (typeof d.bestTimeDisplay === 'string' && d.bestTimeDisplay.trim() !== '') return d.bestTimeDisplay.trim();
+  if (typeof d.bestTimeMs === 'number') return formatAchievementTime(d.bestTimeMs);
+  return '--:--.---';
+}
 
 let progressRequestId = 0;
 
@@ -689,7 +403,7 @@ async function openProgressModal(firestoreId) {
     safe('student stats',  () => getDoc(doc(db, 'students', firestoreId))),
     safe('story saves',    () => getDocs(collection(db, 'students', firestoreId, 'storySaves'))),
     safe('friends',        () => getDocs(collection(db, 'students', firestoreId, 'friends'))),
-    safe('saved badges',   () => getDoc(doc(db, 'achievements', firestoreId))),
+    safe('badges',         () => getDocs(collection(db, 'students', firestoreId, 'achievements'))),
   ]);
 
   if (requestId !== progressRequestId) return; // a newer popup was opened, or this one was closed
@@ -697,15 +411,12 @@ async function openProgressModal(firestoreId) {
   const total = STORY_CHAPTERS.length;
   const u     = userRes.ok && userRes.value.exists() ? userRes.value.data() : {};
   const saves = savesRes.ok ? savesRes.value.docs.map(d => ({ id: d.id, ...d.data() })) : [];
-  const saved = achRes.ok && achRes.value.exists() ? achRes.value.data() : {};
+  const saved = achRes.ok ? new Map(achRes.value.docs.map(d => [d.id, d.data()])) : new Map();
 
   const chaptersCompleted = Math.min(total, saves.reduce((m, s) => Math.max(m, num(s.completedStage)), 0));
   const friendCount       = friendsRes.ok ? friendsRes.value.size : 0;
 
   const stats = {
-    totalScore:        num(u.totalScore),
-    gamesPlayed:       num(u.gamesPlayed),
-    wins:              num(u.wins),
     chaptersCompleted,
     totalChapters:     total,
     friendCount,
@@ -762,23 +473,28 @@ async function openProgressModal(firestoreId) {
   // ---- badges section ----
   let unlockedCount = 0;
   const badgeRows = ACHIEVEMENTS.map(a => {
-    const unlocked = saved[a.id] === true || a.check(stats);
+    const data = saved.get(a.id);
+    // Same rules as dashboard.js: Luksong Baka needs a real win
+    // (completed === true); the other Unity badges need a document
+    // that is not marked unlocked:false; the story badge uses chapters.
+    const unlocked = a.stage
+      ? chaptersCompleted >= a.stage
+      : (!!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false));
     if (unlocked) unlockedCount++;
+    const info = unlocked ? `<div class="pg-row-meta">${escapeHtml(a.detail(data, stats))}</div>` : '';
     return `<li class="pg-row">
       <div>
         <span class="pg-row-title">${a.title}</span>
         <div class="pg-row-meta">${a.desc}</div>
+        ${info}
       </div>
-      <span class="pg-pill ${unlocked ? 'done' : 'locked'}">${unlocked ? 'Unlocked' : a.goal(stats)}</span>
+      <span class="pg-pill ${unlocked ? 'done' : 'locked'}">${unlocked ? 'Unlocked' : (a.goal ? a.goal(stats) : 'Locked')}</span>
     </li>`;
   }).join('');
 
   body.innerHTML = `
     ${warnHtml}
     <div class="pg-stats">
-      <div class="pg-stat"><strong>${stats.totalScore.toLocaleString('en-PH')}</strong><span>Total score</span></div>
-      <div class="pg-stat"><strong>${stats.gamesPlayed}</strong><span>Games played</span></div>
-      <div class="pg-stat"><strong>${stats.wins}</strong><span>Wins</span></div>
       <div class="pg-stat"><strong>${friendsRes.ok ? friendCount : 'N/A'}</strong><span>Friends</span></div>
     </div>
     <div class="pg-section">
@@ -838,11 +554,6 @@ function initSettings() {
     }
   });
 
-  const toggleReg = document.getElementById('toggle-reg');
-  if (toggleReg) toggleReg.addEventListener('change', () => {
-    const msg = toggleReg.checked ? 'New registrations are now allowed.' : 'New registrations are now disabled.';
-    Swal.fire({ title: 'Setting Updated', text: msg, timer: 2200, showConfirmButton: false });
-  });
 }
 
 /* ============================================================
@@ -870,22 +581,6 @@ function initLogout() {
 }
 
 /* ============================================================
-   PRESENCE HELPERS
-   ============================================================ */
-function isUserOnline(user) {
-  if (!user.lastSeen) return false;
-  const lastSeen = user.lastSeen.toDate ? user.lastSeen.toDate() : new Date(user.lastSeen);
-  const diffMs = Date.now() - lastSeen.getTime();
-  return diffMs < 2 * 60 * 1000; // online if seen within last 2 minutes
-}
-
-function updateOnlineCount() {
-  const count = STUDENTS.filter(isUserOnline).length;
-  const el = document.getElementById('online-count');
-  if (el) el.textContent = count;
-}
-
-/* ============================================================
    HELPERS
    ============================================================ */
 function formatDate(dateStr) {
@@ -900,7 +595,4 @@ function escapeHtml(str) {
 }
 
 // Expose for inline onclick handlers in the table
-window.openEditModal = openEditModal;
-window.deleteUser    = deleteUser;
-window.deleteTeacher = deleteTeacher;
 window.openProgressModal = openProgressModal;
