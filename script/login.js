@@ -32,85 +32,52 @@ const app  = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ---- ADMIN / TEACHER LOGIN ----
-// No more hardcoded credentials. This is now a real Firebase Auth login,
-// checked against a 'teachers' Firestore doc (uid -> {role: 'admin' | 'teacher'}).
-// NOTE: the "admin-username" field must now collect an EMAIL address, since
-// Firebase Auth signs in with email/password. Update the label/placeholder
-// in your login form's HTML from "Username" to "Email".
-const adminLoginBtn = document.getElementById('admin-login-btn');
-if (adminLoginBtn) {
-  adminLoginBtn.addEventListener('click', async () => {
-    const email = document.getElementById('admin-username').value.trim();
-    const pass  = document.getElementById('admin-password').value.trim();
-    const err   = document.getElementById('admin-err');
-
-    if (!email || !pass) { err.textContent = 'Please fill in both fields.'; return; }
-
-    err.textContent = '';
-    adminLoginBtn.textContent = 'Signing in...';
-    adminLoginBtn.disabled = true;
-
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, pass);
-      const teacherSnap = await getDoc(doc(db, 'teachers', cred.user.uid));
-
-      if (!teacherSnap.exists() || !['admin', 'teacher'].includes(teacherSnap.data().role)) {
-        // Valid Firebase account, but not a teacher/admin account — reject.
-        await signOut(auth);
-        err.textContent = 'This account is not authorized for the teacher panel.';
-        adminLoginBtn.textContent = 'Login';
-        adminLoginBtn.disabled = false;
-        return;
-      }
-
-      adminLoginBtn.textContent = 'Redirecting...';
-      window.location.href = 'admin.html';
-
-    } catch (e) {
-      const msgs = {
-        "auth/user-not-found":     "No account found with that email.",
-        "auth/wrong-password":     "Incorrect password. Please try again.",
-        "auth/invalid-email":      "Please enter a valid email address.",
-        "auth/invalid-credential": "Wrong email or password.",
-        "auth/too-many-requests":  "Too many attempts. Please wait and try again."
-      };
-      err.textContent = msgs[e.code] || e.message;
-      adminLoginBtn.textContent = 'Login';
-      adminLoginBtn.disabled = false;
-    }
-  });
-}
-
-// ---- STUDENT LOGIN ----
-const studentLoginBtn = document.getElementById('student-login-btn');
-if (studentLoginBtn) {
-  studentLoginBtn.addEventListener('click', async () => {
-    const email = document.getElementById('student-email').value.trim();
-    const pass  = document.getElementById('student-password').value.trim();
-    const err   = document.getElementById('student-err');
+// ---- UNIFIED LOGIN (student + teacher/admin) ----
+// One form for everyone. After sign-in we look for a 'teachers' doc:
+//   role 'admin' or 'teacher'  -> admin.html
+//   anything else              -> dashboard.html (student)
+const loginBtn = document.getElementById('login-btn');
+if (loginBtn) {
+  const doLogin = async () => {
+    const email = document.getElementById('login-email').value.trim();
+    const pass  = document.getElementById('login-password').value.trim();
+    const err   = document.getElementById('login-err');
 
     if (!email || !pass) { err.textContent = 'Please enter your email and password.'; return; }
 
-    studentLoginBtn.textContent = 'Logging in...';
-    studentLoginBtn.disabled = true;
+    err.textContent = '';
+    loginBtn.textContent = 'Logging in...';
+    loginBtn.disabled = true;
 
     try {
-      await signInWithEmailAndPassword(auth, email, pass);
-      err.textContent = '';
-      window.location.href = 'dashboard.html';
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+
+      let isStaff = false;
+      try {
+        const teacherSnap = await getDoc(doc(db, 'teachers', cred.user.uid));
+        isStaff = teacherSnap.exists() &&
+                  ['admin', 'teacher'].includes(teacherSnap.data().role);
+      } catch (_) { /* no access / no doc -> treat as student */ }
+
+      window.location.href = isStaff ? 'admin.html' : 'dashboard.html';
+
     } catch (e) {
       const msgs = {
         "auth/user-not-found":     "No account found with that email.",
         "auth/wrong-password":     "Incorrect password. Please try again.",
         "auth/invalid-email":      "Please enter a valid email.",
-        "auth/invalid-credential": "Wrong email or password."
+        "auth/invalid-credential": "Wrong email or password.",
+        "auth/too-many-requests":  "Too many attempts. Please wait and try again."
       };
       err.textContent = msgs[e.code] || e.message;
-      studentLoginBtn.textContent = 'Login';
-      studentLoginBtn.disabled = false;
+      loginBtn.textContent = 'Login';
+      loginBtn.disabled = false;
     }
-  });
+  };
+
+  loginBtn.addEventListener('click', doLogin);
+  document.getElementById('login-password')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 }
 
 // ---- POPULATE "SELECT YOUR TEACHER" DROPDOWN ----
@@ -216,7 +183,7 @@ if (regBtn) {
       });
 
       // 👉 Close registration modal and go to student login modal
-      window.location.hash = 'student-login';
+      window.location.hash = 'login';
 
     } catch (err) {
       console.error('[REG ERROR]', err.code, err.message);

@@ -83,15 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const teacherSnap = await getDoc(doc(db, 'teachers', user.uid));
-      if (!teacherSnap.exists() || teacherSnap.data().role !== 'admin') {
-        // Signed in with Firebase, but not an admin account
-        await signOut(auth);
-        window.location.href = 'index.html';
+      if (!teacherSnap.exists() || !['admin', 'teacher'].includes(teacherSnap.data().role)) {
+        // Signed in with Firebase, but not an admin/teacher account
+        window.location.href = 'dashboard.html';
         return;
       }
 
       CURRENT_UID      = user.uid;
       CURRENT_USERNAME = teacherSnap.data().username || user.email;
+      const badge = document.querySelector('.admin-nav-badge span');
+      if (badge) badge.textContent = `${teacherSnap.data().role.toUpperCase()} · ${CURRENT_USERNAME}`;
 
       initTabs();
       initHamburger();

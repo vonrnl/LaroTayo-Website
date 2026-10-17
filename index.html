@@ -228,9 +228,9 @@
         <p>Celebrates the games passed down through generations.</p>
       </div>
       <div class="feat reveal">
-        <span class="material-symbols-rounded feat-icon">child_care</span>
-        <h4>Kid-Friendly</h4>
-        <p>Bright visuals designed for ages 9 to 12.</p>
+        <span class="material-symbols-rounded feat-icon">palette</span>
+        <h4>Colorful Visuals</h4>
+        <p>Bright, cheerful graphics that make every game fun to look at.</p>
       </div>
       <div class="feat reveal">
         <span class="material-symbols-rounded feat-icon">group</span>
@@ -289,18 +289,23 @@
     </div>
     <div class="req-grid">
       <div class="req-card reveal">
-        <div class="req-row"><span>Android</span></div>
-        <div class="req-row"><span>RAM</span><span>2 GB</span></div>
-        <div class="req-row"><span>Storage</span><span>400 mb</span></div>
-        <div class="req-row"><span>FPS</span><span>30 FPS</span></div>
+        <h4>Minimum</h4>
+        <div class="req-row"><span>Android</span><span>7.1 or higher</span></div>
+        <div class="req-row"><span>Processor</span><span>64-bit (ARM64) quad-core</span></div>
+        <div class="req-row"><span>RAM</span><span>3 GB</span></div>
+        <div class="req-row"><span>Storage</span><span>500 MB free</span></div>
       </div>
       <div class="req-card reveal">
-        <div class="req-row"><span>Android</span></div>
-        <div class="req-row"><span>RAM</span><span>4 GB</span></div>
-        <div class="req-row"><span>Storage</span><span>500 mb</span></div>
-        <div class="req-row"><span>FPS</span><span>60 FPS</span></div>
+        <h4>Recommended</h4>
+        <div class="req-row"><span>Android</span><span>10 or higher</span></div>
+        <div class="req-row"><span>Processor</span><span>64-bit (ARM64) octa-core</span></div>
+        <div class="req-row"><span>RAM</span><span>4 GB or more</span></div>
+        <div class="req-row"><span>Storage</span><span>1 GB free</span></div>
       </div>
     </div>
+    <p class="reveal" style="text-align:center;margin-top:18px;font-size:0.85rem;color:#6A8AA0;font-weight:700;">
+      An internet connection is needed to log in and save your progress.
+    </p>
   </section>
 
   <!-- DOWNLOAD -->
@@ -318,55 +323,18 @@
     </div>
   </section>
 
-  <!-- ROLE CHOICE MODAL -->
+  <!-- LOGIN MODAL (students + teachers/admins) -->
   <div id="login" class="modal-wrap">
     <div class="modal">
       <a href="#" class="modal-close">✕</a>
-      <span class="material-symbols-rounded modal-icon" style="font-size: 2.5rem;">groups</span>
-      <h3>Login As</h3>
-      <p>Choose how you want to login</p>
-      <div class="role-btns">
-        <a href="#admin-login" class="role-btn admin">
-          <span class="material-symbols-rounded modal-icon"style="font-size: 2.5rem;">person_shield</span>
-          Admin
-        </a>
-        <a href="#student-login" class="role-btn student">
-          <span class="material-symbols-rounded modal-icon"style="font-size: 2.5rem;">person_4</span>
-          Student
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN LOGIN MODAL -->
-  <div id="admin-login" class="modal-wrap">
-    <div class="modal modal-admin">
-      <a href="#login" class="modal-close">✕</a>
-      <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_shield</span>
-      <h3>Admin Login</h3>
-      <p>Sign in to access the Teacher Panel</p>
-      <input type="email" id="admin-username" placeholder="Email" autocomplete="off" />
-      <input type="password" id="admin-password" placeholder="Password" />
-      <p id="admin-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
-      <button class="btn-orange full" id="admin-login-btn" style="background:var(--text);border-color:#0d1f3c;box-shadow:0 5px 0 #0d1f3c;">Sign In</button>
-      <small><a href="#login">← Back</a></small>
-    </div>
-  </div>
-
-  <!-- STUDENT LOGIN MODAL -->
-  <div id="student-login" class="modal-wrap">
-    <div class="modal">
-      <a href="#login" class="modal-close">✕</a>
       <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_4</span>
-      <h3>Student Login</h3>
-      <p>Sign in to save your progress</p>
-      <input type="email" id="student-email" placeholder="Email" autocomplete="off" />
-      <input type="password" id="student-password" placeholder="Password" />
-      <p id="student-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
-      <button class="btn-orange full" id="student-login-btn">Login</button>
+      <h3>Login</h3>
+      <p>Sign in to continue</p>
+      <input type="email" id="login-email" placeholder="Email" autocomplete="off" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <p id="login-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
+      <button class="btn-orange full" id="login-btn">Login</button>
       <small>Don't have an account? <a href="#registration">Sign up</a></small>
-      <div class="modal-divider">or</div>
-      <small><a href="#login">← Back</a></small>
     </div>
   </div>
 
@@ -385,7 +353,7 @@
         <option value="">— Select your teacher —</option>
       </select>
       <button class="btn-orange full" id="register-btn">Sign up</button>
-      <small>Already have an account? <a href="#student-login">Login</a></small>
+      <small>Already have an account? <a href="#login">Login</a></small>
     </div>
   </div>
 
