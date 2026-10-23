@@ -18,7 +18,13 @@
   --white: #fff;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  font-size: 110%;   /* slightly bigger text everywhere (default is 100%) */
+}
+@media (max-width: 600px) {
+  html { font-size: 105%; }   /* a smaller bump on phones so layouts don't break */
+}
 
 body {
   font-family: 'Nunito', sans-serif;
@@ -423,6 +429,10 @@ section { padding: 80px 24px; }
 .cards-grid:last-of-type {
   margin-bottom: 0;
 }
+
+#trailer { scroll-margin-top: 90px; } /* keeps the trailer heading clear of the fixed navbar */
+
+.games-subhead.gap-top { margin-top: 56px; }
 
 .games-subhead {
   display: flex;
@@ -1015,7 +1025,8 @@ section { padding: 80px 24px; }
 }
 
 .gallery-featured img,
-.gallery-featured video {
+.gallery-featured video,
+.gallery-featured iframe {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
@@ -1325,4 +1336,102 @@ footer p + p { margin-top: 6px; }
   }
   .btn-orange:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--orange-dark); }
   .btn-green:active  { transform: translateY(3px); box-shadow: 0 2px 0 var(--green-dark); }
+}
+
+/* ---- SCREENSHOTS GRID ---- */
+.section-head.gap-top-lg { margin-top: 80px; }
+
+.shots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.shot {
+  padding: 0;
+  border: 3px solid #b3d4f0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e0f0ff;
+  cursor: zoom-in;
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 6px 18px rgba(43,127,212,0.12);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.shot img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shot:hover {
+  transform: translateY(-4px);
+  border-color: var(--orange);
+  box-shadow: 0 10px 24px rgba(43,127,212,0.22);
+}
+
+@media (max-width: 800px) { .shots-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 460px) { .shots-grid { grid-template-columns: 1fr; } }
+
+/* ---- GAME HISTORY POPUP ---- */
+.card-clickable { cursor: pointer; }
+.card-clickable:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+
+.card-hint {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7e5b45;
+  opacity: 0.85;
+}
+
+.history-popup {
+  background: #FAE9A3 !important;
+  border: 8px solid #826c57 !important;
+  border-radius: 22px !important;
+  box-shadow: 0 0 0 3px #5f4a3b, 0 9px 0 3px #4a382d !important;
+}
+.history-title {
+  font-family: 'Fredoka One', cursive !important;
+  color: #1A3A5C !important;
+}
+.history-origin {
+  display: inline-block;
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 50px;
+  background: var(--orange);
+  color: #fff;
+  margin-bottom: 12px;
+}
+.history-body { text-align: left; }
+.history-body p {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.7;
+  color: #4A6A8A;
+  margin: 0 0 10px;
+}
+.history-btn {
+  font-family: 'Fredoka One', cursive !important;
+  background: var(--orange) !important;
+  border-radius: 50px !important;
+}
+
+/* ---- TRAILER (YouTube embed) ---- */
+.gallery-featured iframe { border: 0; }
+.trailer-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.3rem;
+  color: #2B7FD4;
 }

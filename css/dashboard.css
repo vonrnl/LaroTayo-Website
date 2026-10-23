@@ -390,6 +390,8 @@
   justify-content: center;
   cursor: pointer;
   color: #888;
+  font-size: 1.6rem;
+  line-height: 1;
   transition: background 0.2s;
 }
 
@@ -1392,7 +1394,7 @@
 
 
 /* ============================================================
-   HULIHIN ANG BABOY BEST TIME
+   HULIHIN ANG BIIK BEST TIME
    ============================================================ */
 
 .ach-time-result {
@@ -1457,7 +1459,7 @@
 
 
 /* ============================================================
-   HULIHIN ANG BABOY TIME VALUE
+   HULIHIN ANG BIIK TIME VALUE
    ============================================================ */
 
 .ach-time-result .ach-result-value {

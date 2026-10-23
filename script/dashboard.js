@@ -94,10 +94,10 @@ function showBio(text){
    STORY PROGRESS
    ============================================================ */
 // Matches the real story flow in Unity's StoryProgressManager.cs:
-// completedStage 0 = nothing done, 1 = Hulihin ang Baboy done,
+// completedStage 0 = nothing done, 1 = Hulihin ang Biik done,
 // 2 = Sipa done, 3 = Palosebo done, 4 = Luksong Baka done (all done).
 const STORY_CHAPTERS = [
-  { id: 1, title: 'Hulihin ang Baboy', blurb: 'Chase and catch the running pigs.' },
+  { id: 1, title: 'Hulihin ang Biik', blurb: 'Chase and catch the running pigs.' },
   { id: 2, title: 'Sipa',              blurb: 'Keep the sipa in the air for as long as you can.' },
   { id: 3, title: 'Palosebo',          blurb: 'Climb the slippery pole to win the prize.' },
   { id: 4, title: 'Luksong Baka',      blurb: 'Jump over the tallest cow in the village.' },
@@ -143,8 +143,8 @@ const ACHIEVEMENTS = [
 
   {
     id: 'hulihin_ang_baboy',
-    title: 'Hulihin ang Baboy',
-    desc: 'Unlocked by completing the Hulihin ang Baboy stage.'
+    title: 'Hulihin ang Biik',
+    desc: 'Unlocked by completing the Hulihin ang Biik stage.'
   },
 
   {
@@ -332,7 +332,7 @@ function renderAchievements(achievementData, chaptersCompleted = 0) {
 
 
       // ========================================================
-      // HULIHIN ANG BABOY
+      // HULIHIN ANG BIIK
       // Show BEST TIME
       // ========================================================
 
@@ -965,9 +965,7 @@ onAuthStateChanged(auth, async (user) => {
     me = { uid: user.uid, username: name, avatar: selectedAvatar };
 
     document.getElementById('dash-name').textContent = name;
-    document.getElementById('dash-email').textContent = email;
     document.getElementById('dash-header-name').textContent = name;
-    document.getElementById('dash-speech-name').textContent = name;
 
     // bio (saved on the student document; hidden when empty)
     showBio((typeof u.bio === 'string' ? u.bio : '').trim());
@@ -1087,7 +1085,6 @@ document.getElementById('ep-save').addEventListener('click', async()=>{
 
     document.getElementById('dash-name').textContent = nickname;
     document.getElementById('dash-header-name').textContent = nickname;
-    document.getElementById('dash-speech-name').textContent = nickname;
     applyAvatar(selectedAvatar);
     showBio(bio);
     if (me){ me.username = nickname; me.avatar = selectedAvatar; }

@@ -80,6 +80,7 @@
           Bringing the spirit of Filipino street games to the next generation.</p>
         <div class="hero-btns">
           <a href="#download" class="btn-orange">Download Laro Tayo</a>
+          <a href="#trailer" class="btn-ghost" id="watch-trailer-btn">▶ Watch Trailer</a>
         </div>
         <div class="genre-row">
           <span class="genre-label">Genre:</span>
@@ -124,7 +125,7 @@
         <span class="pill">Jump & dodge</span>
       </div>
       <div class="card pink reveal">
-        <h3>Hulihin ang Baboy</h3>
+        <h3>Hulihin ang Biik</h3>
         <p>Chase and catch the pig!</p>
         <span class="pill">Run & catch</span>
       </div>
@@ -160,43 +161,40 @@
 
 
 
-    <!-- SCREENSHOT GALLERY -->
-    <div class="gallery-viewer reveal" style="margin-top:52px;">
-      <div class="gallery-featured">
-        <!-- Video (shown by default) -->
-        <video id="featured-video" src="img/ftr.MOV"
-               autoplay muted loop playsinline controls></video>
+    <!-- TRAILER -->
+    <div class="games-subhead gap-top reveal" id="trailer">
+      <span class="material-symbols-rounded">movie</span>
+      <h3>Watch the Trailer</h3>
+    </div>
+    <div class="gallery-viewer reveal">
+      <!-- Paste your YouTube link inside data-youtube="" (watch, youtu.be, or shorts links all work) -->
+      <div class="gallery-featured" id="trailer-embed" data-youtube=""></div>
+    </div>
 
-        <!-- Image (shown when an image thumbnail is picked) -->
-        <img id="featured-img" src="" alt="Screenshot" style="display:none;" />
-
-        <button class="gallery-arrow left" id="gallery-prev" aria-label="Previous">&#8249;</button>
-        <button class="gallery-arrow right" id="gallery-next" aria-label="Next">&#8250;</button>
-      </div>
-      <div class="gallery-thumbs-row" id="gallery-thumbs">
-        <!-- Thumb 0 = the video. Its thumbnail is a still image. -->
-        <div class="gthumb active" data-index="0" data-src="img/pic15.png">
-          <img src="img/pic15.png" alt="Featured video" />
-        </div>
-        <div class="gthumb" data-index="1" data-src="img/pic13.png">
-          <img src="img/pic13.png" alt="Screenshot 2" />
-        </div>
-        <div class="gthumb" data-index="2" data-src="img/pic14.png">
-          <img src="img/pic14.png" alt="Screenshot 3" />
-        </div>
-        <div class="gthumb" data-index="3" data-src="img/pic19.jfif">
-          <img src="img/pic19.jfif" alt="Screenshot 4" />
-        </div>
-        <div class="gthumb" data-index="4" data-src="img/pic16.png">
-          <img src="img/pic16.png" alt="Screenshot 5" />
-        </div>
-        <div class="gthumb" data-index="5" data-src="img/pic17.png">
-          <img src="img/pic17.png" alt="Screenshot 6" />
-        </div>
-        <div class="gthumb" data-index="6" data-src="img/pic18.jfif">
-          <img src="img/pic18.jfif" alt="Screenshot 7" />
-        </div>
-      </div>
+    <!-- GAMEPLAY SCREENSHOTS -->
+    <div class="section-head gap-top-lg reveal">
+      <span class="tag">Gallery</span>
+      <h2>Screenshots</h2>
+    </div>
+    <div class="shots-grid" id="shots-grid">
+      <button class="shot reveal" type="button" aria-label="View screenshot 1">
+        <img src="img/pic13.png" alt="Gameplay screenshot 1" loading="lazy" />
+      </button>
+      <button class="shot reveal" type="button" aria-label="View screenshot 2">
+        <img src="img/pic14.png" alt="Gameplay screenshot 2" loading="lazy" />
+      </button>
+      <button class="shot reveal" type="button" aria-label="View screenshot 3">
+        <img src="img/pic16.png" alt="Gameplay screenshot 3" loading="lazy" />
+      </button>
+      <button class="shot reveal" type="button" aria-label="View screenshot 4">
+        <img src="img/pic17.png" alt="Gameplay screenshot 4" loading="lazy" />
+      </button>
+      <button class="shot reveal" type="button" aria-label="View screenshot 5">
+        <img src="img/pic20.png" alt="Gameplay screenshot 5" loading="lazy" />
+      </button>
+      <button class="shot reveal" type="button" aria-label="View screenshot 6">
+        <img src="img/pic21.png" alt="Gameplay screenshot 6" loading="lazy" />
+      </button>
     </div>
   </section>
 
@@ -273,9 +271,9 @@
       <!-- TEXT -->
       <div class="about-text reveal">
         <span class="tag">About the Game</span>
-        <h2>LARO TAYO</h2>
-        <p>Laro Tayo is a thesis project focuses on developing an educational game that digitally adapts a few traditional street games from the Philippines,
-           specifically targeted at children and students, and is designed for mobile devices. We create this game to keep our traditional filipino street games alive and give the new generation fun and exciting games</p>
+        <h2>WHAT IS LARO TAYO?</h2>
+        <p>Laro Tayo is a thesis project that develops an educational game digitally adapting traditional Filipino street games for children and students. Designed for mobile devices, it brings classic games such as Sipa, Luksong Baka, Patintero, and Palosebo to life on the screen, so that players can enjoy them anytime and anywhere.</p>
+        <p>Many of these games are slowly being forgotten as children spend more time on modern gadgets. We created Laro Tayo to keep our traditional street games alive and to give the new generation a fun and exciting way to discover them. Along the way, players learn the history and culture behind each game, play with their friends in multiplayer, and take part in a playful experience that celebrates what it means to grow up Filipino.</p>
       </div>
 
     </div>
@@ -291,16 +289,16 @@
       <div class="req-card reveal">
         <h4>Minimum</h4>
         <div class="req-row"><span>Android</span><span>7.1 or higher</span></div>
-        <div class="req-row"><span>Processor</span><span>64-bit (ARM64) quad-core</span></div>
         <div class="req-row"><span>RAM</span><span>3 GB</span></div>
         <div class="req-row"><span>Storage</span><span>500 MB free</span></div>
+        <div class="req-row"><span>Connection</span><span>Wi-Fi or mobile data</span></div>
       </div>
       <div class="req-card reveal">
         <h4>Recommended</h4>
         <div class="req-row"><span>Android</span><span>10 or higher</span></div>
-        <div class="req-row"><span>Processor</span><span>64-bit (ARM64) octa-core</span></div>
         <div class="req-row"><span>RAM</span><span>4 GB or more</span></div>
         <div class="req-row"><span>Storage</span><span>1 GB free</span></div>
+        <div class="req-row"><span>Connection</span><span>Wi-Fi or mobile data</span></div>
       </div>
     </div>
     <p class="reveal" style="text-align:center;margin-top:18px;font-size:0.85rem;color:#6A8AA0;font-weight:700;">
@@ -349,9 +347,6 @@
       <input type="email" id="reg-email" placeholder="Email: e.g. juan@email.com" />
       <input type="password" id="reg-password" placeholder="Password" />
       <input type="password" id="reg-confirm" placeholder="Confirm Password" />
-      <select id="reg-teacher" class="reg-teacher-select">
-        <option value="">— Select your teacher —</option>
-      </select>
       <button class="btn-orange full" id="register-btn">Sign up</button>
       <small>Already have an account? <a href="#login">Login</a></small>
     </div>
