@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Register Your School – Laro Tayo</title>
+  <meta name="description" content="Register your school on Laro Tayo to create student accounts and follow their progress in the game." />
+  <link rel="icon" href="img/logo.png" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/signup.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="logo-o">LARO TAYO</span>
+    </a>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html#home" class="nav-item">
+        <span class="material-symbols-rounded">home</span>
+        <span>HOME</span>
+      </a>
+      <a href="index.html#games" class="nav-item">
+        <span class="material-symbols-rounded">sports_esports</span>
+        <span>GAME</span>
+      </a>
+      <a href="index.html#features" class="nav-item">
+        <span class="material-symbols-rounded">auto_awesome</span>
+        <span>FEATURES</span>
+      </a>
+      <a href="index.html#about" class="nav-item">
+        <span class="material-symbols-rounded">info</span>
+        <span>ABOUT</span>
+      </a>
+      <a href="signup.html" class="nav-item">
+        <span class="material-symbols-rounded">how_to_reg</span>
+        <span>SIGN UP</span>
+      </a>
+      <a href="index.html#login" class="nav-item">
+        <span class="material-symbols-rounded">lock</span>
+        <span>LOGIN</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- PAGE HERO -->
+  <header class="su-hero">
+    <div class="su-hero-inner">
+      <h1>Register your school</h1>
+      <p>One school account lets you create game accounts for your students and follow how far they have played.</p>
+    </div>
+  </header>
+
+  <!-- SIGN UP -->
+  <main class="su-main">
+    <aside class="su-aside" aria-label="What a school account can do">
+      <h2>With a school account you can</h2>
+      <ul class="su-perks">
+        <li>
+          <span class="material-symbols-rounded">person_add</span>
+          <div>
+            <strong>Create student accounts</strong>
+            <p>Students do not sign up themselves. You set each username and password.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-rounded">groups</span>
+          <div>
+            <strong>Group students into sections</strong>
+            <p>Make a section for each class and move students between them.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-rounded">monitoring</span>
+          <div>
+            <strong>See story progress and badges</strong>
+            <p>Check which chapters each student finished and which badges they unlocked.</p>
+          </div>
+        </li>
+      </ul>
+      <p class="su-aside-note">After you register, we email a verification link. Open it before you log in.</p>
+    </aside>
+
+    <section class="modal su-card" aria-labelledby="su-title">
+      <div class="signup-head">
+        <span class="material-symbols-rounded signup-badge">school</span>
+        <h3 id="su-title">School Registration</h3>
+        <p>Create an account to get started</p>
+      </div>
+
+      <div class="signup-card">
+        <div class="field">
+          <label for="sch-name"><span class="material-symbols-rounded fi blue">person</span>Name</label>
+          <input type="text" id="sch-name" placeholder="Enter your full name" maxlength="60" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="sch-category"><span class="material-symbols-rounded fi purple">groups</span>Category</label>
+          <select id="sch-category" class="reg-select">
+            <option value="">Select category</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Principal">Principal</option>
+            <option value="School Administrator">School Administrator</option>
+            <option value="ICT Coordinator">ICT Coordinator</option>
+            <option value="Other">Other</option>
+          </select>
+          <small class="field-hint">Example: Teacher, Principal, etc.</small>
+        </div>
+
+        <div class="field">
+          <label for="sch-school"><span class="material-symbols-rounded fi teal">account_balance</span>Name of School</label>
+          <input type="text" id="sch-school" list="sch-school-list" placeholder="Type or pick your school" maxlength="80" autocomplete="off" />
+          <datalist id="sch-school-list"></datalist>
+        </div>
+
+        <div class="field">
+          <label for="sch-email"><span class="material-symbols-rounded fi red">mail</span>Email</label>
+          <input type="email" id="sch-email" placeholder="e.g. maria@school.edu.ph" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="sch-password"><span class="material-symbols-rounded fi yellow">lock</span>Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="sch-password" placeholder="At least 6 characters" autocomplete="new-password" />
+            <button type="button" class="pass-eye" data-toggle-pass="sch-password" aria-label="Show password">
+              <span class="material-symbols-rounded">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="sch-confirm"><span class="material-symbols-rounded fi yellow">lock_reset</span>Confirm Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="sch-confirm" placeholder="Type your password again" autocomplete="new-password" />
+            <button type="button" class="pass-eye" data-toggle-pass="sch-confirm" aria-label="Show password">
+              <span class="material-symbols-rounded">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="signup-divider"></div>
+
+        <label class="terms-row" for="sch-terms">
+          <input type="checkbox" id="sch-terms" />
+          <span>I agree to the <button type="button" class="terms-link" id="terms-link">Terms and Conditions</button> and <button type="button" class="terms-link" id="privacy-link">Privacy Policy</button>.</span>
+        </label>
+
+        <div class="signup-divider"></div>
+
+        <div class="pay-title"><span class="material-symbols-rounded fi purple">credit_card</span>Payment</div>
+        <div class="pay-group" role="radiogroup" aria-label="Payment method">
+          <label class="pay-opt"><input type="radio" name="sch-pay" value="GCash" /><span class="material-symbols-rounded">account_balance_wallet</span><span>GCash</span></label>
+        </div>
+        <p class="modal-note">Your payment method is saved for now. You won't be charged yet.</p>
+
+        <button class="btn-orange full" id="school-register-btn">Register</button>
+      </div>
+
+      <small class="signup-login">Already have an account? <a href="index.html#login">Login</a></small>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="ft-inner">
+      <div class="ft-brand">
+        <a href="index.html#home" class="ft-logo logo-o">LARO TAYO</a>
+        <p>An Interactive Educational Game for Preserving Filipino Traditional Street Games.</p>
+      </div>
+
+      <div class="ft-col">
+        <h5>Project</h5>
+        <ul>
+          <li>Erjohn Zaballa</li>
+          <li>Cyrel Labora</li>
+          <li>Miguel Canlas</li>
+          <li>Vhon Renel Dimapilis</li>
+          <li>Roi Tiongson</li>
+        </ul>
+      </div>
+
+      <div class="ft-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="index.html#home">Home</a></li>
+          <li><a href="index.html#games">Games</a></li>
+          <li><a href="index.html#features">Features</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#reviews">Ratings</a></li>
+          <li><a href="index.html#download">Download</a></li>
+          <li><a href="signup.html">Register School</a></li>
+          <li><a href="index.html#login">Sign In</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ft-bottom">
+      <span>&copy; 2026 Laro Tayo. All Rights Reserved.</span>
+      <span>Thesis Game Project</span>
+    </div>
+  </footer>
+
+  <script src="script/script.js"></script>
+  <script type="module" src="script/login.js"></script>
+</body>
+</html>

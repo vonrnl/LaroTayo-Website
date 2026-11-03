@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>School Admin – Laro Tayo</title>
+  <link rel="stylesheet" href="css/school-admin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="sa-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sa-sidebar" id="sa-sidebar">
+    <div class="sa-brand">
+      <span class="sa-logo">LARO TAYO</span>
+      <span class="sa-brand-sub">School Admin</span>
+      <span class="sa-school" id="sa-school-name">Your school</span>
+    </div>
+
+    <nav class="sa-menu">
+      <button class="sa-menu-btn active" data-tab="dashboard">
+        <span class="material-symbols-rounded">home</span><span>Dashboard</span>
+      </button>
+      <button class="sa-menu-btn" data-tab="sections">
+        <span class="material-symbols-rounded">groups</span><span>Sections</span>
+      </button>
+      <button class="sa-menu-btn" data-tab="students">
+        <span class="material-symbols-rounded">person</span><span>Students</span>
+        <span class="sa-count" id="nav-student-count">0</span>
+      </button>
+      <button class="sa-menu-btn" data-tab="settings">
+        <span class="material-symbols-rounded">settings</span><span>Settings</span>
+      </button>
+    </nav>
+
+    <button class="sa-logout" id="sa-logout">
+      <span class="material-symbols-rounded">logout</span><span>Logout</span>
+    </button>
+  </aside>
+  <div class="sa-scrim" id="sa-scrim"></div>
+
+  <div class="sa-main">
+    <!-- TOP BAR -->
+    <header class="sa-top">
+      <div class="sa-top-left">
+        <button class="sa-burger" id="sa-burger" aria-label="Open menu">
+          <span class="material-symbols-rounded">menu</span>
+        </button>
+        <h2 id="sa-page-title">Dashboard</h2>
+      </div>
+      <div class="sa-user">
+        <span class="sa-user-avatar" id="sa-user-initial">?</span>
+        <div class="sa-user-text">
+          <strong id="sa-user-name">School Admin</strong>
+          <span id="sa-user-role">School Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="sa-content">
+
+      <!-- DASHBOARD -->
+      <section class="sa-panel active" id="tab-dashboard">
+        <div class="sa-head">
+          <h1>Dashboard</h1>
+          <p id="dash-welcome">Here is a quick look at your school.</p>
+        </div>
+
+        <div class="sa-stats">
+          <div class="sa-stat blue"><span>Students</span><strong id="st-total">0</strong></div>
+          <div class="sa-stat green"><span>Active Accounts</span><strong id="st-active">0</strong></div>
+          <div class="sa-stat orange"><span>Sections</span><strong id="st-sections">0</strong></div>
+          <div class="sa-stat yellow"><span>No Section Yet</span><strong id="st-unassigned">0</strong></div>
+        </div>
+
+        <div class="sa-two">
+          <div class="sa-card">
+            <div class="sa-card-head"><h3>Sections</h3></div>
+            <ul class="sa-list" id="dash-sections"></ul>
+          </div>
+          <div class="sa-card">
+            <div class="sa-card-head"><h3>Recently Added Students</h3></div>
+            <div class="sa-table-wrap">
+              <table class="sa-table">
+                <thead><tr><th>Name</th><th>Section</th><th>Joined</th></tr></thead>
+                <tbody id="dash-recent"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTIONS -->
+      <section class="sa-panel" id="tab-sections">
+        <div class="sa-head">
+          <h1>Create Section</h1>
+          <p>Add a new section and assign students to it.</p>
+        </div>
+
+        <div class="sa-card sa-pad">
+          <div class="sa-form-row">
+            <div class="sa-field grow">
+              <label for="sec-name">Section Name</label>
+              <input type="text" class="sa-input" id="sec-name" placeholder="e.g. Grade 4 - Section A" maxlength="40" autocomplete="off" />
+            </div>
+            <div class="sa-field grow">
+              <label for="sec-grade">Grade Level (Optional)</label>
+              <select class="sa-select" id="sec-grade">
+                <option value="">Select grade level</option>
+                <option>Grade 1</option>
+                <option>Grade 2</option>
+                <option>Grade 3</option>
+                <option>Grade 4</option>
+                <option>Grade 5</option>
+                <option>Grade 6</option>
+              </select>
+            </div>
+            <button class="sa-btn orange" id="create-section-btn">Create Section</button>
+          </div>
+        </div>
+
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div>
+              <h3>Students in Section</h3>
+              <p class="sa-sub">Pick a section to see its students. Use Assign to move a student.</p>
+            </div>
+            <div class="sa-tools">
+              <select class="sa-select" id="section-filter"><option value="">All students</option></select>
+              <button class="sa-mini red" id="delete-section-btn" hidden>Delete Section</button>
+              <input type="text" class="sa-input sa-search" id="section-search" placeholder="Search student..." />
+            </div>
+          </div>
+          <div class="sa-table-wrap">
+            <table class="sa-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Section</th><th>Grade Level</th><th>Date Joined</th><th>Action</th></tr>
+              </thead>
+              <tbody id="section-students-body"></tbody>
+            </table>
+          </div>
+          <p class="sa-foot" id="section-students-count"></p>
+        </div>
+      </section>
+
+      <!-- STUDENTS -->
+      <section class="sa-panel" id="tab-students">
+        <div class="sa-head">
+          <h1>Students</h1>
+          <p>Create game accounts for your students and check their progress.</p>
+        </div>
+
+        <div class="sa-card sa-pad">
+          <h3 class="sa-form-title">Register Student</h3>
+          <div class="sa-form-row">
+            <div class="sa-field grow">
+              <label for="reg-username">Username</label>
+              <input type="text" class="sa-input" id="reg-username" placeholder="e.g. juan_dela_cruz" maxlength="30" autocomplete="off" />
+            </div>
+            <div class="sa-field grow">
+              <label for="reg-email">Email</label>
+              <input type="email" class="sa-input" id="reg-email" placeholder="e.g. juan@school.edu.ph" autocomplete="off" />
+            </div>
+            <div class="sa-field grow">
+              <label for="reg-password">Password</label>
+              <input type="password" class="sa-input" id="reg-password" placeholder="At least 6 characters" autocomplete="new-password" />
+            </div>
+            <div class="sa-field grow">
+              <label for="reg-section">Section (Optional)</label>
+              <select class="sa-select" id="reg-section"><option value="">No section (assign later)</option></select>
+            </div>
+            <button class="sa-btn orange" id="register-student-btn">Register Student</button>
+          </div>
+        </div>
+
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div>
+              <h3>My Students</h3>
+              <p class="sa-sub">Student accounts you created for the game.</p>
+            </div>
+            <div class="sa-tools">
+              <input type="text" class="sa-input sa-search" id="student-search" placeholder="Search by name or email..." />
+            </div>
+          </div>
+          <div class="sa-table-wrap">
+            <table class="sa-table">
+              <thead>
+                <tr><th>#</th><th>Name</th><th>Email</th><th>Section</th><th>Grade Level</th><th>Date Joined</th><th>Action</th></tr>
+              </thead>
+              <tbody id="students-body"></tbody>
+            </table>
+          </div>
+          <p class="sa-foot" id="students-count"></p>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="sa-panel" id="tab-settings">
+        <div class="sa-head">
+          <h1>Settings</h1>
+          <p>Your account details and password.</p>
+        </div>
+        <div class="sa-two">
+          <div class="sa-card sa-pad">
+            <h3 class="sa-form-title">My School Account</h3>
+            <dl class="sa-info">
+              <dt>Name</dt><dd id="pf-name">—</dd>
+              <dt>Category</dt><dd id="pf-category">—</dd>
+              <dt>School</dt><dd id="pf-school">—</dd>
+              <dt>Email</dt><dd id="pf-email">—</dd>
+              <dt>Payment method</dt><dd id="pf-payment">—</dd>
+            </dl>
+          </div>
+          <div class="sa-card sa-pad">
+            <h3 class="sa-form-title">Change Password</h3>
+            <div class="sa-stack">
+              <div class="sa-field">
+                <label for="cur-pass">Current Password</label>
+                <input type="password" class="sa-input" id="cur-pass" placeholder="Current password" autocomplete="current-password" />
+              </div>
+              <div class="sa-field">
+                <label for="new-pass">New Password</label>
+                <input type="password" class="sa-input" id="new-pass" placeholder="New password" autocomplete="new-password" />
+              </div>
+              <div class="sa-field">
+                <label for="conf-pass">Confirm New Password</label>
+                <input type="password" class="sa-input" id="conf-pass" placeholder="Confirm new password" autocomplete="new-password" />
+              </div>
+              <button class="sa-btn orange" id="change-pass-btn">Update Password</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- STUDENT PROGRESS MODAL -->
+  <div class="modal-overlay" id="progress-modal-overlay">
+    <div class="modal-card modal-wide" id="progress-modal">
+      <div class="modal-header">
+        <h3 id="progress-modal-title">Student Progress</h3>
+        <button class="modal-close-btn" id="progress-close-btn">Close</button>
+      </div>
+      <div class="modal-body" id="progress-modal-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="script/school-admin.js"></script>
+</body>
+</html>

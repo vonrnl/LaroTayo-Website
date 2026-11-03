@@ -4,173 +4,160 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Admin Panel – Laro Tayo</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/school-admin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="admin-body">
+<body class="sa-body">
 
-  <!-- TOP NAVBAR -->
-  <nav class="admin-nav">
-    <a href="index.html" class="logo">
-      <span class="logo-o">LARO TAYO</span>
-    </a>
-    <div class="admin-nav-tabs" id="admin-nav-tabs">
-      <button class="admin-tab-btn active" data-tab="users">
-        <span>Users</span>
-        <span class="tab-count" id="user-count-badge">0</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="register">
-        <span>Register</span>
-      </button>
-      <button class="admin-tab-btn" data-tab="settings">
-        <span>Settings</span>
-      </button>
+  <aside class="sa-sidebar" id="sa-sidebar">
+    <div class="sa-brand">
+      <span class="sa-logo">LARO TAYO</span>
+      <span class="sa-brand-sub">Website Admin</span>
+      <span class="sa-school">Owner</span>
     </div>
-    <div class="admin-nav-right">
-      <div class="admin-nav-badge">
-        <span>ADMIN</span>
-      </div>
-      <button class="admin-logout-btn" id="admin-logout">
-        Logout
-      </button>
-      <button class="admin-hamburger" id="admin-hamburger">
-        Menu
-      </button>
-    </div>
-  </nav>
+    <nav class="sa-menu">
+      <button class="sa-menu-btn active" data-tab="dashboard"><span class="material-symbols-rounded">home</span><span>Dashboard</span></button>
+      <button class="sa-menu-btn" data-tab="schools"><span class="material-symbols-rounded">school</span><span>Schools</span><span class="sa-count" id="nav-school-count">0</span></button>
+      <button class="sa-menu-btn" data-tab="payments"><span class="material-symbols-rounded">payments</span><span>Payments</span></button>
+      <button class="sa-menu-btn" data-tab="reports"><span class="material-symbols-rounded">bar_chart</span><span>Reports</span></button>
+      <button class="sa-menu-btn" data-tab="settings"><span class="material-symbols-rounded">settings</span><span>Settings</span></button>
+    </nav>
+    <button class="sa-logout" id="admin-logout"><span class="material-symbols-rounded">logout</span><span>Logout</span></button>
+  </aside>
+  <div class="sa-scrim" id="sa-scrim"></div>
 
-  <!-- MOBILE DROPDOWN MENU -->
-  <div class="admin-mobile-menu" id="admin-mobile-menu">
-    <button class="admin-tab-btn active" data-tab="users">
-      Users
-    </button>
-    <button class="admin-tab-btn" data-tab="register">
-      Register
-    </button>
-    <button class="admin-tab-btn" data-tab="settings">
-      Settings
-    </button>
-  </div>
+  <div class="sa-main">
+    <header class="sa-top">
+      <div class="sa-top-left">
+        <button class="sa-burger" id="sa-burger" aria-label="Open menu"><span class="material-symbols-rounded">menu</span></button>
+        <h2 id="sa-page-title">Dashboard</h2>
+      </div>
+      <div class="sa-user">
+        <span class="sa-user-avatar" id="sa-user-initial">?</span>
+        <div class="sa-user-text"><strong id="sa-user-name">Admin</strong><span>Website Admin</span></div>
+      </div>
+    </header>
 
-  <main class="admin-main">
+    <main class="sa-content">
 
-    <!-- STUDENTS TAB -->
-    <div class="admin-tab-panel active" id="tab-users">
-      <div class="admin-page-header">
-        <div>
-          <h1>Registered Users</h1>
-          <p>View and manage all registered user accounts.</p>
+      <!-- DASHBOARD -->
+      <section class="sa-panel active" id="tab-dashboard">
+        <div class="sa-head"><h1>Dashboard</h1><p>A quick look at all schools on Laro Tayo.</p></div>
+        <div class="sa-stats">
+          <div class="sa-stat blue"><span>Schools</span><strong id="st-schools">0</strong></div>
+          <div class="sa-stat green"><span>Paid Schools</span><strong id="st-paid">0</strong></div>
+          <div class="sa-stat orange"><span>Unpaid / Expired</span><strong id="st-unpaid">0</strong></div>
+          <div class="sa-stat yellow"><span>Students</span><strong id="st-students">0</strong></div>
         </div>
-      </div>
-      <div class="admin-toolbar">
-        <div class="admin-search-wrap">
-          <input type="text" id="user-search" class="admin-search" placeholder="Search by name or email..." />
+        <div class="sa-two">
+          <div class="sa-card">
+            <div class="sa-card-head"><h3>Newest Schools</h3></div>
+            <div class="sa-table-wrap"><table class="sa-table">
+              <thead><tr><th>School</th><th>Admin</th><th>Joined</th></tr></thead>
+              <tbody id="dash-schools"></tbody>
+            </table></div>
+          </div>
+          <div class="sa-card">
+            <div class="sa-card-head"><h3>Recent Payments</h3></div>
+            <div class="sa-table-wrap"><table class="sa-table">
+              <thead><tr><th>School</th><th>Amount</th><th>Date</th></tr></thead>
+              <tbody id="dash-payments"></tbody>
+            </table></div>
+          </div>
         </div>
-      </div>
-      <div class="admin-table-card">
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="users-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- REGISTER TAB -->
-    <div class="admin-tab-panel" id="tab-register">
-      <div class="admin-page-header">
-        <div>
-          <h1>Register User</h1>
-          <p>Create a new user account.</p>
+      <!-- SCHOOLS -->
+      <section class="sa-panel" id="tab-schools">
+        <div class="sa-head"><h1>Schools</h1><p>Every school admin account, their students, and payment status.</p></div>
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div><h3>All Schools</h3></div>
+            <div class="sa-tools"><input type="text" class="sa-input sa-search" id="school-search" placeholder="Search school, name or email..." /></div>
+          </div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>#</th><th>School</th><th>Admin</th><th>Email</th><th>Students</th><th>Access</th><th>Joined</th><th>Action</th></tr></thead>
+            <tbody id="schools-body"></tbody>
+          </table></div>
+          <p class="sa-foot" id="schools-count"></p>
         </div>
-      </div>
-      <div class="register-form-card">
-        <div class="register-form-inner">
-          <div class="register-field">
-            <label class="register-label">
-              Username
-            </label>
-            <input type="text" class="admin-input-field" id="reg-username" placeholder="username" maxlength="30" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Email Address
-            </label>
-            <input type="email" class="admin-input-field" id="reg-email" placeholder="e.g. juan@email.com" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Password
-            </label>
-            <input type="password" class="admin-input-field" id="reg-password" placeholder="Minimum 6 characters" />
-          </div>
-          <div class="register-field">
-            <label class="register-label">
-              Confirm Password
-            </label>
-            <input type="password" class="admin-input-field" id="reg-confirm" placeholder="Re-enter password" />
-          </div>
-          <button class="admin-action-btn orange register-submit-btn" id="register-student-btn">
-            Register Student
-          </button>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- SETTINGS TAB -->
-    <div class="admin-tab-panel" id="tab-settings">
-      <div class="admin-page-header">
-        <div>
-          <h1>Settings</h1>
-          <p>Configure panel preferences.</p>
+      <!-- PAYMENTS -->
+      <section class="sa-panel" id="tab-payments">
+        <div class="sa-head"><h1>Payments</h1><p>Record payments and see every payment received.</p></div>
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div><h3>Payment History</h3><p class="sa-sub">Recording a payment gives that school access for the days you choose.</p></div>
+            <div class="sa-tools"><button class="sa-btn orange" id="record-payment-btn">Record Payment</button></div>
+          </div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>Date</th><th>School</th><th>Amount</th><th>Method</th><th>Reference</th><th>Access Until</th></tr></thead>
+            <tbody id="payments-body"></tbody>
+          </table></div>
+          <p class="sa-foot" id="payments-total"></p>
         </div>
-      </div>
-      <div class="settings-grid">
-        <div class="settings-card">
-          <h3>Change Password</h3>
-          <div class="settings-field">
-            <label>Current Password</label>
-            <input type="password" class="admin-input-field" id="cur-pass" placeholder="Current password" />
-          </div>
-          <div class="settings-field">
-            <label>New Password</label>
-            <input type="password" class="admin-input-field" id="new-pass" placeholder="New password" />
-          </div>
-          <div class="settings-field">
-            <label>Confirm New Password</label>
-            <input type="password" class="admin-input-field" id="conf-pass" placeholder="Confirm new password" />
-          </div>
-          <button class="admin-action-btn orange" id="change-pass-btn">
-            Update Password
-          </button>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="sa-panel" id="tab-reports">
+        <div class="sa-head"><h1>Reports</h1><p>Totals across all schools. Download any list as a CSV file.</p></div>
+        <div class="sa-stats">
+          <div class="sa-stat green"><span>Total Revenue</span><strong id="rp-revenue">₱0.00</strong></div>
+          <div class="sa-stat blue"><span>Paid Schools</span><strong id="rp-paid">0</strong></div>
+          <div class="sa-stat yellow"><span>Students</span><strong id="rp-students">0</strong></div>
+          <div class="sa-stat orange"><span>Avg Students / School</span><strong id="rp-avg">0</strong></div>
         </div>
-      </div>
-    </div>
+        <div class="sa-card">
+          <div class="sa-card-head"><h3>Last 6 Months</h3></div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>Month</th><th>New Schools</th><th>New Students</th><th>Revenue</th></tr></thead>
+            <tbody id="rp-months"></tbody>
+          </table></div>
+        </div>
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <h3>Students per School</h3>
+            <div class="sa-tools">
+              <button class="sa-mini blue" data-csv="schools">Schools CSV</button>
+              <button class="sa-mini blue" data-csv="students">Students CSV</button>
+              <button class="sa-mini blue" data-csv="payments">Payments CSV</button>
+            </div>
+          </div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>School</th><th>Admin</th><th>Students</th><th>Active</th><th>Access</th></tr></thead>
+            <tbody id="rp-schools"></tbody>
+          </table></div>
+        </div>
+      </section>
 
-  </main>
+      <!-- SETTINGS -->
+      <section class="sa-panel" id="tab-settings">
+        <div class="sa-head"><h1>Settings</h1><p>Your account details and password.</p></div>
+        <div class="sa-two">
+          <div class="sa-card sa-pad">
+            <h3 class="sa-form-title">My Account</h3>
+            <dl class="sa-info">
+              <dt>Name</dt><dd id="pf-name">—</dd>
+              <dt>Role</dt><dd>Website Admin</dd>
+              <dt>Email</dt><dd id="pf-email">—</dd>
+            </dl>
+          </div>
+          <div class="sa-card sa-pad">
+            <h3 class="sa-form-title">Change Password</h3>
+            <div class="sa-stack">
+              <div class="sa-field"><label for="cur-pass">Current Password</label><input type="password" class="sa-input" id="cur-pass" autocomplete="current-password" /></div>
+              <div class="sa-field"><label for="new-pass">New Password</label><input type="password" class="sa-input" id="new-pass" autocomplete="new-password" /></div>
+              <div class="sa-field"><label for="conf-pass">Confirm New Password</label><input type="password" class="sa-input" id="conf-pass" autocomplete="new-password" /></div>
+              <button class="sa-btn orange" id="change-pass-btn">Update Password</button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-  <!-- STUDENT PROGRESS MODAL -->
-  <div class="modal-overlay" id="progress-modal-overlay">
-    <div class="modal-card modal-wide" id="progress-modal">
-      <div class="modal-header">
-        <h3 id="progress-modal-title">Student Progress</h3>
-        <button class="modal-close-btn" id="progress-close-btn">
-          Close
-        </button>
-      </div>
-      <div class="modal-body" id="progress-modal-body"></div>
-    </div>
+    </main>
   </div>
 
   <script type="module" src="script/admin.js"></script>

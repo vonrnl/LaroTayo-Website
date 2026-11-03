@@ -18,9 +18,9 @@ const currentPage = window.location.pathname.split('/').pop();
 function setActiveByPage() {
   navItems.forEach(i => i.classList.remove('active'));
 
-  if (currentPage === 'about.html') {
+  if (currentPage === 'signup.html') {
     navItems.forEach(item => {
-      if (item.getAttribute('href') === 'about.html') item.classList.add('active');
+      if (item.getAttribute('href') === 'signup.html') item.classList.add('active');
     });
     return;
   }
@@ -160,6 +160,7 @@ if (hamburger && navLinks) {
   const GAME_HISTORY = {
     'sipa': {
       origin: 'Pre-colonial Philippines',
+      image: 'img/ab2.png',
       paragraphs: [
         'Sipa is one of the oldest traditional games in the Philippines and is often called the country\u2019s native kicking game. Filipinos were already playing it long before the Spanish arrived, and similar kick games exist across Southeast Asia, such as sepak takraw.',
         'It is traditionally played with a \u201Csipa\u201D: a small metal washer wrapped in colorful strips of paper, plastic, or cloth. Players use the foot (and sometimes the knee or heel) to keep it in the air for as long as possible.'
@@ -167,6 +168,7 @@ if (hamburger && navLinks) {
     },
     'luksong baka': {
       origin: 'Rural farming communities',
+      image: 'img/ab1.png',
       paragraphs: [
         'Luksong Baka is a close cousin of Luksong Tinik and is believed to come from farming communities, where children took inspiration from the cows and carabaos around them.',
         'One player crouches as the \u201Cbaka\u201D (cow) while the others take turns leaping over. The baka gets taller as the game goes on, so it tests agility and courage. Traditionally, jumpers may use their hands to push off the baka but must not touch it with their body.'
@@ -174,6 +176,7 @@ if (hamburger && navLinks) {
     },
     'hulihin ang biik': {
       origin: 'Fiesta and barrio games',
+      image: 'img/ab3.png',
       paragraphs: [
         'Chasing and catching a pig is a classic fiesta and barrio game. It is part of the Philippines\u2019 festive tradition of lively community contests, often alongside games like Palosebo.',
         'Players chase a pig (sometimes a greased one) around an open area, and the one who catches it can win it as a prize. It is as much about fun and laughter for the crowd as it is about speed and quick thinking.'
@@ -181,6 +184,7 @@ if (hamburger && navLinks) {
     },
     'palosebo': {
       origin: 'Spanish colonial period',
+      image: 'img/ab4.png',
       paragraphs: [
         'The name comes from the Spanish words \u201Cpalo\u201D (pole) and \u201Csebo\u201D (grease or tallow). Palosebo became a favorite at town fiestas, especially during the Spanish colonial period.',
         'A tall bamboo pole is greased and a prize is hung at the top, which can be anything from food to money. Players try to climb up, often working together, and the slippery pole makes it a real test of patience and teamwork.'
@@ -188,6 +192,7 @@ if (hamburger && navLinks) {
     },
     'patintero': {
       origin: 'Street and schoolyard play',
+      image: 'img/history/patintero.png',
       paragraphs: [
         'Patintero is one of the most popular street games in the Philippines and is also known as \u201Charangang taga\u201D in Tagalog and \u201Ctubigan\u201D in parts of the Visayas.',
         'Lines are drawn on the ground, and one team (the taggers) guards the lines while the other team tries to cross every line and return without being tagged. It is usually played at dusk with a big group of neighborhood kids, and it builds teamwork and speed.'
@@ -195,6 +200,7 @@ if (hamburger && navLinks) {
     },
     'bamsak': {
       origin: 'Hide-and-seek tradition',
+      image: 'img/history/bamsak.png',
       paragraphs: [
         'Bamsak belongs to the family of Filipino hide-and-seek style street games, like \u201Ctagu-taguan,\u201D that children have played in neighborhoods for generations.',
         'Players scatter and hide while the seekers try to find them, and the last player left standing wins. It needs no equipment, only a good hiding spot and quick feet.'
@@ -202,6 +208,7 @@ if (hamburger && navLinks) {
     },
     'sekyu base': {
       origin: 'Base-capturing street games',
+      image: 'img/history/sekyu-base.png',
       paragraphs: [
         'Sekyu Base is inspired by traditional Filipino base games like \u201Cagawan base,\u201D where two teams each protect a home base and try to capture the other team\u2019s.',
         'Players run, dodge, and tag opponents to defend their own base while sneaking into enemy territory. It is a game of strategy and teamwork that neighborhood kids have played in open streets and yards for generations.'
@@ -227,15 +234,26 @@ if (hamburger && navLinks) {
     card.appendChild(hint);
 
     const openHistory = () => {
+      const name = titleEl.textContent.trim();
       const body = info.paragraphs.map(p => '<p>' + p + '</p>').join('');
+      // Image on the left. If the file is missing, it is removed and the text fills the popup.
+      const figure = info.image
+        ? '<figure class="history-figure"><img class="history-img" src="' + info.image + '" alt="' + name + '" ' +
+          'onerror="this.closest(\'.history-layout\').classList.remove(\'has-image\'); this.closest(\'.history-figure\').remove();"></figure>'
+        : '';
       Swal.fire({
-        title: titleEl.textContent.trim(),
+        title: name,
         html:
-          '<span class="history-origin">' + info.origin + '</span>' +
-          '<div class="history-body">' + body + '</div>',
+          '<div class="history-layout' + (info.image ? ' has-image' : '') + '">' +
+            figure +
+            '<div class="history-text">' +
+              '<span class="history-origin">' + info.origin + '</span>' +
+              '<div class="history-body">' + body + '</div>' +
+            '</div>' +
+          '</div>',
         confirmButtonText: 'Got it!',
         showCloseButton: true,
-        width: 'min(92vw, 560px)',
+        width: info.image ? 'min(92vw, 820px)' : 'min(92vw, 560px)',
         customClass: {
           popup: 'history-popup',
           title: 'history-title',

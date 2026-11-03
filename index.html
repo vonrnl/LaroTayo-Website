@@ -3,32 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Laro Tayo</title>
+  <title>Laro Tayo – Filipino Street Games</title>
+  <meta name="description" content="Laro Tayo is an educational mobile game that brings Filipino street games like Sipa, Luksong Baka, Patintero and Palosebo to the next generation." />
+  <meta property="og:title" content="Laro Tayo – Filipino Street Games" />
+  <meta property="og:description" content="Play and learn traditional Filipino street games through an educational mobile game." />
+  <meta property="og:image" content="img/logo.png" />
+  <link rel="icon" href="img/logo.png" />
   <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    /* Fallback styling for the teacher-select dropdown in the registration
-       modal, in case style.css doesn't already style <select> elements the
-       same way it styles the <input> fields in .modal. Safe to delete this
-       block and add equivalent rules to style.css instead. */
-    .modal select.reg-teacher-select {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 2px solid #dde8f0;
-      font-family: 'Nunito', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #1A3A5C;
-      background: #fff;
-      cursor: pointer;
-    }
-    .modal select.reg-teacher-select:focus { outline: none; border-color: #2B7FD4; }
-  </style>
 </head>
 <body>
 
@@ -57,9 +41,9 @@
         <span class="material-symbols-rounded">info</span>
         <span>ABOUT</span>
       </a>
-      <a href="about.html" class="nav-item">
-        <span class="material-symbols-rounded">groups</span>
-        <span>TEAM</span>
+      <a href="signup.html" class="nav-item">
+        <span class="material-symbols-rounded">how_to_reg</span>
+        <span>SIGN UP</span>
       </a>
       <a href="#login" class="nav-item">
         <span class="material-symbols-rounded">lock</span>
@@ -74,28 +58,18 @@
     <div class="overlay"></div>
     <div class="hero-inner">
       <div class="hero-left">
-        <span class="badge">🇵🇭 Filipino Street Games</span>
-        <h1>Play &amp; Learn<br><span>Filipino Street</span><br><span>Games!</span></h1>
-        <p>Play and learn our traditional Filipino Street games through our immersive game.
+        <h1>Play &amp; Learn<br><span>Filipino Street Games!</span></h1>
+        <p>Play and learn our traditional Filipino street games through our immersive game.
           Bringing the spirit of Filipino street games to the next generation.</p>
-        <div class="hero-btns">
-          <a href="#download" class="btn-orange">Download Laro Tayo</a>
-          <a href="#trailer" class="btn-ghost" id="watch-trailer-btn">▶ Watch Trailer</a>
-        </div>
         <div class="genre-row">
           <span class="genre-label">Genre:</span>
           <span class="genre-pill">Multiplayer</span>
           <span class="genre-pill">Educational</span>
           <span class="genre-pill">Arcade</span>
         </div>
-      </div>
-      <div class="hero-right">
-        <div class="hero-img-box">
-          <img src="img/logo.png" alt="Laro Tayo Logo" class="hero-logo-img"
-            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div class="hero-logo-fallback">
-            <span class="logo-text">LARO TAY</span><span class="logo-o">O</span>
-          </div>
+        <div class="hero-btns">
+          <a href="#download" class="btn-orange">Download Game</a>
+          <a href="#trailer" class="btn-ghost" id="watch-trailer-btn">Watch Trailer</a>
         </div>
       </div>
     </div>
@@ -116,7 +90,7 @@
 
       <div class="card pink reveal">
         <h3>Sipa</h3>
-        <p>keep the object in the air and never let it touch the ground!</p>
+        <p>Keep the object in the air and never let it touch the ground!</p>
         <span class="pill">Kick & keep up</span>
       </div>
       <div class="card blue reveal">
@@ -233,7 +207,7 @@
       <div class="feat reveal">
         <span class="material-symbols-rounded feat-icon">group</span>
         <h4>Multiplayer</h4>
-        <p>Play with your friends through multiplayer. </p>
+        <p>Play with your friends through multiplayer.</p>
       </div>
     </div>
   </section>
@@ -247,7 +221,7 @@
 
         <!-- MAIN / FEATURED PHOTO -->
         <div class="gallery-main">
-          <img src="img/ab1.jfif" alt="Photo 1"
+          <img src="img/ab1.png" alt="Photo 1"
             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
           <div class="gallery-fallback"></div>
         </div>
@@ -255,12 +229,17 @@
         <!-- THUMBNAIL STRIP — replace src with your own images -->
         <div class="gallery-thumbs">
           <div class="gallery-thumb">
-            <img src="img/ab2.jfif" alt="Photo 2"
+            <img src="img/ab2.png" alt="Photo 2"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
             <div class="gallery-fallback small"></div>
           </div>
           <div class="gallery-thumb">
-            <img src="img/ab3.jfif" alt="Photo 3"
+            <img src="img/ab3.png" alt="Photo 3"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+            <div class="gallery-fallback small"></div>
+          </div>
+          <div class="gallery-thumb">
+            <img src="img/ab4.png" alt="Photo 4"
               onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
             <div class="gallery-fallback small"></div>
           </div>
@@ -279,31 +258,43 @@
     </div>
   </section>
 
-  <!-- REQUIREMENTS -->
-  <section id="requirements" class="light-bg">
+  <!-- REVIEWS & RATINGS -->
+  <section id="reviews" class="light-bg">
     <div class="section-head reveal">
-      <span class="tag">Device Requirements</span>
-      <h2>What Phone Do You Need?</h2>
+      <span class="tag">Community Feedback</span>
+      <h2>Game Ratings</h2>
+      <p>See how players rate their Laro Tayo experience.</p>
     </div>
-    <div class="req-grid">
-      <div class="req-card reveal">
-        <h4>Minimum</h4>
-        <div class="req-row"><span>Android</span><span>7.1 or higher</span></div>
-        <div class="req-row"><span>RAM</span><span>3 GB</span></div>
-        <div class="req-row"><span>Storage</span><span>500 MB free</span></div>
-        <div class="req-row"><span>Connection</span><span>Wi-Fi or mobile data</span></div>
+
+    <div class="rev-wrap">
+      <div class="rev-top">
+        <div class="rev-summary reveal">
+          <span class="rev-avg" id="rev-avg">0.0</span>
+          <span class="rev-stars" id="rev-avg-stars" aria-hidden="true"></span>
+          <span class="rev-count" id="rev-count">0 ratings</span>
+        </div>
+
+        <div class="rev-formcard reveal">
+          <h4>Rate Laro Tayo</h4>
+          <div id="rev-guest">
+            <p>Sign in to rate the game.</p>
+            <a href="#login" class="btn-orange">Sign In to Rate</a>
+          </div>
+          <form id="rev-form" hidden novalidate>
+            <div class="rev-picker" id="rev-picker" role="radiogroup" aria-label="Your rating">
+              <button type="button" data-v="1" aria-label="1 star">&#9733;</button>
+              <button type="button" data-v="2" aria-label="2 stars">&#9733;</button>
+              <button type="button" data-v="3" aria-label="3 stars">&#9733;</button>
+              <button type="button" data-v="4" aria-label="4 stars">&#9733;</button>
+              <button type="button" data-v="5" aria-label="5 stars">&#9733;</button>
+            </div>
+            <p id="rev-err" class="rev-err"></p>
+            <button type="submit" class="btn-orange" id="rev-submit">Submit Rating</button>
+          </form>
+        </div>
       </div>
-      <div class="req-card reveal">
-        <h4>Recommended</h4>
-        <div class="req-row"><span>Android</span><span>10 or higher</span></div>
-        <div class="req-row"><span>RAM</span><span>4 GB or more</span></div>
-        <div class="req-row"><span>Storage</span><span>1 GB free</span></div>
-        <div class="req-row"><span>Connection</span><span>Wi-Fi or mobile data</span></div>
-      </div>
+
     </div>
-    <p class="reveal" style="text-align:center;margin-top:18px;font-size:0.85rem;color:#6A8AA0;font-weight:700;">
-      An internet connection is needed to log in and save your progress.
-    </p>
   </section>
 
   <!-- DOWNLOAD -->
@@ -311,54 +302,156 @@
     <div class="section-head reveal">
       <span class="tag light">Get the App</span>
       <h2 class="white">Download Laro Tayo</h2>
-      <p class="light-text">Free sign-up. Just install and play!</p>
+      <p class="light-text">Get your account from your school, then install and play!</p>
     </div>
     <div class="dl-box reveal">
       <span class="material-symbols-rounded card-icon" style="font-size: 5rem;">stadia_controller</span>
-      <h3>Laro Tayo – Android APK</h3>
+      <h3>Laro Tayo – Android</h3>
       <a href="https://github.com/vonrnl/LaroTayo-Website/releases/download/v1.0/larotayo2026.zip" class="btn-green">PLAY NOW</a>
-      <small>Enable "Install from unknown sources" in settings first.</small>
+      <small>Downloads as a .zip file: unzip it, then install the APK inside. You may need to enable "Install from unknown sources" in settings first.</small>
     </div>
   </section>
 
-  <!-- LOGIN MODAL (students + teachers/admins) -->
+  <!-- LOGIN MODAL: one form for students and school admins -->
   <div id="login" class="modal-wrap">
     <div class="modal">
       <a href="#" class="modal-close">✕</a>
-      <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_4</span>
-      <h3>Login</h3>
-      <p>Sign in to continue</p>
-      <input type="email" id="login-email" placeholder="Email" autocomplete="off" />
-      <input type="password" id="login-password" placeholder="Password" />
-      <p id="login-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
-      <button class="btn-orange full" id="login-btn">Login</button>
-      <small>Don't have an account? <a href="#registration">Sign up</a></small>
-    </div>
-  </div>
 
-  <!-- REGISTRATION MODAL -->
-  <div id="registration" class="modal-wrap">
-    <div class="modal">
-      <a href="#" class="modal-close">✕</a>
-      <span class="modal-icon">✨</span>
-      <h3>Register Now</h3>
-      <p>Create your account</p>
-      <input type="text" id="reg-username" placeholder="Username" />
-      <input type="email" id="reg-email" placeholder="Email: e.g. juan@email.com" />
-      <input type="password" id="reg-password" placeholder="Password" />
-      <input type="password" id="reg-confirm" placeholder="Confirm Password" />
-      <button class="btn-orange full" id="register-btn">Sign up</button>
-      <small>Already have an account? <a href="#login">Login</a></small>
+      <!-- 1. LOGIN (one form for students and school admins) -->
+      <div class="auth-view" id="auth-login">
+        <span class="material-symbols-rounded modal-icon" style="font-size: 3rem;">person_4</span>
+        <h3>Welcome!</h3>
+        <p>Students and school admins sign in here</p>
+        <input type="email" id="login-email" placeholder="Email" autocomplete="username" />
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+        <p id="login-err" style="color:#e53935;font-size:0.82rem;font-weight:700;min-height:18px;margin-bottom:10px;"></p>
+        <button class="btn-orange full" id="login-btn">Login</button>
+        <small>Student? Ask your school to create your account.<br>School admin? <a href="signup.html">Sign up</a></small>
+      </div>
+
+      <!-- 2. SCHOOL ADMIN SIGN UP (single page) -->
+      <div class="auth-view signup-view" id="auth-signup" hidden>
+        <button type="button" class="auth-back" data-back>← Back</button>
+        <div class="signup-head">
+          <span class="material-symbols-rounded signup-badge">school</span>
+          <h3>School Registration</h3>
+          <p>Create an account to get started</p>
+        </div>
+
+        <div class="signup-card">
+          <div class="field">
+            <label for="sch-name"><span class="material-symbols-rounded fi blue">person</span>Name</label>
+            <input type="text" id="sch-name" placeholder="Enter your full name" maxlength="60" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="sch-category"><span class="material-symbols-rounded fi purple">groups</span>Category</label>
+            <select id="sch-category" class="reg-select">
+              <option value="">Select category</option>
+              <option value="Teacher">Teacher</option>
+              <option value="Principal">Principal</option>
+              <option value="School Administrator">School Administrator</option>
+              <option value="ICT Coordinator">ICT Coordinator</option>
+              <option value="Other">Other</option>
+            </select>
+            <small class="field-hint">Example: Teacher, Principal, etc.</small>
+          </div>
+
+          <div class="field">
+            <label for="sch-school"><span class="material-symbols-rounded fi teal">account_balance</span>Name of School</label>
+            <input type="text" id="sch-school" list="sch-school-list" placeholder="Type or pick your school" maxlength="80" autocomplete="off" />
+            <datalist id="sch-school-list"></datalist>
+          </div>
+
+          <div class="field">
+            <label for="sch-email"><span class="material-symbols-rounded fi red">mail</span>Email</label>
+            <input type="email" id="sch-email" placeholder="e.g. maria@school.edu.ph" autocomplete="off" />
+          </div>
+
+          <div class="field">
+            <label for="sch-password"><span class="material-symbols-rounded fi yellow">lock</span>Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="sch-password" placeholder="At least 6 characters" autocomplete="new-password" />
+              <button type="button" class="pass-eye" data-toggle-pass="sch-password" aria-label="Show password">
+                <span class="material-symbols-rounded">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="sch-confirm"><span class="material-symbols-rounded fi yellow">lock_reset</span>Confirm Password</label>
+            <div class="pass-wrap">
+              <input type="password" id="sch-confirm" placeholder="Type your password again" autocomplete="new-password" />
+              <button type="button" class="pass-eye" data-toggle-pass="sch-confirm" aria-label="Show password">
+                <span class="material-symbols-rounded">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="signup-divider"></div>
+
+          <label class="terms-row" for="sch-terms">
+            <input type="checkbox" id="sch-terms" />
+            <span>I agree to the <button type="button" class="terms-link" id="terms-link">Terms and Conditions</button> and <button type="button" class="terms-link" id="privacy-link">Privacy Policy</button>.</span>
+          </label>
+
+          <div class="signup-divider"></div>
+
+          <div class="pay-title"><span class="material-symbols-rounded fi purple">credit_card</span>Payment</div>
+          <div class="pay-group" role="radiogroup" aria-label="Payment method">
+            <label class="pay-opt"><input type="radio" name="sch-pay" value="GCash" /><span class="material-symbols-rounded">account_balance_wallet</span><span>GCash</span></label>
+            <label class="pay-opt"><input type="radio" name="sch-pay" value="Credit/Debit Card" /><span class="material-symbols-rounded">credit_card</span><span>Credit / Debit Card</span></label>
+            <label class="pay-opt"><input type="radio" name="sch-pay" value="PayPal" /><span class="material-symbols-rounded">payments</span><span>PayPal</span></label>
+          </div>
+          <p class="modal-note">Your payment method is saved for now. You won't be charged yet.</p>
+
+          <button class="btn-orange full" id="school-register-btn">Register</button>
+        </div>
+
+        <small class="signup-login">Already have an account? <a href="#" data-goto="login">Login</a></small>
+      </div>
     </div>
   </div>
 
   <!-- FOOTER -->
-  <footer>
-    <p>© Laro Tayo — Thesis Game Project</p>
-    <p>Preserving the Philippines traditional street games through gamification.</p>
+  <footer class="site-footer">
+    <div class="ft-inner">
+      <div class="ft-brand">
+        <a href="#home" class="ft-logo logo-o">LARO TAYO</a>
+        <p>An Interactive Educational Game for Preserving Filipino Traditional Street Games.</p>
+      </div>
+
+      <div class="ft-col">
+        <h5>Project</h5>
+        <ul>
+          <li>Erjohn Zaballa</li>
+          <li>Cyrel Labora</li>
+          <li>Miguel Canlas</li>
+          <li>Vhon Renel Dimapilis</li>
+          <li>Roi Tiongson</li>
+        </ul>
+      </div>
+
+      <div class="ft-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#games">Games</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#download">Download</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ft-bottom">
+      <span>&copy; 2026 Laro Tayo. All Rights Reserved.</span>
+      <span>Thesis Game Project</span>
+    </div>
   </footer>
 
   <script src="script/script.js"></script>
   <script type="module" src="script/login.js"></script>
+  <script type="module" src="script/reviews.js"></script>
 </body>
 </html>

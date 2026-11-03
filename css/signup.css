@@ -1,0 +1,134 @@
+/* ---- SIGN UP PAGE (signup.html) ----
+   The form itself reuses the .modal / .signup-card styles from style.css,
+   so this file only handles the page around it. */
+
+/* ---- HERO ---- */
+.su-hero {
+  background: linear-gradient(160deg, rgba(13,30,60,0.78) 0%, rgba(26,74,138,0.78) 100%),
+              url('../img/bg2.png') center/cover no-repeat;
+  padding: 130px 24px 120px;
+  text-align: center;
+}
+.su-hero-inner { max-width: 620px; margin: 0 auto; }
+.su-hero h1 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 6vw, 3.6rem);
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 14px;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+.su-hero p {
+  color: rgba(255,255,255,0.85);
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+/* ---- MAIN: perks on the left, form on the right ---- */
+.su-main {
+  max-width: 1040px;
+  margin: -72px auto 0;           /* the form card overlaps the hero */
+  padding: 0 24px 80px;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 500px);
+  gap: 48px;
+  align-items: start;
+}
+
+.su-aside { padding-top: 92px; }     /* sits below the hero, beside the card's header */
+.su-aside h2 {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: 1.7rem;
+  color: var(--text);
+  margin-bottom: 22px;
+}
+.su-perks { list-style: none; display: grid; gap: 22px; }
+.su-perks li { display: flex; gap: 16px; align-items: flex-start; }
+.su-perks .material-symbols-rounded {
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--blue);
+  font-size: 1.7rem;
+  box-shadow: 0 4px 0 #cfe3f2;
+}
+.su-perks strong { display: block; color: var(--text); font-size: 1rem; margin-bottom: 2px; }
+.su-perks p { color: #4A6A8A; font-size: 0.93rem; font-weight: 600; line-height: 1.6; }
+.su-aside-note {
+  margin-top: 28px;
+  padding: 12px 14px;
+  background: #FFF8E1;
+  border: 2px dashed var(--orange);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* ---- FORM CARD (the .modal look, but as a normal page block) ---- */
+.su-card.modal {
+  max-width: none;
+  width: 100%;
+  animation: none;
+  text-align: left;
+  padding: 28px 22px 22px;
+  background: linear-gradient(180deg, #DDF1FF 0%, #F3FAFF 100%);
+}
+.su-card .signup-login { display: block; text-align: center; margin-top: 14px; }
+
+/* ---- KEYBOARD FOCUS ---- */
+.su-card .pass-eye:focus-visible,
+.su-card .terms-link:focus-visible,
+.su-card .signup-login a:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+.su-card .pay-opt:has(input:focus-visible) { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 860px) {
+  .su-main { grid-template-columns: 1fr; gap: 36px; max-width: 560px; }
+  .su-aside { padding-top: 0; order: 2; }      /* form first on tablets and phones */
+  .su-card.modal { order: 1; }
+}
+@media (max-width: 600px) {
+  .su-hero { padding: 104px 16px 104px; }
+  .su-hero p { font-size: 0.93rem; }
+  .su-main { padding: 0 14px 56px; margin-top: -60px; }
+  .su-card.modal { padding: 22px 12px 18px; }
+  .su-aside h2 { font-size: 1.45rem; }
+}
+/* ---- HIDE SCROLLBARS (scrolling still works) ---- */
+html,
+body,
+* {
+  -ms-overflow-style: none;   /* old Edge / IE */
+  scrollbar-width: none;      /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
+}
+/* ---- HIDE SCROLLBARS (scrolling still works) ---- */
+html,
+body,
+* {
+  -ms-overflow-style: none;   /* old Edge / IE */
+  scrollbar-width: none;      /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
+}

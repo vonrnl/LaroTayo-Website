@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc,
-  collection, query, where, orderBy, limit, getDocs, onSnapshot, serverTimestamp
+  collection, query, where, limit, getDocs, getCountFromServer, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -55,18 +55,6 @@ function applyAvatar(id){
 /* ============================================================
    HELPERS
    ============================================================ */
-function animateCounter(el,target){
-  if(!el) return;
-  if(target===0){el.textContent=0;return;}
-  let start=0;
-  const step=target/(1200/16);
-  const timer=setInterval(()=>{
-    start+=step;
-    if(start>=target){el.textContent=target;clearInterval(timer);return;}
-    el.textContent=Math.floor(start);
-  },16);
-}
-
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -103,7 +91,7 @@ const STORY_CHAPTERS = [
   { id: 4, title: 'Luksong Baka',      blurb: 'Jump over the tallest cow in the village.' },
 ];
 
-function renderStory(completed){
+function renderStory(completed, started){
   const total = STORY_CHAPTERS.length;
   const done  = Math.max(0, Math.min(completed, total));
   const pct   = Math.round((done / total) * 100);
@@ -115,12 +103,12 @@ function renderStory(completed){
   document.getElementById('chapter-list').innerHTML = STORY_CHAPTERS.map(ch => {
     let state = 'locked', badge = 'Locked';
     if (ch.id <= done)        { state = 'done';    badge = 'Completed'; }
-    else if (ch.id === done+1){ state = 'current'; badge = 'Locked'; }
+    else if (ch.id === done+1){ state = 'current'; badge = started ? 'In progress' : 'Not started'; }
     return `<div class="chapter-card ${state}">
       <span class="chapter-num">Ch. ${ch.id}</span>
       <div class="chapter-info">
-        <h4>${ch.title}</h4>
-        <p>${state === 'locked' ? 'Complete the previous chapter first.' : ch.blurb}</p>
+        <h4>${escapeHtml(ch.title)}</h4>
+        <p>${state === 'locked' ? 'Complete the previous chapter first.' : escapeHtml(ch.blurb)}</p>
       </div>
       <span class="chapter-badge ${state === 'current' ? 'locked' : state}">
         ${badge}
@@ -131,536 +119,98 @@ function renderStory(completed){
 
 /* ============================================================
    PLAYER ACHIEVEMENTS
+   Sipa / Hulihin ang Biik / Luksong Baka are saved by Unity in
+   students/{uid}/achievements/{id}. 'Story Complete' comes from the
+   story saves, so it needs no Firestore document.
    ============================================================ */
-
 const ACHIEVEMENTS = [
-
-  {
-    id: 'sipa',
-    title: 'Sipa',
-    desc: 'Unlocked by completing the Sipa stage.'
-  },
-
-  {
-    id: 'hulihin_ang_baboy',
-    title: 'Hulihin ang Biik',
-    desc: 'Unlocked by completing the Hulihin ang Biik stage.'
-  },
-
-  {
-    id: 'luksong_baka',
-    title: 'Luksong Baka',
-    desc: 'Unlocked by completing the Luksong Baka stage.'
-  },
-
-  // Story-based badges: unlocked from story progress (storySaves),
-  // so no Firestore changes are needed. 'stage' = chapters required.
-  {
-    id: 'story_complete',
-    title: 'Story Complete',
-    desc: 'Unlocked by completing all story chapters.',
-    stage: STORY_CHAPTERS.length
-  }
-
+  { id: 'sipa',              title: 'Sipa',             desc: 'Unlocked by completing the Sipa stage.' },
+  { id: 'hulihin_ang_baboy', title: 'Hulihin ang Biik', desc: 'Unlocked by completing the Hulihin ang Biik stage.' },
+  { id: 'luksong_baka',      title: 'Luksong Baka',     desc: 'Unlocked by completing the Luksong Baka stage.' },
+  { id: 'story_complete',    title: 'Story Complete',   desc: 'Unlocked by completing all story chapters.', stage: STORY_CHAPTERS.length }
 ];
 
-
-// ============================================================
-// FORMAT MILLISECONDS
-// ============================================================
-
-function formatAchievementTime(milliseconds) {
-
-  if (
-    typeof milliseconds !== 'number' ||
-    !isFinite(milliseconds)
-  ) {
-    return '--:--.---';
-  }
-
-
-  const totalMilliseconds =
-    Math.max(
-      0,
-      Math.round(milliseconds)
-    );
-
-
-  const minutes =
-    Math.floor(
-      totalMilliseconds / 60000
-    );
-
-
-  const seconds =
-    Math.floor(
-      (totalMilliseconds % 60000) / 1000
-    );
-
-
-  const ms =
-    totalMilliseconds % 1000;
-
-
-  return (
-    String(minutes).padStart(2, '0') +
-    ':' +
-    String(seconds).padStart(2, '0') +
-    '.' +
-    String(ms).padStart(3, '0')
-  );
+function formatAchievementTime(ms) {
+  if (typeof ms !== 'number' || !isFinite(ms)) return '--:--.---';
+  const t = Math.max(0, Math.round(ms));
+  return String(Math.floor(t / 60000)).padStart(2, '0') + ':' +
+         String(Math.floor((t % 60000) / 1000)).padStart(2, '0') + '.' +
+         String(t % 1000).padStart(3, '0');
 }
-
-
-// ============================================================
-// GET BEST TIME
-//
-// First tries:
-//
-// bestTimeDisplay
-//
-// If that does not exist, it uses:
-//
-// bestTimeMs
-// ============================================================
 
 function getBestTime(data) {
-
-  if (!data) {
-    return '--:--.---';
-  }
-
-
-  // ----------------------------------------------------------
-  // Firebase already has formatted best time
-  // ----------------------------------------------------------
-
-  if (
-    typeof data.bestTimeDisplay === 'string' &&
-    data.bestTimeDisplay.trim() !== ''
-  ) {
-
-    return data.bestTimeDisplay.trim();
-
-  }
-
-
-  // ----------------------------------------------------------
-  // Fallback to milliseconds
-  // ----------------------------------------------------------
-
-  if (
-    typeof data.bestTimeMs === 'number'
-  ) {
-
-    return formatAchievementTime(
-      data.bestTimeMs
-    );
-
-  }
-
-
-  return '--:--.---';
+  if (!data) return '--:--.---';
+  if (typeof data.bestTimeDisplay === 'string' && data.bestTimeDisplay.trim() !== '') return data.bestTimeDisplay.trim();
+  return formatAchievementTime(data.bestTimeMs);
 }
 
-
-// ============================================================
-// RENDER ACHIEVEMENTS
-// ============================================================
+function resultBlock(label, value, small = '', extraClass = '') {
+  return `<div class="ach-result ${extraClass}">
+    <span class="ach-result-label">${label}</span>
+    <strong class="ach-result-value">${escapeHtml(value)}</strong>
+    ${small ? `<span class="ach-result-small">${escapeHtml(small)}</span>` : ''}
+  </div>`;
+}
 
 function renderAchievements(achievementData, chaptersCompleted = 0) {
-
-  const grid =
-    document.getElementById('ach-grid');
-
-
-  if (!grid) {
-
-    console.error(
-      'Achievement grid #ach-grid was not found.'
-    );
-
-    return;
-
-  }
-
+  const grid = document.getElementById('ach-grid');
+  if (!grid) return;
 
   let unlockedCount = 0;
-
-
-  grid.innerHTML =
-    ACHIEVEMENTS.map(achievement => {
-
-
-      // --------------------------------------------------------
-      // GET FIRESTORE DATA
-      // --------------------------------------------------------
-
-      const data =
-        achievementData.get(
-          achievement.id
-        );
-
-
-      // Achievement is unlocked when document exists
-      // and unlocked is not explicitly false.
-
-      // Luksong Baka only unlocks after a real win
-      // (Unity also saves failed runs with completed = false).
-      // Other badges keep the original rule.
-
-      const unlocked = achievement.stage
-        ? chaptersCompleted >= achievement.stage
-        : (!!data &&
-          (achievement.id === 'luksong_baka'
-            ? data.completed === true
-            : data.unlocked !== false));
-
-
-      if (unlocked) {
-
-        unlockedCount++;
-
-      }
-
-
-      // --------------------------------------------------------
-      // EXTRA INFORMATION
-      // --------------------------------------------------------
-
-      let extraInfo = '';
-
-
-      // ========================================================
-      // HULIHIN ANG BIIK
-      // Show BEST TIME
-      // ========================================================
-
-      if (
-        achievement.id ===
-        'hulihin_ang_baboy'
-      ) {
-
-        if (unlocked) {
-
-          const bestTime =
-            getBestTime(data);
-
-
-          extraInfo = `
-
-            <div class="ach-result ach-time-result">
-
-              <span class="ach-result-label">
-                Best Time
-              </span>
-
-              <strong class="ach-result-value">
-                ${escapeHtml(bestTime)}
-              </strong>
-
-            </div>
-
-          `;
-
-        }
-
-      }
-
-
-      // ========================================================
-      // SIPA
-      // Show BEST SCORE
-      // ========================================================
-
-      if (
-        achievement.id === 'sipa'
-      ) {
-
-        if (unlocked) {
-
-          const bestScore =
-            typeof data.bestScore === 'number'
-              ? data.bestScore
-              : 0;
-
-
-          extraInfo = `
-
-            <div class="ach-result">
-
-              <span class="ach-result-label">
-                Best Score
-              </span>
-
-              <strong class="ach-result-value">
-                ${bestScore}
-              </strong>
-
-            </div>
-
-          `;
-
-        }
-
-      }
-
-
-      // ========================================================
-      // LUKSONG BAKA
-      // Show BEST SCORE + BEST LEVEL
-      // ========================================================
-
-      if (
-        achievement.id ===
-        'luksong_baka'
-      ) {
-
-        if (unlocked) {
-
-          const bestScore =
-            typeof data.bestScore === 'number'
-              ? data.bestScore
-              : 0;
-
-
-          const bestLevel =
-            typeof data.bestLevel === 'number'
-              ? data.bestLevel
-              : 0;
-
-
-          extraInfo = `
-
-            <div class="ach-result">
-
-              <span class="ach-result-label">
-                Best Score
-              </span>
-
-              <strong class="ach-result-value">
-                ${bestScore}
-              </strong>
-
-              <span class="ach-result-small">
-                Best Level: ${bestLevel}
-              </span>
-
-            </div>
-
-          `;
-
-        }
-
-      }
-
-
-      // ========================================================
-      // STORY BADGES
-      // Show story progress
-      // ========================================================
-
-      if (achievement.stage && unlocked) {
-
-        extraInfo = `
-
-          <div class="ach-result">
-
-            <span class="ach-result-label">
-              Story Progress
-            </span>
-
-            <strong class="ach-result-value">
-              ${Math.min(chaptersCompleted, STORY_CHAPTERS.length)}/${STORY_CHAPTERS.length}
-            </strong>
-
-            <span class="ach-result-small">
-              chapters completed
-            </span>
-
-          </div>
-
-        `;
-
-      }
-
-
-      // --------------------------------------------------------
-      // CARD
-      // --------------------------------------------------------
-
-      return `
-
-        <div class="ach-card ${unlocked ? 'unlocked' : 'locked'}">
-
-
-          <h4>
-            ${achievement.title}
-          </h4>
-
-
-          <p>
-            ${achievement.desc}
-          </p>
-
-
-          ${extraInfo}
-
-
-          <span class="ach-status">
-
-            ${
-              unlocked
-                ? 'Unlocked'
-                : 'Locked'
-            }
-
-          </span>
-
-
-        </div>
-
-      `;
-
-    }).join('');
-
-
-  // ==========================================================
-  // BADGE COUNT
-  // ==========================================================
-
-  const countText =
-    document.getElementById(
-      'ach-count'
-    );
-
-
-  if (countText) {
-
-    countText.textContent =
-      unlockedCount +
-      ' of ' +
-      ACHIEVEMENTS.length +
-      ' badges unlocked';
-
-  }
-
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const data = achievementData.get(a.id);
+    // Luksong Baka needs a real win (Unity also saves failed runs with completed = false).
+    // Other Unity badges: a document that isn't marked unlocked:false. Story badge: chapters.
+    const unlocked = a.stage
+      ? chaptersCompleted >= a.stage
+      : !!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false);
+    if (unlocked) unlockedCount++;
+
+    let extra = '';
+    if (unlocked) {
+      if (a.id === 'hulihin_ang_baboy') extra = resultBlock('Best Time', getBestTime(data), '', 'ach-time-result');
+      else if (a.id === 'sipa')         extra = resultBlock('Best Score', String(num(data.bestScore)));
+      else if (a.id === 'luksong_baka') extra = resultBlock('Best Score', String(num(data.bestScore)), `Best Level: ${num(data.bestLevel)}`);
+      else if (a.stage)                 extra = resultBlock('Story Progress', `${Math.min(chaptersCompleted, STORY_CHAPTERS.length)}/${STORY_CHAPTERS.length}`, 'chapters completed');
+    }
+
+    return `<div class="ach-card ${unlocked ? 'unlocked' : 'locked'}">
+      <h4>${escapeHtml(a.title)}</h4>
+      <p>${escapeHtml(a.desc)}</p>
+      ${extra}
+      <span class="ach-status">${unlocked ? 'Unlocked' : 'Locked'}</span>
+    </div>`;
+  }).join('');
+
+  const countText = document.getElementById('ach-count');
+  if (countText) countText.textContent = `${unlockedCount} of ${ACHIEVEMENTS.length} badges unlocked`;
 }
-
-
-// ============================================================
-// LOAD ACHIEVEMENTS FROM FIRESTORE
-// ============================================================
 
 async function loadAchievements(uid, chaptersCompleted = 0) {
-
-  const achievementData =
-    new Map();
-
-
+  const achievementData = new Map();
   try {
-
-    // ----------------------------------------------------------
-    // Firestore:
-    //
-    // students/{uid}/achievements
-    // ----------------------------------------------------------
-
-    const snap =
-      await getDocs(
-
-        collection(
-          db,
-          'students',
-          uid,
-          'achievements'
-        )
-
-      );
-
-
-    // ----------------------------------------------------------
-    // Store the FULL document data.
-    //
-    // This is important!
-    //
-    // Before, your code only stored the achievement ID.
-    // Now we also keep:
-    //
-    // bestTimeDisplay
-    // bestTimeMs
-    // bestScore
-    // bestLevel
-    // completed
-    // etc.
-    // ----------------------------------------------------------
-
-    snap.forEach(documentSnapshot => {
-
-      const data =
-        documentSnapshot.data();
-
-
-      achievementData.set(
-        documentSnapshot.id,
-        data
-      );
-
-
-      console.log(
-        'Achievement loaded:',
-        documentSnapshot.id,
-        data
-      );
-
-    });
-
-
+    const snap = await getDocs(collection(db, 'students', uid, 'achievements'));
+    snap.forEach(d => achievementData.set(d.id, d.data()));
+  } catch (error) {
+    console.error('Could not read achievements:', error);
   }
-  catch (error) {
-
-    console.error(
-      'Could not read achievements:',
-      error
-    );
-
-  }
-
-
-  // ----------------------------------------------------------
-  // Show everything on dashboard
-  // ----------------------------------------------------------
-
-  renderAchievements(
-    achievementData,
-    chaptersCompleted
-  );
-
+  renderAchievements(achievementData, chaptersCompleted);
 }
-
-
 
 /* ============================================================
    LEADERBOARD RANK
-   Ranks the player against every user document by totalScore.
-   NOTE: there's no weekly-score field in the schema yet, so this
-   is an all-time rank, not a "this week" rank — add a
-   weeklyScore field (and reset it on a schedule) if you want a
-   real weekly leaderboard later.
+   All-time rank by totalScore. Counts the students with a higher
+   score on the server instead of downloading every student document.
+   (There is no weekly-score field yet, so this is not a weekly rank.)
    ============================================================ */
-async function loadRank(uid){
+async function loadRank(myScore){
   const pill = document.getElementById('rank-pill');
   const text = document.getElementById('rank-pill-text');
+  if (typeof myScore !== 'number' || !isFinite(myScore)){ pill.hidden = true; return; }
   try{
-    const snap = await getDocs(query(collection(db,'students'), orderBy('totalScore','desc')));
-    const ids = snap.docs.map(d => d.id);
-    const position = ids.indexOf(uid);
-    if (position === -1){ pill.hidden = true; return; }
-
-    const rank = position + 1;
-    text.textContent = rank === 1
-      ? `You're #1 overall!`
-      : `You're #${rank} overall`;
+    const higher = await getCountFromServer(query(collection(db,'students'), where('totalScore','>', myScore)));
+    const rank = higher.data().count + 1;
+    text.textContent = rank === 1 ? `You're #1 overall!` : `You're #${rank} overall`;
     pill.hidden = false;
   }catch(err){
     console.error('loadRank:', err);
@@ -680,8 +230,6 @@ const friendUids   = new Set();      // people I'm already friends with
 const outgoingUids = new Set();      // requests I sent that are still pending
 const incomingUids = new Set();      // requests waiting for me
 let lastResults = [];                // last search results, so we can re-render on state change
-let studentsCache   = null;          // cached students list used by search
-let studentsCacheAt = 0;             // when the cache was last loaded
 
 function friendState(uid){
   if (friendUids.has(uid))   return 'friend';
@@ -700,24 +248,18 @@ async function searchUsers(term){
   box.innerHTML = '<p class="fr-empty">Naghahanap…</p>';
 
   try{
-    // Load the students list (cached for a minute) and filter it here.
-    // This way search works for every account, even ones that have no
-    // 'usernameLower' field (e.g. created from the Unity game).
-    if (!studentsCache || Date.now() - studentsCacheAt > 60000){
-      const snap = await getDocs(collection(db,'students'));
-      studentsCache = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
-      studentsCacheAt = Date.now();
-    }
-
-    // case-insensitive match anywhere in the username (e.g. "jun" finds "Junjun")
-    lastResults = studentsCache
-      .filter(u => u.uid !== me.uid && (u.username || '').toLowerCase().includes(q))
-      .sort((a, b) => {
-        const an = (a.username || '').toLowerCase(), bn = (b.username || '').toLowerCase();
-        return (bn.startsWith(q) - an.startsWith(q)) || an.localeCompare(bn);
-      })
-      .slice(0, 10);
-
+    // Usernames that START with the search text (case-insensitive), 10 at most.
+    // Needs the 'usernameLower' field, which the dashboard fills in on each login.
+    const snap = await getDocs(query(
+      collection(db,'students'),
+      where('usernameLower','>=', q),
+      where('usernameLower','<=', q + '\uf8ff'),
+      limit(10)
+    ));
+    lastResults = snap.docs
+      .map(d => ({ uid: d.id, ...d.data() }))
+      .filter(u => u.uid !== me.uid)
+      .sort((a, b) => (a.usernameLower || '').localeCompare(b.usernameLower || ''));
     renderResults();
   }catch(err){
     console.error('Search error:', err);
@@ -1015,19 +557,15 @@ onAuthStateChanged(auth, async (user) => {
       console.error('Could not read storySaves:', e);
     }
 
-    const stats = {
-      chaptersCompleted: chaptersCompleted,
-      totalChapters:     STORY_CHAPTERS.length,
-      friendCount:       0
-    };
+    const stats = { chaptersCompleted, totalChapters: STORY_CHAPTERS.length };
     setTimeout(()=>{
       document.getElementById('stat-chapters').textContent = `${stats.chaptersCompleted}/${stats.totalChapters}`;
     },400);
 
-    renderStory(stats.chaptersCompleted);
+    renderStory(stats.chaptersCompleted, storyDocExists);
 
     loadAchievements(user.uid, stats.chaptersCompleted);
-    loadRank(user.uid);
+    loadRank(u.totalScore);
 
     // friends
     watchFriends();

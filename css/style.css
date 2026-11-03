@@ -7,6 +7,8 @@
 }
 
 :root {
+  --font-head: 'Lilita One', 'Fredoka One', cursive;   /* headings, buttons, big numbers */
+  --font-body: 'Poppins', 'Nunito', sans-serif;           /* normal text */
   --blue: #2B7FD4;
   --orange: #F4A234;
   --orange-dark: #D4851A;
@@ -20,14 +22,14 @@
 
 html {
   scroll-behavior: smooth;
-  font-size: 110%;   /* slightly bigger text everywhere (default is 100%) */
+  font-size: 95%;   /* overall text size: lower = smaller letters (100% is the browser default) */
 }
 @media (max-width: 600px) {
-  html { font-size: 105%; }   /* a smaller bump on phones so layouts don't break */
+  html { font-size: 92%; }   /* phones */
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   color: var(--text);
   background: var(--light);
 }
@@ -56,7 +58,7 @@ nav .logo {
 }
 
 .logo-o {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.8rem;
   color: var(--yellow);
   -webkit-text-stroke: 1.5px #1A3A5C;
@@ -93,7 +95,7 @@ nav .logo {
 }
 
 .nav-item span:not(.material-symbols-rounded) {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.62rem;
   letter-spacing: 1.5px;
   color: #888;
@@ -164,7 +166,7 @@ nav .logo {
   display: inline-block;
   background: var(--orange);
   color: var(--white);
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.8rem;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -175,7 +177,7 @@ nav .logo {
 }
 
 .hero-left h1 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: clamp(2.8rem, 5.5vw, 4.5rem);
   color: var(--white);
   line-height: 1.1;
@@ -204,7 +206,7 @@ nav .logo {
 .btn-orange {
   background: var(--orange);
   color: var(--white);
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1rem;
   padding: 12px 28px;
   border-radius: 50px;
@@ -223,7 +225,7 @@ nav .logo {
 .btn-ghost {
   background: transparent;
   color: var(--white);
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1rem;
   padding: 12px 28px;
   border-radius: 50px;
@@ -255,7 +257,7 @@ nav .logo {
 
 .stats strong {
   display: block;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.7rem;
   color: var(--yellow);
   line-height: 1;
@@ -276,7 +278,7 @@ nav .logo {
 }
 
 .genre-label {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   font-weight: 800;
   font-size: 1.1rem;
   color: var(--white);
@@ -287,7 +289,7 @@ nav .logo {
   background: #14497F;
   border: 3px solid #0B2E55;
   color: var(--white);
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.95rem;
   padding: 7px 20px;
@@ -351,7 +353,7 @@ section { padding: 80px 24px; }
 }
 
 .section-head h2 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   color: var(--text);
   margin-bottom: 10px;
@@ -369,7 +371,7 @@ section { padding: 80px 24px; }
   display: inline-block;
   background: var(--orange);
   color: var(--white);
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.78rem;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -449,7 +451,7 @@ section { padding: 80px 24px; }
 }
 
 .games-subhead h3 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: clamp(1.2rem, 2.6vw, 1.6rem);
   color: var(--text);
   text-align: center;
@@ -486,7 +488,7 @@ section { padding: 80px 24px; }
 .card:hover { transform: translateY(-5px); }
 
 .card h3 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.5rem;
   color: var(--text);
   margin-bottom: 8px;
@@ -502,7 +504,7 @@ section { padding: 80px 24px; }
 .pill {
   display: inline-block;
   margin-top: 14px;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.75rem;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -560,7 +562,7 @@ section { padding: 80px 24px; }
 }
 
 .feat h4 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.5rem;
   color: var(--white);
   margin-bottom: 10px;
@@ -628,7 +630,7 @@ section { padding: 80px 24px; }
 
 .gallery-thumbs {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -671,7 +673,7 @@ section { padding: 80px 24px; }
 .gallery-fallback.small { font-size: 1.8rem; }
 
 .about-text h2 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   color: var(--text);
   margin: 10px 0 12px;
@@ -697,11 +699,11 @@ section { padding: 80px 24px; }
   font-weight: 700;
 }
 
-/* ---- REQUIREMENTS ---- */
+/* ---- REVIEWS & RATINGS ---- */
 
-#requirements { position: relative; }
+#reviews { position: relative; }
 
-#requirements::before {
+#reviews::before {
   content: '';
   display: block;
   height: 6px;
@@ -710,43 +712,59 @@ section { padding: 80px 24px; }
   background: repeating-linear-gradient(90deg, var(--green) 0, var(--green) 20px, #90EE90 20px, #90EE90 40px);
 }
 
-.req-grid {
+.rev-wrap { max-width: 1000px; margin: 0 auto; }
+
+.rev-top {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr 2fr;
   gap: 20px;
-  max-width: 900px;
-  margin: 0 auto;
+  margin-bottom: 24px;
 }
 
-.req-card {
+.rev-summary,
+.rev-formcard {
   background: linear-gradient(160deg, #fff9e6, #fff3cc);
-  border: 4px solid var(--orange);
+  border: none;
   border-radius: 20px;
   padding: 24px 20px;
-  box-shadow: 0 5px 0 var(--orange-dark);
-  transition: transform 0.2s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
-.req-card:hover { transform: translateY(-4px); }
+.rev-summary { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.rev-avg { font-family: var(--font-head); font-size: 3.6rem; line-height: 1; color: var(--orange-dark); }
+.rev-stars { color: var(--orange); font-size: 1.5rem; letter-spacing: 3px; margin: 8px 0 4px; }
+.rev-stars .off { color: #d9d9d9; }
+.rev-count { font-size: 0.85rem; font-weight: 700; color: #6A8AA0; }
 
-.req-card h4 {
-  font-family: 'Fredoka One', cursive;
-  font-size: 1.05rem;
-  color: var(--text);
-  margin-bottom: 14px;
+.rev-formcard h4 { font-family: var(--font-head); font-size: 1.2rem; color: var(--text); margin-bottom: 6px; }
+.rev-formcard p { font-size: 0.9rem; font-weight: 600; color: #6A8AA0; margin-bottom: 14px; }
+.rev-formcard form[hidden],
+.rev-formcard #rev-guest[hidden] { display: none; }
+
+
+.rev-picker { display: flex; gap: 4px; margin-bottom: 12px; }
+.rev-picker button {
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #d9d9d9;
+  cursor: pointer;
+  padding: 0 2px;
+  transition: transform 0.15s, color 0.15s;
 }
+.rev-picker button.on { color: var(--orange); }
+.rev-picker button:hover { transform: scale(1.15); }
 
-.req-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 7px 0;
-  border-bottom: 2px dashed rgba(0,0,0,0.07);
-  font-size: 0.87rem;
-}
+.rev-err { color: #e53935 !important; font-size: 0.82rem !important; font-weight: 700; min-height: 18px; margin-bottom: 8px !important; }
 
-.req-row:last-child { border-bottom: none; }
-.req-row span:first-child { color: #6A8AA0; font-weight: 700; }
-.req-row span:last-child { color: var(--text); font-weight: 800; }
+
+
+.rev-empty { grid-column: 1 / -1; text-align: center; font-weight: 700; color: #6A8AA0; }
+
+@media (max-width: 700px) {
+  .rev-top { grid-template-columns: 1fr; }
+  }
 
 .note {
   text-align: center;
@@ -779,7 +797,7 @@ section { padding: 80px 24px; }
 }
 
 .dl-box h3 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.5rem;
   color: var(--white);
   margin-bottom: 6px;
@@ -795,7 +813,7 @@ section { padding: 80px 24px; }
 .btn-green {
   background: var(--green);
   color: var(--white);
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.1rem;
   padding: 13px 40px;
   border-radius: 50px;
@@ -873,7 +891,7 @@ section { padding: 80px 24px; }
 }
 
 .modal h3 {
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.8rem;
   color: var(--text);
   margin-bottom: 6px;
@@ -891,7 +909,7 @@ section { padding: 80px 24px; }
   padding: 12px 16px;
   border: 3px solid #dde8f0;
   border-radius: 12px;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   font-size: 16px;
   font-weight: 700;
   color: var(--text);
@@ -901,7 +919,7 @@ section { padding: 80px 24px; }
 }
 
 .modal input:focus { border-color: var(--orange); }
-.modal button { cursor: pointer; border: none; font-family: 'Fredoka One', cursive; }
+.modal button { cursor: pointer; border: none; font-family: var(--font-head); }
 
 .btn-orange.full {
   width: 100%;
@@ -925,7 +943,7 @@ section { padding: 80px 24px; }
   display: block;
   text-decoration: none;
   text-align: center;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
 }
 
 .btn-dark.full:hover {
@@ -953,7 +971,7 @@ section { padding: 80px 24px; }
   padding: 22px 12px;
   border-radius: 18px;
   text-decoration: none;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.05rem;
   transition: transform 0.15s, box-shadow 0.15s;
   border: 3px solid transparent;
@@ -1039,7 +1057,7 @@ section { padding: 80px 24px; }
   padding: 10px 16px;
   background: linear-gradient(transparent, rgba(26,58,92,0.75));
   color: #fff;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   font-weight: 700;
   font-size: 0.9rem;
   letter-spacing: 0.3px;
@@ -1108,7 +1126,7 @@ section { padding: 80px 24px; }
   inset: 0;
   align-items: center;
   justify-content: center;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.8rem;
   color: var(--text);
   text-align: center;
@@ -1123,7 +1141,7 @@ section { padding: 80px 24px; }
   gap: 10px;
   width: 100%; height: 100%;
   color: #7aaed4;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1rem;
 }
 
@@ -1137,7 +1155,7 @@ section { padding: 80px 24px; }
   width: 100%; height: 100%;
   gap: 4px;
   color: #9bbfda;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.7rem;
 }
 
@@ -1162,7 +1180,7 @@ footer {
   font-weight: 700;
 }
 
-footer strong { color: var(--yellow); font-family: 'Fredoka One', cursive; }
+footer strong { color: var(--yellow); font-family: var(--font-head); }
 footer p + p { margin-top: 6px; }
 
 /* ---- HAMBURGER ---- */
@@ -1282,11 +1300,10 @@ footer p + p { margin-top: 6px; }
 
   .about-wrap { grid-template-columns: 1fr; gap: 20px; }
   .about-gallery { max-width: 100%; }
-  .gallery-thumbs { grid-template-columns: repeat(2, 1fr); }
+  .gallery-thumbs { grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .about-text h2 { font-size: 1.6rem; }
   .about-text ul li { font-size: 0.88rem; }
 
-  .req-grid { grid-template-columns: 1fr; gap: 14px; }
   .dl-box { padding: 28px 20px; width: 100%; max-width: 100%; }
   .dl-box h3 { font-size: 1.2rem; }
   .btn-green { width: 100%; padding: 13px 24px; }
@@ -1329,7 +1346,7 @@ footer p + p { margin-top: 6px; }
 }
 
 @media (hover: none) {
-  .card:hover, .feat:hover, .req-card:hover,
+  .card:hover, .feat:hover, .rev-picker button:hover,
   .btn-orange:hover, .btn-green:hover {
     transform: none;
     box-shadow: inherit;
@@ -1396,12 +1413,12 @@ footer p + p { margin-top: 6px; }
   box-shadow: 0 0 0 3px #5f4a3b, 0 9px 0 3px #4a382d !important;
 }
 .history-title {
-  font-family: 'Fredoka One', cursive !important;
+  font-family: var(--font-head) !important;
   color: #1A3A5C !important;
 }
 .history-origin {
   display: inline-block;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 0.78rem;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -1413,7 +1430,7 @@ footer p + p { margin-top: 6px; }
 }
 .history-body { text-align: left; }
 .history-body p {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 600;
   line-height: 1.7;
@@ -1421,9 +1438,49 @@ footer p + p { margin-top: 6px; }
   margin: 0 0 10px;
 }
 .history-btn {
-  font-family: 'Fredoka One', cursive !important;
+  font-family: var(--font-head) !important;
   background: var(--orange) !important;
   border-radius: 50px !important;
+}
+
+/* ---- GAME HISTORY POPUP: image on the left + animation ---- */
+.history-layout { display: flex; align-items: center; gap: 24px; text-align: left; }
+.history-text { flex: 1; min-width: 0; }
+.history-text .history-body { animation: history-text-in .5s ease-out .15s both; }
+
+.history-figure {
+  flex: 0 0 38%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  animation: history-slide-in .6s cubic-bezier(.2, .9, .3, 1.2) both;
+}
+.history-img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 0 rgba(74, 56, 45, 0.25));
+  animation: history-float 3s ease-in-out .6s infinite;
+}
+
+@keyframes history-slide-in {
+  from { opacity: 0; transform: translateX(-40px) scale(.9); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes history-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-12px) rotate(2deg); }
+}
+@keyframes history-text-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* phones: image goes on top of the text */
+@media (max-width: 640px) {
+  .history-layout.has-image { flex-direction: column; gap: 14px; }
+  .history-figure { flex-basis: auto; width: 55%; }
+  .history-img { max-height: 180px; }
 }
 
 /* ---- TRAILER (YouTube embed) ---- */
@@ -1431,7 +1488,459 @@ footer p + p { margin-top: 6px; }
 .trailer-placeholder {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Fredoka One', cursive;
+  font-family: var(--font-head);
   font-size: 1.3rem;
   color: #2B7FD4;
+}
+
+/* ---- REGISTRATION FORM ---- */
+.modal-scroll {
+  max-height: 92vh;
+  overflow-y: auto;
+  text-align: left;
+}
+.modal-scroll .modal-icon,
+.modal-scroll h3,
+.modal-scroll > p,
+.modal-scroll > small { text-align: center; }
+.modal-scroll > small { display: block; }
+
+.field { margin-bottom: 4px; }
+.field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 5px 4px;
+}
+
+.modal select.reg-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 3px solid #dde8f0;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  background: #fff;
+  margin-bottom: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.modal select.reg-select:focus { border-color: var(--orange); }
+.modal .hidden-field { display: none; }
+.modal .hidden-field.show { display: block; }
+
+.terms-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6A8AA0;
+  cursor: pointer;
+}
+.modal .terms-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--orange);
+  cursor: pointer;
+}
+.modal .terms-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: inherit;
+  font-weight: 800;
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+/* Terms and Conditions popup */
+.terms-popup .terms-body {
+  text-align: left;
+  max-height: 50vh;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.terms-popup .terms-body h4 { font-family: var(--font-head); margin: 14px 0 4px; }
+.terms-popup .terms-body p { margin: 0 0 6px; }
+
+/* ---- SCHOOL REGISTRATION ---- */
+.modal .modal-note {
+  background: #FFF8E1;
+  border: 2px dashed var(--orange);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+.modal input[list] { margin-bottom: 12px; }
+footer a { color: var(--yellow); font-weight: 800; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+
+/* ---- LOGIN MODAL: role picker + school sign up ---- */
+#login .modal { max-width: 440px; max-height: 92vh; overflow-y: auto; }
+.auth-view[hidden] { display: none; }
+.modal .auth-back {
+  display: block;
+  background: none;
+  border: none;
+  padding: 4px;
+  margin: -14px 0 8px -4px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--blue);
+  text-align: left;
+}
+.modal .auth-back:hover { text-decoration: underline; }
+.auth-view .field { text-align: left; }
+.auth-view .role-btn { cursor: pointer; }
+.auth-view .role-btn .material-symbols-rounded { font-size: 2.4rem; }
+.modal .field-hint { display: block; text-align: left; margin: -6px 0 12px 4px; font-size: 0.75rem; }
+.pay-title {
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--text);
+  margin: 6px 0 8px 4px;
+}
+.pay-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.pay-opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 3px solid #dde8f0;
+  border-radius: 12px;
+  padding: 10px 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pay-opt:has(input:checked) { border-color: var(--orange); background: #FFF8E1; }
+.modal .pay-opt input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--orange);
+  cursor: pointer;
+}
+@media (max-width: 420px) {
+  .pay-group { grid-template-columns: 1fr; }
+  .role-btns { flex-direction: column; }
+}
+
+/* ---- "Create Account" button under the school admin Login button ---- */
+.login-new { margin-top: 16px; }
+.btn-outline {
+  background: var(--white);
+  color: var(--orange-dark);
+  font-family: var(--font-head);
+  font-size: 1rem;
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: 3px solid var(--orange);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.btn-outline.full { width: 100%; margin-top: 8px; }
+.btn-outline:hover { background: #FFF4E0; }
+.btn-outline:active { transform: translateY(2px); }
+
+
+/* ---- SCHOOL REGISTRATION: single-page card design ---- */
+#login .modal:has(#auth-signup:not([hidden])) {
+  max-width: 500px;
+  background: linear-gradient(180deg, #DDF1FF 0%, #F3FAFF 100%);
+}
+.signup-view { text-align: left; }
+.signup-head { text-align: center; margin-bottom: 14px; }
+.signup-head .signup-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 20px;
+  background: #fff; color: var(--text);
+  font-size: 2.2rem; box-shadow: 0 4px 0 #cfe3f2;
+}
+.signup-head h3 { margin: 8px 0 2px; }
+.signup-head p { margin: 0; }
+.signup-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 18px 16px 16px;
+  box-shadow: 0 6px 18px rgba(43, 127, 212, 0.12);
+}
+.signup-card .field label,
+.signup-card .pay-title { display: flex; align-items: center; gap: 8px; }
+.signup-card .fi { font-size: 1.35rem; }
+.fi.blue   { color: #2B7FD4; }
+.fi.purple { color: #8E6BD8; }
+.fi.teal   { color: #1F8A70; }
+.fi.red    { color: #E5533D; }
+.fi.yellow { color: #F4A234; }
+.signup-divider { height: 1px; background: #E6EEF5; margin: 6px 0 12px; }
+.signup-card .modal-note { margin-top: 0; }
+.signup-card .btn-orange.full { margin-top: 0; }
+.signup-login { display: block; text-align: center; margin-top: 12px; }
+
+/* password field with the show/hide eye */
+.pass-wrap { position: relative; margin-bottom: 12px; }
+.pass-wrap input { margin-bottom: 0; padding-right: 48px; }
+.modal .pass-eye {
+  position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+  background: none; border: none; padding: 6px; line-height: 1;
+  color: #6A8AA0; border-radius: 50%;
+}
+.modal .pass-eye:hover { color: var(--text); background: #eef4f9; }
+.pass-eye .material-symbols-rounded { font-size: 1.3rem; }
+
+/* payment cards */
+.signup-card .pay-opt { flex-direction: column; gap: 4px; padding: 10px 6px; }
+.signup-card .pay-opt .material-symbols-rounded { font-size: 1.6rem; color: #2B7FD4; }
+.signup-card .pay-opt input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.signup-card .pay-opt { position: relative; }
+@media (max-width: 420px) {
+  .signup-card .pay-opt { flex-direction: row; justify-content: flex-start; padding-left: 14px; }
+}
+
+
+/* ============================================================
+   SWEETALERT2 POPUPS in the Laro Tayo style
+   (buttons that set their own colour in the code, like red Delete
+   or navy Logout, keep that colour; only the default purple changes)
+   ============================================================ */
+.swal2-popup {
+  font-family: var(--font-body);
+  border-radius: 24px;
+  padding: 1.6rem 1.4rem 1.4rem;
+  box-shadow: 0 12px 40px rgba(26, 58, 92, 0.25);
+}
+.swal2-title {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: var(--text, #1A3A5C);
+}
+.swal2-html-container { color: #4A6A85; font-size: 1rem; line-height: 1.5; }
+.swal2-styled {
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: 1rem;
+  border-radius: 50px;
+  padding: 10px 28px;
+}
+.swal2-styled.swal2-confirm { background-color: var(--orange, #F4A234); }
+.swal2-styled.swal2-cancel  { background-color: #6A8AA0; }
+.swal2-styled:focus { box-shadow: 0 0 0 3px rgba(244, 162, 52, 0.35); }
+.swal2-input, .swal2-select, .swal2-textarea {
+  font-family: var(--font-body);
+  border-radius: 12px;
+  border: 2px solid #D5E3EE;
+}
+.swal2-input:focus, .swal2-select:focus, .swal2-textarea:focus {
+  border-color: var(--orange, #F4A234);
+  box-shadow: 0 0 0 3px rgba(244, 162, 52, 0.25);
+}
+.swal2-timer-progress-bar { background: var(--orange, #F4A234); }
+.swal2-close:hover { color: var(--orange, #F4A234); }
+/* ---- HIDE SCROLLBARS (scrolling still works) ---- */
+html,
+body,
+* {
+  -ms-overflow-style: none;   /* old Edge / IE */
+  scrollbar-width: none;      /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
+}
+
+/* ---- HERO REDESIGN: left-aligned text, no logo box ----
+   Overrides the older hero rules above, so it must stay at the end of the file. */
+.overlay {
+  background:
+    linear-gradient(90deg, rgba(0,20,60,0.78) 0%, rgba(0,20,60,0.45) 55%, rgba(0,20,60,0.2) 100%),
+    linear-gradient(0deg, rgba(0,20,60,0.45) 0%, transparent 35%);
+}
+.hero-inner {
+  justify-content: flex-start;
+  flex-direction: row;
+  text-align: left;
+  max-width: 1200px;
+  padding: 60px 48px;
+}
+.hero-left { max-width: 780px; }
+.hero-left h1 {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 22px;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.35);
+}
+.hero-left h1 span { display: block; color: var(--yellow); }
+.hero-left p {
+  font-weight: 500;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  max-width: 540px;
+  margin: 0 0 28px;
+}
+.genre-row { justify-content: flex-start; margin-bottom: 28px; }
+.genre-label { font-weight: 600; font-size: 1rem; }
+.genre-pill {
+  background: var(--orange);
+  border: none;
+  box-shadow: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 6px 16px;
+}
+.hero-btns { justify-content: flex-start; flex-direction: row; margin-bottom: 0; gap: 16px; }
+.hero-btns .btn-orange,
+.hero-btns .btn-ghost {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 16px 40px;
+  border: 2px solid transparent;
+  width: auto;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.hero-btns .btn-orange {
+  background: var(--orange);
+  box-shadow: 0 6px 22px rgba(244,162,52,0.5);
+}
+.hero-btns .btn-ghost {
+  background: #fff;
+  color: var(--blue);
+  border-color: #fff;
+  box-shadow: 0 0 20px rgba(255,255,255,0.55);
+}
+.hero-btns .btn-orange:hover,
+.hero-btns .btn-ghost:hover { transform: translateY(-2px); }
+.hero-btns .btn-orange:hover { box-shadow: 0 10px 26px rgba(244,162,52,0.6); }
+.hero-btns .btn-ghost:hover { background: #fff; box-shadow: 0 0 28px rgba(255,255,255,0.8); }
+
+@media (max-width: 768px) {
+  .hero-inner { flex-direction: column; text-align: left; padding: 40px 24px 56px; }
+  .hero-left p { margin: 0 0 24px; }
+  .genre-row, .hero-btns { justify-content: flex-start; }
+}
+@media (max-width: 600px) {
+  .hero-inner { padding: 28px 18px 48px; }
+  .hero-left h1 { font-size: clamp(2.2rem, 10vw, 3rem); }
+  .hero-btns { flex-direction: row; align-items: stretch; gap: 12px; }
+  .hero-btns .btn-orange, .hero-btns .btn-ghost { flex: 1 1 auto; padding: 14px 20px; }
+}
+
+/* ---- SITE FOOTER (brand + columns + bottom bar) ---- */
+footer.site-footer {
+  background: #1c1c1c;
+  border-top: 4px solid var(--light);
+  padding: 56px 24px 0;
+  text-align: left;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.site-footer .ft-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 40px;
+}
+.site-footer .ft-logo {
+  display: inline-block;
+  margin: 0 0 14px;
+  text-decoration: none;
+  font-size: 1.6rem;
+}
+.site-footer .ft-logo:hover { text-decoration: none; }
+.site-footer .ft-brand p { max-width: 280px; line-height: 1.7; margin: 0; }
+.site-footer h5 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 18px;
+}
+.site-footer ul { list-style: none; display: grid; gap: 12px; }
+.site-footer li { line-height: 1.5; }
+.site-footer a {
+  color: rgba(255,255,255,0.65);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.site-footer ul a:hover { color: var(--yellow); text-decoration: none; }
+.site-footer a:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; border-radius: 4px; }
+.site-footer .ft-bottom {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 0 24px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px 24px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.4);
+}
+@media (max-width: 768px) {
+  footer.site-footer { padding: 44px 20px 0; }
+  .site-footer .ft-inner { grid-template-columns: 1fr 1fr; gap: 36px 28px; }
+  .site-footer .ft-brand { grid-column: 1 / -1; }
+}
+@media (max-width: 480px) {
+  footer.site-footer { font-size: 0.88rem; padding: 40px 16px 0; }
+  .site-footer .ft-bottom { flex-direction: column; }
+}
+/* ---- HIDE SCROLLBARS (scrolling still works) ---- */
+html,
+body,
+* {
+  -ms-overflow-style: none;   /* old Edge / IE */
+  scrollbar-width: none;      /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
 }
