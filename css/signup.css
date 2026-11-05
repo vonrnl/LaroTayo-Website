@@ -132,3 +132,42 @@ body::-webkit-scrollbar,
   width: 0;
   height: 0;
 }
+
+/* ---- PAYMENT POPUPS (GCash / card, test mode) ---- */
+.pay-popup { border-radius: 24px !important; font-family: var(--font-body, 'Poppins', sans-serif); }
+.pay-popup .swal2-title { font-family: var(--font-head); font-weight: 400; color: #0d1e3c; }
+.pay-modal { text-align: center; }
+.pay-test-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 999px;
+  background: #FFF8E1; border: 2px dashed #F5A02B; color: #8a5a00;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: .04em;
+}
+.pay-amt-label { margin: 14px 0 2px; color: #4A6A8A; font-weight: 700; font-size: 0.95rem; }
+.pay-amt { font-family: var(--font-head); font-size: 2.6rem; color: #F5A02B; line-height: 1.1; }
+.pay-sub { color: #4A6A8A; font-size: 0.85rem; font-weight: 600; margin: 4px 0 14px; }
+.pay-label { display: block; text-align: left; font-size: 0.82rem; font-weight: 700; color: #0d1e3c; margin: 10px 0 4px; }
+.pay-input {
+  width: 100%; box-sizing: border-box; padding: 11px 14px; font: inherit; font-size: 1rem;
+  border: 2px solid #cfe3f2; border-radius: 12px; background: #fff; color: #0d1e3c;
+}
+.pay-input:focus { outline: none; border-color: #1A4A8A; box-shadow: 0 0 0 3px rgba(26,74,138,.15); }
+.pay-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pay-hint { margin-top: 10px; color: #4A6A8A; font-size: 0.82rem; font-weight: 600; line-height: 1.5; }
+.pay-testcards {
+  margin-top: 14px; padding: 10px 12px; border-radius: 12px; text-align: left;
+  background: #EEF6FF; border: 1px solid #cfe3f2; font-size: 0.78rem; color: #0d1e3c;
+}
+.pay-fill {
+  display: block; width: 100%; margin-top: 6px; padding: 7px 10px; text-align: left; cursor: pointer;
+  border: 1px solid #cfe3f2; border-radius: 8px; background: #fff; color: #1A4A8A;
+  font: inherit; font-weight: 700; font-size: 0.78rem;
+}
+.pay-fill:hover { background: #DDF1FF; }
+.pay-popup .pay-confirm { background: #F5A02B !important; border-radius: 999px !important; font-weight: 800 !important; }
+.pay-popup .pay-cancel  { background: #6b8399 !important; border-radius: 999px !important; font-weight: 800 !important; }
+.pay-popup .swal2-input { text-align: center; letter-spacing: .3em; font-weight: 800; }
+.pay-receipt { text-align: left; background: #F3FAFF; border: 2px solid #cfe3f2; border-radius: 14px; padding: 8px 14px; }
+.pay-receipt-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 0.88rem; border-bottom: 1px dashed #cfe3f2; }
+.pay-receipt-row:last-child { border-bottom: 0; }
+.pay-receipt-row span { color: #4A6A8A; font-weight: 600; }
+.pay-receipt-row b { color: #0d1e3c; text-align: right; word-break: break-word; }

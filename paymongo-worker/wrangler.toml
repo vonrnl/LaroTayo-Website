@@ -1,0 +1,7 @@
+name = "laro-tayo-paymongo"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+ALLOWED_ORIGIN = "http://127.0.0.1:5500"
+MAYA_API = "https://pg-sandbox.paymaya.com"

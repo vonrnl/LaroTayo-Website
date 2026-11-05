@@ -14,8 +14,15 @@ import {
   doc,
   getDoc,
   setDoc,
+  collection,
+  writeBatch,
+  Timestamp,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import {
+  collectTestPayment, sendReceiptEmail, createPayMongoCheckout, getPayMongoStatus,
+  REGISTRATION_FEE, PAYMENT_MODE, peso
+} from "./payment.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDtB1ouns3wY1ljekvHm8h-_V_ChAcNjJw",
@@ -168,40 +175,6 @@ if (loginBtn) {
     .addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 }
 
-// ---- SCHOOL CHOICES (suggestions for the School Name box) ----
-// Edit this list to add/remove schools. Admins can still type any school name.
-const CAVITE_SCHOOLS = [
-  'Dasmariñas East Central School',
-  'Dasmariñas West Central School',
-  'Dasmariñas North Central School',
-  'Imus Pilot Elementary School',
-  'Bacoor Central School',
-  'Kawit Central School',
-  'General Trias Central School',
-  'Trece Martires City Central School',
-  'Tagaytay City Central School',
-  'Silang Central School',
-  'Carmona Central School',
-  'Naic Central School',
-  'Cavite City Central School',
-  'Noveleta Central School',
-  'Rosario Central School',
-  'Indang Central School',
-  'Tanza Central School',
-  'Gen. Mariano Alvarez Central School',
-  'Amadeo Central School',
-  'Mendez Central School'
-];
-
-const schoolList = document.getElementById('sch-school-list');
-if (schoolList) {
-  CAVITE_SCHOOLS.forEach(name => {
-    const opt = document.createElement('option');
-    opt.value = name;
-    schoolList.appendChild(opt);
-  });
-}
-
 function esc(t) {
   return String(t).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 }
@@ -285,6 +258,114 @@ if (privacyLink) {
 
 // ---- SCHOOL REGISTRATION ----
 const schoolBtn = document.getElementById('school-register-btn');
+const PAY_LABEL = 'Pay ' + peso(REGISTRATION_FEE) + ' & Register';
+const PENDING_KEY = 'laro_pending_reg';     // remembers the form while the user is on PayMongo's page
+if (schoolBtn) schoolBtn.textContent = PAY_LABEL;
+
+const resetBtn = () => { if (schoolBtn) { schoolBtn.textContent = PAY_LABEL; schoolBtn.disabled = false; } };
+const tryDelete = async (u) => { try { await deleteUser(u); } catch (_) {} };
+
+// Creates the login. If an earlier attempt made the login but never finished
+// (cancelled / closed the tab), the same email + password picks it up again.
+async function createOrReuseAccount(email, password) {
+  try {
+    return (await createUserWithEmailAndPassword(auth, email, password)).user;
+  } catch (e) {
+    if (e.code !== 'auth/email-already-in-use') throw e;
+    let user;
+    try { user = (await signInWithEmailAndPassword(auth, email, password)).user; } catch (_) { throw e; }
+    let taken = false;
+    try {
+      taken = (await getDoc(doc(db, 'teachers', user.uid))).exists()
+           || (await getDoc(doc(db, 'students', user.uid))).exists();
+    } catch (_) {}
+    if (!taken) return user;
+    await signOut(auth);
+    throw e;
+  }
+}
+
+// Saves the school record, sends emails, shows the receipt. Used by both payment modes.
+async function finishRegistration(user, data, pay) {
+  try {
+    await updateProfile(user, { displayName: data.name });
+    // School record + payment record are saved together (all or nothing),
+    // so the admin panel sees the school as Paid right away. No manual "Record payment".
+    const paidAt    = Timestamp.fromDate(pay.paidAt instanceof Date ? pay.paidAt : new Date());
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'teachers', user.uid), {
+      uid: user.uid,
+      username: data.name,
+      email: data.email,
+      role: 'teacher',
+      category: data.category,
+      school: data.school,
+      paymentMethod: data.payment,
+      termsAccepted: true,
+      approved: true,
+      paid: true,
+      paidAt,
+      createdAt: serverTimestamp()
+    });
+    batch.set(doc(db, 'payments', String(pay.reference)), {   // same reference = never saved twice
+      schoolId: user.uid,
+      schoolName: data.school,
+      adminName: data.name,
+      email: data.email,
+      amount: Number(pay.amount) || REGISTRATION_FEE,
+      method: pay.detail || data.payment,
+      reference: String(pay.reference),
+      paidAt,
+      recordedBy: user.uid,
+      source: 'registration'
+    });
+    await batch.commit();
+  } catch (inner) {
+    console.error('[SAVE ERROR]', inner);
+    Swal.close();
+    await Swal.fire({
+      icon: 'error',
+      title: 'Payment OK, account not saved',
+      html: 'Your payment went through, but we could not save your account.<br>Reference: <b>' + esc(pay.reference) + '</b><br>Please contact the project team with this reference.'
+    });
+    return false;
+  }
+
+  try { await sendEmailVerification(user); } catch (_) {}
+  // PayMongo emails its own receipt; the built-in test checkout uses EmailJS instead.
+  const receiptSent = PAYMENT_MODE === 'paymongo'
+    ? false
+    : await sendReceiptEmail({ toEmail: data.email, toName: data.name, school: data.school, pay });
+  await signOut(auth);
+  localStorage.removeItem(PENDING_KEY);
+
+  ['sch-name', 'sch-school', 'sch-email', 'sch-password', 'sch-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const cat = document.getElementById('sch-category'); if (cat) cat.value = '';
+  if (regTerms) regTerms.checked = false;
+  document.querySelectorAll('input[name="sch-pay"]').forEach(r => r.checked = false);
+
+  await Swal.fire({
+    icon: 'success',
+    title: 'Payment Successful!',
+    width: 'min(92vw, 460px)',
+    html:
+      '<div class="pay-receipt">' +
+        '<div class="pay-receipt-row"><span>School</span><b>' + esc(data.school) + '</b></div>' +
+        '<div class="pay-receipt-row"><span>Amount</span><b>' + peso(pay.amount) + (PAYMENT_MODE === 'sim' ? ' (test)' : '') + '</b></div>' +
+        '<div class="pay-receipt-row"><span>Method</span><b>' + esc(pay.detail) + '</b></div>' +
+        '<div class="pay-receipt-row"><span>Reference</span><b>' + esc(pay.reference) + '</b></div>' +
+        '<div class="pay-receipt-row"><span>Date</span><b>' + pay.paidAt.toLocaleString('en-PH') + '</b></div>' +
+      '</div>' +
+      '<p style="margin-top:12px">Your school account is ready.' +
+        (receiptSent ? '<br>A payment receipt was sent to <b>' + esc(data.email) + '</b>.' : '') +
+        '<br>We sent a verification link to <b>' + esc(data.email) + '</b>. Open it, then log in.</p>',
+    confirmButtonText: 'Go to Login'
+  });
+
+  if (document.getElementById('login')) openLogin();
+  else window.location.href = 'index.html#login';
+  return true;
+}
 
 if (schoolBtn) {
   schoolBtn.addEventListener('click', async () => {
@@ -314,57 +395,53 @@ if (schoolBtn) {
 
     schoolBtn.textContent = 'Creating account...';
     schoolBtn.disabled = true;
-    const resetBtn = () => { schoolBtn.textContent = 'Register'; schoolBtn.disabled = false; };
 
     try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      const user = cred.user;
+      // 1) Create the login first, so a taken email fails BEFORE anyone pays.
+      const user = await createOrReuseAccount(email, password);
+      const data = { name, category, school, email, payment };
 
-      try {
-        await updateProfile(user, { displayName: name });
-        await setDoc(doc(db, 'teachers', user.uid), {
-          uid: user.uid,
-          username: name,
-          email: email,
-          role: 'teacher',
-          category: category,
-          school: school,
-          paymentMethod: payment,
-          termsAccepted: true,
-          approved: true,   // no manual approval step; kept so new accounts can be told apart from older ones
-          createdAt: serverTimestamp()
-        });
-      } catch (inner) {
-        // don't leave a login with no school record behind
-        try { await deleteUser(user); } catch (_) {}
-        throw inner;
+      // 2a) REAL PayMongo checkout: go to PayMongo's page, come back to this page after.
+      if (PAYMENT_MODE === 'paymongo') {
+        schoolBtn.textContent = 'Opening PayMongo...';
+        let co;
+        try {
+          co = await createPayMongoCheckout({ uid: user.uid, name, email, method: payment, school });
+        } catch (e) {
+          await tryDelete(user);
+          throw e;
+        }
+        localStorage.setItem(PENDING_KEY, JSON.stringify({ uid: user.uid, sessionId: co.id, data }));
+        window.location.href = co.checkoutUrl;
+        return;
       }
 
-      try { await sendEmailVerification(user); } catch (_) {}
-      await signOut(auth);
+      // 2b) Built-in test checkout (no real money)
+      schoolBtn.textContent = 'Waiting for payment...';
+      let pay;
+      try {
+        pay = await collectTestPayment({ method: payment, amount: REGISTRATION_FEE });
+      } catch (payErr) {
+        await tryDelete(user);
+        throw payErr;
+      }
+      if (!pay.ok) {
+        await tryDelete(user);
+        resetBtn();
+        Swal.fire({ icon: 'info', title: 'Payment Cancelled', text: 'No payment was made and no account was created. You can try again anytime.' });
+        return;
+      }
+
+      // 3) Payment done -> save the school record
+      await finishRegistration(user, data, pay);
       resetBtn();
-
-      ['sch-name', 'sch-school', 'sch-email', 'sch-password', 'sch-confirm'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('sch-category').value = '';
-      if (regTerms) regTerms.checked = false;
-      document.querySelectorAll('input[name="sch-pay"]').forEach(r => r.checked = false);
-
-      await Swal.fire({
-        icon: 'success',
-        title: 'School Registered!',
-        html: 'Your account for <b>' + esc(school) + '</b> was created.<br>' +
-              'Verify your email, then you can log in.' +
-              '<br><small>A verification email was sent to ' + esc(email) + '. Open the link in it before you log in.</small>'
-      });
-
-      if (document.getElementById('login')) openLogin();   // homepage: open the login modal
-      else window.location.href = 'index.html#login';              // signup.html: go to the homepage login
     } catch (err) {
       console.error('[SCHOOL REG ERROR]', err.code, err.message);
       const messages = {
         'auth/email-already-in-use': 'That email is already registered.',
         'auth/invalid-email': 'Invalid email address.',
         'auth/weak-password': 'Password is too weak.',
+        'auth/network-request-failed': 'Network problem. Check your connection and try again.',
         'permission-denied': 'Database permission denied. Check Firestore rules.'
       };
       Swal.fire({ icon: 'error', title: 'Registration Failed', text: messages[err.code] || err.message });
@@ -372,6 +449,78 @@ if (schoolBtn) {
     }
   });
 }
+
+// ---- COMING BACK FROM PAYMONGO (?paid=1 or ?cancelled=1) ----
+async function handlePayMongoReturn() {
+  const params = new URLSearchParams(location.search);
+  const paid = params.get('paid') === '1';
+  const cancelled = params.get('cancelled') === '1';
+  if (!paid && !cancelled) return;
+  history.replaceState(null, '', location.pathname + location.hash);
+
+  let pending = null;
+  try { pending = JSON.parse(localStorage.getItem(PENDING_KEY) || 'null'); } catch (_) {}
+  if (!pending) {
+    Swal.fire({ icon: 'info', title: 'Nothing to finish', text: 'We could not find a registration in progress on this device.' });
+    return;
+  }
+
+  // wait for Firebase to restore the signed-in user
+  const user = await new Promise(res => { const off = onAuthStateChanged(auth, u => { off(); res(u); }); });
+  if (!user || user.uid !== pending.uid) {
+    Swal.fire({ icon: 'error', title: 'Please register again', text: 'Your session expired before the payment was confirmed.' });
+    localStorage.removeItem(PENDING_KEY);
+    return;
+  }
+
+  if (cancelled) {
+    await tryDelete(user);
+    try { await signOut(auth); } catch (_) {}
+    localStorage.removeItem(PENDING_KEY);
+    Swal.fire({ icon: 'info', title: 'Payment Cancelled', text: 'No payment was made. You can register again anytime.' });
+    return;
+  }
+
+  // paid=1 in the address is NOT proof: ask PayMongo (through the Worker)
+  const check = async () => {
+    Swal.fire({ title: 'Confirming your payment...', allowOutsideClick: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
+    let st = { paid: false };
+    for (let i = 0; i < 5 && !st.paid; i++) {
+      st = await getPayMongoStatus(pending.sessionId);
+      if (!st.paid) await new Promise(r => setTimeout(r, 2000));
+    }
+    return st;
+  };
+
+  let st = await check();
+  while (!(st.paid && st.reference === user.uid)) {
+    const r = await Swal.fire({
+      icon: 'warning',
+      title: 'Payment not confirmed yet',
+      text: 'PayMongo has not confirmed the payment. If you just paid, wait a few seconds and check again.',
+      showCancelButton: true,
+      confirmButtonText: 'Check again',
+      cancelButtonText: 'Cancel registration'
+    });
+    if (!r.isConfirmed) {
+      await tryDelete(user);
+      try { await signOut(auth); } catch (_) {}
+      localStorage.removeItem(PENDING_KEY);
+      return;
+    }
+    st = await check();
+  }
+
+  const labels = { gcash: 'GCash', card: 'Card', qrph: 'QR Ph', maya: 'Maya' };
+  const detail = (labels[st.method] || 'Maya') + (st.last4 ? ' ending ' + st.last4 : '');
+  await finishRegistration(user, pending.data, {
+    amount: st.amount != null ? st.amount : REGISTRATION_FEE,
+    detail,
+    reference: st.paymentId || pending.sessionId,
+    paidAt: new Date()
+  });
+}
+handlePayMongoReturn();
 
 // ---- AUTH STATE ----
 onAuthStateChanged(auth, async (user) => {

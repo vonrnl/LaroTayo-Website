@@ -2,3 +2,10 @@
 larotayo2026.zip
 
 larotayo2026.zip
+
+*.apk
+*.zip
+.wrangler/
+paymongo-worker/.wrangler/
+node_modules/
+.dev.vars

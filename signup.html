@@ -23,29 +23,9 @@
       <span></span><span></span><span></span>
     </button>
     <div class="nav-links" id="nav-links">
-      <a href="index.html#home" class="nav-item">
-        <span class="material-symbols-rounded">home</span>
-        <span>HOME</span>
-      </a>
-      <a href="index.html#games" class="nav-item">
-        <span class="material-symbols-rounded">sports_esports</span>
-        <span>GAME</span>
-      </a>
-      <a href="index.html#features" class="nav-item">
-        <span class="material-symbols-rounded">auto_awesome</span>
-        <span>FEATURES</span>
-      </a>
-      <a href="index.html#about" class="nav-item">
-        <span class="material-symbols-rounded">info</span>
-        <span>ABOUT</span>
-      </a>
-      <a href="signup.html" class="nav-item">
-        <span class="material-symbols-rounded">how_to_reg</span>
-        <span>SIGN UP</span>
-      </a>
-      <a href="index.html#login" class="nav-item">
-        <span class="material-symbols-rounded">lock</span>
-        <span>LOGIN</span>
+      <a href="index.html" class="nav-item">
+        <span class="material-symbols-rounded">arrow_back</span>
+        <span>BACK</span>
       </a>
     </div>
   </nav>
@@ -85,7 +65,7 @@
           </div>
         </li>
       </ul>
-      <p class="su-aside-note">After you register, we email a verification link. Open it before you log in.</p>
+      <p class="su-aside-note">After you pay and register, we email a verification link. Open it before you log in.</p>
     </aside>
 
     <section class="modal su-card" aria-labelledby="su-title">
@@ -116,8 +96,7 @@
 
         <div class="field">
           <label for="sch-school"><span class="material-symbols-rounded fi teal">account_balance</span>Name of School</label>
-          <input type="text" id="sch-school" list="sch-school-list" placeholder="Type or pick your school" maxlength="80" autocomplete="off" />
-          <datalist id="sch-school-list"></datalist>
+          <input type="text" id="sch-school" placeholder="Type your school name" maxlength="80" autocomplete="off" />
         </div>
 
         <div class="field">
@@ -157,10 +136,11 @@
         <div class="pay-title"><span class="material-symbols-rounded fi purple">credit_card</span>Payment</div>
         <div class="pay-group" role="radiogroup" aria-label="Payment method">
           <label class="pay-opt"><input type="radio" name="sch-pay" value="GCash" /><span class="material-symbols-rounded">account_balance_wallet</span><span>GCash</span></label>
+          <label class="pay-opt"><input type="radio" name="sch-pay" value="Credit/Debit Card" /><span class="material-symbols-rounded">credit_card</span><span>Credit / Debit Card</span></label>
         </div>
-        <p class="modal-note">Your payment method is saved for now. You won't be charged yet.</p>
+        <p class="modal-note">One-time registration fee: <b>₱500</b>.</p>
 
-        <button class="btn-orange full" id="school-register-btn">Register</button>
+        <button class="btn-orange full" id="school-register-btn">Pay ₱500 &amp; Register</button>
       </div>
 
       <small class="signup-login">Already have an account? <a href="index.html#login">Login</a></small>
@@ -193,10 +173,7 @@
           <li><a href="index.html#games">Games</a></li>
           <li><a href="index.html#features">Features</a></li>
           <li><a href="index.html#about">About</a></li>
-          <li><a href="index.html#reviews">Ratings</a></li>
           <li><a href="index.html#download">Download</a></li>
-          <li><a href="signup.html">Register School</a></li>
-          <li><a href="index.html#login">Sign In</a></li>
         </ul>
       </div>
     </div>
