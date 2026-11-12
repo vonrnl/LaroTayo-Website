@@ -1536,3 +1536,42 @@ body::-webkit-scrollbar,
   width: 0;
   height: 0;
 }
+
+
+/* ---- HAMBURGER MENU ON DESKTOP TOO ----
+   Phones already use the hamburger (rules above). From 769px up the
+   buttons now live in a dropdown under the top bar instead of in a row. */
+@media (min-width: 769px) {
+  .dash-hamburger-group { display: flex; }
+  .dash-hamburger { display: flex; }
+
+  .dash-nav-user {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 24px;
+    width: 250px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 16px;
+    background: #1c1c1c;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-top: 0;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+  }
+  .dash-nav-user.open { display: flex; }
+
+  .dash-user-info { text-align: center; padding-bottom: 4px; }
+
+  .dash-nav-user .dash-home-btn,
+  .dash-nav-user .dash-edit-btn,
+  .dash-nav-user .dash-logout-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .dash-nav-user .dash-home-btn span:last-child,
+  .dash-nav-user .dash-edit-btn span:last-child,
+  .dash-nav-user .dash-logout-btn span:last-child { display: inline !important; }
+}

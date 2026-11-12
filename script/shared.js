@@ -1,10 +1,10 @@
 import { initializeApp, getApps, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import {
   getAuth, createUserWithEmailAndPassword, deleteUser, updatePassword,
-  reauthenticateWithCredential, EmailAuthProvider, signOut,
+  reauthenticateWithCredential, EmailAuthProvider, signOut, sendPasswordResetEmail,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp,
+  getFirestore, collection, doc, getDoc, getDocs, setDoc, serverTimestamp, query, where, limit,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 /* Shared by admin.js (website owner) and school-admin.js (school admins). */
@@ -70,6 +70,103 @@ export async function createStudentAccount({ username, email, password, extra = 
     try { await signOut(secondaryAuth); } catch (_) {}
     await deleteApp(secondaryApp);
   }
+}
+
+/* ============================================================
+   CREATE A STUDENT FROM AN EMAIL ONLY
+   ------------------------------------------------------------
+   The school admin types only the student's email (+ section).
+   - A random password is generated (nobody sees it, it is not saved).
+   - The username defaults to the part before the @ (made unique).
+   - Firebase emails the student a "set your password" link.
+   ============================================================ */
+function randomPassword(len = 20) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+  const a = new Uint32Array(len);
+  crypto.getRandomValues(a);
+  return Array.from(a, n => chars[n % chars.length]).join('');
+}
+
+// Nickname = the first name of the full name (first word), letters and numbers only.
+export function nicknameFromFullName(fullName) {
+  const first = String(fullName || '').trim().split(/\s+/)[0] || '';
+  return first.replace(/[^\p{L}\p{N}_-]/gu, '').slice(0, 24);
+}
+
+async function uniqueUsername(seed) {
+  let base = String(seed);
+  while (base.length < 3) base += '_';
+  for (let i = 0; i < 50; i++) {
+    const candidate = i === 0 ? base : base + (i + 1);          // "Juan", "Juan2", "Juan3"...
+    try {
+      const snap = await getDocs(query(collection(db, 'students'), where('usernameLower', '==', candidate.toLowerCase()), limit(1)));
+      if (snap.empty) return candidate;
+    } catch (err) {
+      console.error('Username check failed:', err);
+      return base + Math.floor(100 + Math.random() * 900);   // can't check: add random digits
+    }
+  }
+  return base + Date.now().toString().slice(-5);
+}
+
+// Resolves { uid, username, emailSent }. emailSent is false if the account was
+// made but the setup email could not be sent (the admin can press Resend).
+// fullName is saved as-is; the username (nickname) is its first name, made unique.
+export async function createStudentFromEmail({ email, fullName = '', extra = {} }) {
+  email = String(email).trim().toLowerCase();
+  fullName = String(fullName).trim().replace(/\s+/g, ' ').slice(0, 60);
+  const emailBase = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_.-]/g, '_').slice(0, 24);
+  const username = await uniqueUsername(nicknameFromFullName(fullName) || emailBase);
+  const uid = await createStudentAccount({ username, email, password: randomPassword(), extra: fullName ? { fullName, ...extra } : extra });
+  let emailSent = true;
+  try { await sendPasswordResetEmail(auth, email); }
+  catch (err) { console.error('Setup email failed:', err); emailSent = false; }
+  return { uid, username, emailSent };
+}
+
+/* ============================================================
+   CREATE A TEACHER (staff account added by the school admin)
+   ------------------------------------------------------------
+   Same idea as the student: random password nobody sees, then Firebase
+   emails a "set your password" link. The profile is saved in
+   teachers/{uid} with role 'staff', so it never shows up in the
+   website admin's list of schools (that list only reads role 'teacher').
+   ============================================================ */
+export async function createTeacherFromEmail({ name, email, extra = {} }) {
+  email = String(email).trim().toLowerCase();
+  const secondaryApp  = initializeApp(firebaseConfig, `secondary-${Date.now()}`);
+  const secondaryAuth = getAuth(secondaryApp);
+  let uid;
+  try {
+    const newUser = (await createUserWithEmailAndPassword(secondaryAuth, email, randomPassword())).user;
+    try {
+      await setDoc(doc(db, 'teachers', newUser.uid), {
+        uid: newUser.uid, username: name, email,
+        role:     'staff',
+        category: 'Teacher',
+        active:   true,
+        joined:    new Date().toISOString().split('T')[0],
+        createdAt: serverTimestamp(),
+        ...extra,
+      });
+    } catch (err) {
+      try { await deleteUser(newUser); } catch (_) { /* nothing more we can do */ }
+      throw err;
+    }
+    uid = newUser.uid;
+  } finally {
+    try { await signOut(secondaryAuth); } catch (_) {}
+    await deleteApp(secondaryApp);
+  }
+  let emailSent = true;
+  try { await sendPasswordResetEmail(auth, email); }
+  catch (err) { console.error('Setup email failed:', err); emailSent = false; }
+  return { uid, emailSent };
+}
+
+// "Set your password" email (used by the Resend button too).
+export function sendPasswordSetupEmail(email) {
+  return sendPasswordResetEmail(auth, String(email).trim());
 }
 
 /* ============================================================
@@ -313,3 +410,51 @@ export async function openProgressModal(student) {
       <ul class="pg-list two-col">${badgeRows}</ul>
     </div>`;
 }
+
+
+/* ============================================================
+   PROOF-OF-POSITION DOCUMENT (school sign-up verification)
+   ------------------------------------------------------------
+   The photo is shrunk in the browser and saved as text inside
+   verifications/{uid}, so no Firebase Storage is needed. Only the
+   owner and the website admin can read it (see Firestore rules).
+   ============================================================ */
+export const VERIFICATION_DOC_TYPES = [
+  'School ID / Employee ID',
+  'DepEd ID',
+  'Appointment letter / Service record',
+  'Certificate of Employment',
+  'Other official school document',
+];
+
+export const DOC_MAX_UPLOAD_MB = 8;
+
+export function fileToCompressedDataUrl(file, maxSide = 1400) {
+  const MAX_CHARS = 760000;           // Firestore documents are limited to about 1 MB
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const w = img.naturalWidth, h = img.naturalHeight;
+      let scale = Math.min(1, maxSide / Math.max(w, h));
+      let quality = 0.75;
+      for (let i = 0; i < 8; i++) {
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.max(1, Math.round(w * scale));
+        canvas.height = Math.max(1, Math.round(h * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const out = canvas.toDataURL('image/jpeg', quality);
+        if (out.length <= MAX_CHARS) { resolve(out); return; }
+        quality = Math.max(0.4, quality - 0.1);
+        scale *= 0.85;
+      }
+      reject(new Error('too-large'));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad-image')); };
+    img.src = url;
+  });
+} 

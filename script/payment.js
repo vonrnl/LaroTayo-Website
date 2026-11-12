@@ -9,11 +9,9 @@ export const TEST_MODE = true;
 // ---- WHICH PAYMENT TO USE ----
 //   'sim'      = the built-in fake checkout (no PayMongo, no backend needed)
 //   'paymongo' = real PayMongo checkout page (use test keys = still no real money)
-export const PAYMENT_MODE = 'sim';
+export const PAYMENT_MODE = 'paymongo';
 // Your Cloudflare Worker address (see paymongo-worker/worker.js), no trailing slash.
-export const PAYMONGO_API = 'https://YOUR-WORKER.YOUR-NAME.workers.dev';
-
-const GCASH_TEST_OTP = '123456';
+export const PAYMONGO_API = 'https://laro-tayo-paymongo.vhondimapilis26.workers.dev';
 
 // ---- RECEIPT EMAIL (EmailJS) ----
 // Fill these 3 values from your EmailJS dashboard (emailjs.com, free plan).
@@ -84,22 +82,6 @@ async function gcashStep(amount) {
   if (!step1.isConfirmed) return null;
   const mobile = step1.value;
 
-  const step2 = await Swal.fire({
-    title: 'Authorize in GCash',
-    width: 'min(92vw, 440px)',
-    customClass: { popup: 'pay-popup', confirmButton: 'pay-confirm', cancelButton: 'pay-cancel' },
-    html: header(amount, 'Confirm payment') + `
-        <p class="pay-hint">A code was sent to <b>${mobile.slice(0, 4)}***${mobile.slice(-3)}</b>.<br>
-        Enter <b>${GCASH_TEST_OTP}</b>.</p>
-      </div>`,
-    input: 'text',
-    inputAttributes: { inputmode: 'numeric', maxlength: 6, autocomplete: 'off', placeholder: '6-digit code' },
-    inputValidator: v => (v === GCASH_TEST_OTP ? undefined : 'Wrong code. Use ' + GCASH_TEST_OTP + '.'),
-    showCancelButton: true,
-    confirmButtonText: 'Pay ' + peso(amount),
-    cancelButtonText: 'Cancel'
-  });
-  if (!step2.isConfirmed) return null;
   return { detail: 'GCash ' + mobile.slice(0, 4) + '***' + mobile.slice(-3) };
 }
 

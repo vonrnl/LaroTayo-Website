@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc,
   collection, query, where, limit, getDocs, getCountFromServer, onSnapshot, serverTimestamp
@@ -498,6 +498,19 @@ onAuthStateChanged(auth, async (user) => {
     const userSnap = await getDoc(userRef);
     const u = userSnap.exists() ? userSnap.data() : {};
 
+    // Disabled or deleted by the school admin / teacher: no access to the dashboard.
+    if (u.status === 'disabled' || u.status === 'deleted') {
+      await Swal.fire({
+        icon: 'info',
+        title: u.status === 'deleted' ? 'Account removed' : 'Account disabled',
+        text: u.status === 'deleted' ? 'This account was removed. Please ask your school admin.' : 'Your account is disabled. Please ask your teacher or school admin.',
+        confirmButtonColor: '#F4A234'
+      });
+      await signOut(auth);
+      window.location.href = 'index.html';
+      return;
+    }
+
     const name  = u.username || user.displayName || 'Player';
     const email = u.email || user.email || '';
 
@@ -634,5 +647,125 @@ document.getElementById('ep-save').addEventListener('click', async()=>{
     msgEl.textContent='Error saving. Try again.';
     msgEl.className='ep-msg error';
     console.error(err);
+  }
+});
+
+
+/* ============================================================
+   REPORT A BUG / SEND FEEDBACK
+   Saved in reports/{id}; only the website admin can read them all.
+   ============================================================ */
+const REPORT_COOLDOWN_MS = 30000;     // one report every 30 seconds
+let lastReportAt = 0;
+
+document.getElementById('dash-report-btn').addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  if (Date.now() - lastReportAt < REPORT_COOLDOWN_MS) {
+    Swal.fire({ icon: 'info', title: 'Please wait a bit', text: 'You just sent a report. You can send another one in a few seconds.', confirmButtonColor: '#F5A02B' });
+    return;
+  }
+
+  const res = await Swal.fire({
+    title: 'Report a bug or send feedback',
+    width: 'min(92vw, 480px)',
+    html:
+      '<select id="rp-type" class="swal2-select" style="display:flex;width:80%;margin:8px auto">' +
+        '<option value="bug">Bug (something is not working)</option>' +
+        '<option value="feedback">Feedback</option>' +
+        '<option value="suggestion">Suggestion (an idea)</option>' +
+      '</select>' +
+      '<select id="rp-area" class="swal2-select" style="display:flex;width:80%;margin:8px auto">' +
+        '<option value="Website">It is about the website</option>' +
+        '<option value="Game">It is about the game</option>' +
+      '</select>' +
+      '<textarea id="rp-text" class="swal2-textarea" maxlength="500" placeholder="Tell us what happened or what you think." style="display:flex;width:80%;margin:8px auto"></textarea>',
+    showCancelButton: true,
+    confirmButtonText: 'Send',
+    confirmButtonColor: '#F5A02B',
+    focusConfirm: false,
+    preConfirm: () => {
+      const text = document.getElementById('rp-text').value.trim();
+      if (text.length < 10) { Swal.showValidationMessage('Please write at least 10 letters so we can understand.'); return false; }
+      return {
+        type: document.getElementById('rp-type').value,
+        area: document.getElementById('rp-area').value,
+        message: text.slice(0, 500)
+      };
+    }
+  });
+  if (!res.isConfirmed) return;
+
+  try {
+    const name = (document.getElementById('dash-name').textContent || 'Player').trim().slice(0, 60) || 'Player';
+    await setDoc(doc(collection(db, 'reports')), {
+      uid: user.uid,
+      name,
+      email: user.email || '',
+      type: res.value.type,
+      area: res.value.area,
+      message: res.value.message,
+      status: 'open',
+      createdAt: serverTimestamp()
+    });
+    lastReportAt = Date.now();
+    Swal.fire({ icon: 'success', title: 'Thank you!', text: 'Your report was sent to the Laro Tayo team.', confirmButtonColor: '#F5A02B' });
+  } catch (err) {
+    console.error(err);
+    Swal.fire({ icon: 'error', title: 'Could not send', text: err.code === 'permission-denied' ? 'Database permission denied. Ask the admin to publish the updated Firestore rules.' : 'Please try again.', confirmButtonColor: '#e53935' });
+  }
+});
+
+/* ============================================================
+   CHANGE PASSWORD
+   ============================================================ */
+document.getElementById('dash-password-btn').addEventListener('click', async () => {
+  const user = auth.currentUser;
+  if (!user || !user.email) return;
+
+  const field = 'display:flex;width:80%;margin:8px auto';
+  const res = await Swal.fire({
+    title: 'Change Password',
+    width: 'min(92vw, 420px)',
+    html:
+      '<input id="cp-cur" type="password" class="swal2-input" style="' + field + '" placeholder="Current password" autocomplete="current-password">' +
+      '<input id="cp-new" type="password" class="swal2-input" style="' + field + '" placeholder="New password (6+ characters)" autocomplete="new-password">' +
+      '<input id="cp-conf" type="password" class="swal2-input" style="' + field + '" placeholder="Confirm new password" autocomplete="new-password">',
+    showCancelButton: true,
+    confirmButtonText: 'Update Password',
+    confirmButtonColor: '#F5A02B',
+    focusConfirm: false,
+    didOpen: () => document.getElementById('cp-cur').focus(),
+    preConfirm: async () => {
+      const cur  = document.getElementById('cp-cur').value;
+      const nw   = document.getElementById('cp-new').value;
+      const conf = document.getElementById('cp-conf').value;
+
+      if (!cur || !nw || !conf) { Swal.showValidationMessage('Please fill in all fields.'); return false; }
+      if (nw.length < 6)        { Swal.showValidationMessage('New password must be at least 6 characters.'); return false; }
+      if (nw !== conf)          { Swal.showValidationMessage('New passwords do not match.'); return false; }
+      if (nw === cur)           { Swal.showValidationMessage('New password must be different from the current one.'); return false; }
+
+      try {
+        await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, cur));
+        await updatePassword(user, nw);
+        return true;
+      } catch (err) {
+        const msgs = {
+          'auth/wrong-password':        'Your current password is incorrect.',
+          'auth/invalid-credential':    'Your current password is incorrect.',
+          'auth/weak-password':         'New password must be at least 6 characters.',
+          'auth/too-many-requests':     'Too many tries. Please wait a few minutes and try again.',
+          'auth/requires-recent-login': 'Please log out and log in again, then try again.'
+        };
+        Swal.showValidationMessage(msgs[err.code] || 'Could not change your password. Please try again.');
+        return false;
+      }
+    }
+  });
+
+  if (res.isConfirmed) {
+    Swal.fire({ icon: 'success', title: 'Password Updated', text: 'Your password has been changed.', timer: 2200, showConfirmButton: false });
   }
 });

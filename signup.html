@@ -8,7 +8,7 @@
   <link rel="icon" href="img/logo.png" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/signup.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -34,7 +34,7 @@
   <header class="su-hero">
     <div class="su-hero-inner">
       <h1>Register your school</h1>
-      <p>One school account lets you create game accounts for your students and follow how far they have played.</p>
+      <p>One school account lets you create game accounts for your students and follow how far they have played. We verify every school admin first.</p>
     </div>
   </header>
 
@@ -46,15 +46,22 @@
         <li>
           <span class="material-symbols-rounded">person_add</span>
           <div>
-            <strong>Create student accounts</strong>
-            <p>Students do not sign up themselves. You set each username and password.</p>
+            <strong>Register your students</strong>
+            <p>Enter each student's full name and Gmail. We email them a link to set their own password, so you never handle it.</p>
           </div>
         </li>
         <li>
           <span class="material-symbols-rounded">groups</span>
           <div>
-            <strong>Group students into sections</strong>
-            <p>Make a section for each class and move students between them.</p>
+            <strong>Organize students into sections</strong>
+            <p>Create a section for each class, set a student limit, and choose the section when you register a student.</p>
+          </div>
+        </li>
+        <li>
+          <span class="material-symbols-rounded">badge</span>
+          <div>
+            <strong>Add teachers</strong>
+            <p>Add teachers by Gmail and assign each one a section. They only see the students in their own section.</p>
           </div>
         </li>
         <li>
@@ -65,7 +72,7 @@
           </div>
         </li>
       </ul>
-      <p class="su-aside-note">After you pay and register, we email a verification link. Open it before you log in.</p>
+      <p class="su-aside-note">We check your document first. Once approved, you pay the one-time fee and your account is activated. We also email a verification link; open it before you log in.</p>
     </aside>
 
     <section class="modal su-card" aria-labelledby="su-title">
@@ -82,9 +89,9 @@
         </div>
 
         <div class="field">
-          <label for="sch-category"><span class="material-symbols-rounded fi purple">groups</span>Category</label>
+          <label for="sch-category"><span class="material-symbols-rounded fi purple">groups</span>Type of User</label>
           <select id="sch-category" class="reg-select">
-            <option value="">Select category</option>
+            <option value="">Select type of user</option>
             <option value="Teacher">Teacher</option>
             <option value="Principal">Principal</option>
             <option value="School Administrator">School Administrator</option>
@@ -114,15 +121,6 @@
           </div>
         </div>
 
-        <div class="field">
-          <label for="sch-confirm"><span class="material-symbols-rounded fi yellow">lock_reset</span>Confirm Password</label>
-          <div class="pass-wrap">
-            <input type="password" id="sch-confirm" placeholder="Type your password again" autocomplete="new-password" />
-            <button type="button" class="pass-eye" data-toggle-pass="sch-confirm" aria-label="Show password">
-              <span class="material-symbols-rounded">visibility</span>
-            </button>
-          </div>
-        </div>
 
         <div class="signup-divider"></div>
 
@@ -133,14 +131,30 @@
 
         <div class="signup-divider"></div>
 
-        <div class="pay-title"><span class="material-symbols-rounded fi purple">credit_card</span>Payment</div>
-        <div class="pay-group" role="radiogroup" aria-label="Payment method">
-          <label class="pay-opt"><input type="radio" name="sch-pay" value="GCash" /><span class="material-symbols-rounded">account_balance_wallet</span><span>GCash</span></label>
-          <label class="pay-opt"><input type="radio" name="sch-pay" value="Credit/Debit Card" /><span class="material-symbols-rounded">credit_card</span><span>Credit / Debit Card</span></label>
-        </div>
-        <p class="modal-note">One-time registration fee: <b>₱500</b>.</p>
+        <div class="pay-title"><span class="material-symbols-rounded fi purple">verified_user</span>Proof of Position</div>
+        <p class="field-hint-top">Upload a document that shows you work at this school. We check it before your account is activated.</p>
 
-        <button class="btn-orange full" id="school-register-btn">Pay ₱500 &amp; Register</button>
+        <div class="field">
+          <label for="sch-doctype"><span class="material-symbols-rounded fi teal">badge</span>Document Type</label>
+          <select id="sch-doctype" class="reg-select">
+            <option value="">Select document</option>
+            <option value="School ID / Employee ID">School ID / Employee ID</option>
+            <option value="DepEd ID">DepEd ID</option>
+            <option value="Appointment letter / Service record">Appointment letter / Service record</option>
+            <option value="Certificate of Employment">Certificate of Employment</option>
+            <option value="Other official school document">Other official school document</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="sch-doc"><span class="material-symbols-rounded fi red">upload_file</span>Upload Document</label>
+          <input type="file" id="sch-doc" class="reg-file" accept="image/jpeg,image/png,image/webp" />
+          <img id="sch-doc-preview" class="reg-doc-preview" alt="Preview of the selected document" />
+        </div>
+
+        <p class="modal-note">After we approve your document, you pay the one-time registration fee of <b>&#8369;500</b> to activate your account.</p>
+
+        <button class="btn-orange full" id="school-register-btn">Submit for Verification</button>
       </div>
 
       <small class="signup-login">Already have an account? <a href="index.html#login">Login</a></small>
@@ -156,7 +170,7 @@
       </div>
 
       <div class="ft-col">
-        <h5>Project</h5>
+        <h5>Project Team</h5>
         <ul>
           <li>Erjohn Zaballa</li>
           <li>Cyrel Labora</li>

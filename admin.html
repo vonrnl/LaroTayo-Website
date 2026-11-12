@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Admin Panel – Laro Tayo</title>
   <link rel="stylesheet" href="css/school-admin.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -19,9 +19,11 @@
     </div>
     <nav class="sa-menu">
       <button class="sa-menu-btn active" data-tab="dashboard"><span class="material-symbols-rounded">home</span><span>Dashboard</span></button>
+      <button class="sa-menu-btn" data-tab="verify"><span class="material-symbols-rounded">verified_user</span><span>Verification</span><span class="sa-count" id="nav-verify-count">0</span></button>
       <button class="sa-menu-btn" data-tab="schools"><span class="material-symbols-rounded">school</span><span>Schools</span><span class="sa-count" id="nav-school-count">0</span></button>
       <button class="sa-menu-btn" data-tab="payments"><span class="material-symbols-rounded">payments</span><span>Payments</span></button>
       <button class="sa-menu-btn" data-tab="reports"><span class="material-symbols-rounded">bar_chart</span><span>Reports</span></button>
+      <button class="sa-menu-btn" data-tab="bugs"><span class="material-symbols-rounded">bug_report</span><span>Bug Reports</span><span class="sa-count" id="nav-bug-count">0</span></button>
       <button class="sa-menu-btn" data-tab="settings"><span class="material-symbols-rounded">settings</span><span>Settings</span></button>
     </nav>
     <button class="sa-logout" id="admin-logout"><span class="material-symbols-rounded">logout</span><span>Logout</span></button>
@@ -49,6 +51,7 @@
           <div class="sa-stat blue"><span>Schools</span><strong id="st-schools">0</strong></div>
           <div class="sa-stat green"><span>Paid Schools</span><strong id="st-paid">0</strong></div>
           <div class="sa-stat yellow"><span>Students</span><strong id="st-students">0</strong></div>
+          <div class="sa-stat orange"><span>Waiting for Review</span><strong id="st-pending">0</strong></div>
         </div>
         <div class="sa-two">
           <div class="sa-card">
@@ -65,6 +68,21 @@
               <tbody id="dash-payments"></tbody>
             </table></div>
           </div>
+        </div>
+      </section>
+
+      <!-- VERIFICATION -->
+      <section class="sa-panel" id="tab-verify">
+        <div class="sa-head"><h1>Verification</h1><p>Check the document each new school admin sent. Approve them so they can pay and start, or reject with a reason.</p></div>
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div><h3>Applications</h3><p class="sa-sub">Waiting for review first. The document is deleted when you approve.</p></div>
+          </div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>School</th><th>Admin</th><th>Email</th><th>Applied</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="verify-body"></tbody>
+          </table></div>
+          <p class="sa-foot" id="verify-count"></p>
         </div>
       </section>
 
@@ -123,6 +141,29 @@
             <thead><tr><th>School</th><th>Admin</th><th>Students</th><th>Access</th></tr></thead>
             <tbody id="rp-schools"></tbody>
           </table></div>
+        </div>
+      </section>
+
+      <!-- BUG REPORTS -->
+      <section class="sa-panel" id="tab-bugs">
+        <div class="sa-head"><h1>Bug Reports</h1><p>Bugs, feedback and ideas sent by players from their dashboard.</p></div>
+        <div class="sa-card">
+          <div class="sa-card-head">
+            <div><h3>Reports</h3><p class="sa-sub">Newest first.</p></div>
+            <div class="sa-tools">
+              <select class="sa-select" id="bug-type">
+                <option value="">All types</option>
+                <option value="bug">Bug</option>
+                <option value="feedback">Feedback</option>
+                <option value="suggestion">Suggestion</option>
+              </select>
+            </div>
+          </div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>Date</th><th>From</th><th>Type</th><th>About</th><th>Message</th></tr></thead>
+            <tbody id="bugs-body"></tbody>
+          </table></div>
+          <p class="sa-foot" id="bugs-count"></p>
         </div>
       </section>
 

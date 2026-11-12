@@ -1,12 +1,12 @@
-// Laro Tayo - Maya Checkout backend (Cloudflare Worker)
+// Laro Tayo - PayMongo Checkout backend (Cloudflare Worker)
 //   POST /create-checkout  -> { id, checkoutUrl }
 //   GET  /status?id=...    -> { paid, reference, method, last4, amount, paymentId }
 //
-// Secrets: MAYA_PUBLIC_KEY (pk-...), MAYA_SECRET_KEY (sk-...)
-// Vars:    ALLOWED_ORIGIN (your website, no trailing slash)
-//          MAYA_API  https://pg-sandbox.paymaya.com  (sandbox)  |  https://pg.maya.ph  (live)
+// Secret: PAYMONGO_SECRET_KEY  (sk_test_... for testing, sk_live_... for real money)
+// Vars:   ALLOWED_ORIGIN       (your website, no trailing slash)
 
-const FEE = 500;   // pesos. Set here, never trusted from the browser.
+const FEE = 500;                       // pesos. Set here, never trusted from the browser.
+const API = 'https://api.paymongo.com/v1';
 
 const json = (body, status, origin) =>
   new Response(JSON.stringify(body), {
@@ -18,12 +18,11 @@ const json = (body, status, origin) =>
     }
   });
 
-const basic = key => 'Basic ' + btoa(key + ':');
+const auth = env => 'Basic ' + btoa(env.PAYMONGO_SECRET_KEY + ':');
 
 export default {
   async fetch(req, env) {
     const origin = env.ALLOWED_ORIGIN;
-    const api = env.MAYA_API || 'https://pg-sandbox.paymaya.com';
     const url = new URL(req.url);
 
     if (req.method === 'OPTIONS') {
@@ -47,60 +46,69 @@ export default {
         if (!b.reference || !b.email || !b.returnUrl) return json({ error: 'Missing fields.' }, 400, origin);
         if (new URL(b.returnUrl).origin !== origin) return json({ error: 'Bad return URL.' }, 400, origin);
 
-        const res = await fetch(api + '/checkout/v1/checkouts', {
+        const m = String(b.method || '').toLowerCase();
+        const types = m.includes('gcash') ? ['gcash']
+                    : m.includes('card')  ? ['card']
+                    : ['gcash', 'card', 'paymaya'];
+
+        const res = await fetch(API + '/checkout_sessions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: basic(env.MAYA_PUBLIC_KEY) },
+          headers: { 'Content-Type': 'application/json', Authorization: auth(env) },
           body: JSON.stringify({
-            totalAmount: { value: FEE, currency: 'PHP' },
-            buyer: {
-              firstName: String(b.name || 'School').slice(0, 60),
-              contact: { email: b.email }
-            },
-            items: [{
-              name: 'Laro Tayo School Registration',
-              quantity: 1,
-              totalAmount: { value: FEE }
-            }],
-            redirectUrl: {
-              success: b.returnUrl + '?paid=1',
-              failure: b.returnUrl + '?cancelled=1',
-              cancel:  b.returnUrl + '?cancelled=1'
-            },
-            requestReferenceNumber: b.reference,        // the Firebase uid
-            metadata: { school: String(b.school || '').slice(0, 80) }
+            data: {
+              attributes: {
+                billing: { name: String(b.name || 'School').slice(0, 60), email: b.email },
+                line_items: [{
+                  currency: 'PHP',
+                  amount: FEE * 100,                       // centavos
+                  name: 'Laro Tayo School Registration',
+                  quantity: 1
+                }],
+                payment_method_types: types,
+                description: 'Laro Tayo School Registration (one-time fee)',
+                reference_number: b.reference,             // the Firebase uid
+                send_email_receipt: true,
+                show_description: true,
+                show_line_items: true,
+                success_url: b.returnUrl + '?paid=1',
+                cancel_url:  b.returnUrl + '?cancelled=1',
+                metadata: { uid: b.reference, school: String(b.school || '').slice(0, 80) }
+              }
+            }
           })
         });
         const out = await res.json().catch(() => ({}));
-        if (!res.ok || !out.checkoutId) {
-          return json({ error: out.message || 'Maya error' }, 502, origin);
+        const d = out.data;
+        if (!res.ok || !d || !d.attributes || !d.attributes.checkout_url) {
+          const msg = out.errors && out.errors[0] && out.errors[0].detail;
+          return json({ error: msg || 'PayMongo error' }, 502, origin);
         }
-        return json({ id: out.checkoutId, checkoutUrl: out.redirectUrl }, 200, origin);
+        return json({ id: d.id, checkoutUrl: d.attributes.checkout_url }, 200, origin);
       }
 
       // ---------- STATUS ----------
       if (url.pathname === '/status' && req.method === 'GET') {
         const id = url.searchParams.get('id');
-        if (!id || !/^[A-Za-z0-9-]{10,64}$/.test(id)) return json({ paid: false }, 400, origin);
+        if (!id || !/^[A-Za-z0-9_-]{10,80}$/.test(id)) return json({ paid: false }, 400, origin);
 
-        const res = await fetch(api + '/checkout/v1/checkouts/' + id, {
-          headers: { Authorization: basic(env.MAYA_SECRET_KEY) }
+        const res = await fetch(API + '/checkout_sessions/' + id, {
+          headers: { Authorization: auth(env) }
         });
         if (!res.ok) return json({ paid: false }, 200, origin);
-        const c = await res.json();
+        const a = ((await res.json()).data || {}).attributes || {};
 
-        const value = Number(c.totalAmount && c.totalAmount.value);
-        const paid = c.paymentStatus === 'PAYMENT_SUCCESS' && value >= FEE;
-        if (!paid) return json({ paid: false }, 200, origin);
+        const pay = (a.payments || []).find(p =>
+          p.attributes && p.attributes.status === 'paid' && Number(p.attributes.amount) >= FEE * 100);
+        if (!pay) return json({ paid: false }, 200, origin);
 
-        const efs = (c.paymentDetails && c.paymentDetails.responses && c.paymentDetails.responses.efs) || {};
-        const pan = String(efs.maskedPan || (c.paymentDetails && c.paymentDetails.maskedPan) || '');
+        const src = pay.attributes.source || {};
         return json({
           paid: true,
-          reference: c.requestReferenceNumber,
-          method: 'maya',
-          last4: pan ? pan.slice(-4) : null,
-          amount: value,
-          paymentId: efs.paymentTransactionReferenceNo || c.id || id
+          reference: a.reference_number,
+          method: src.type || 'paymongo',
+          last4: src.last4 || null,
+          amount: Number(pay.attributes.amount) / 100,
+          paymentId: pay.id
         }, 200, origin);
       }
 
