@@ -37,6 +37,7 @@
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=expose@700&f[]=bespoke-sans@400,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="dashboard-body">
@@ -47,33 +48,30 @@
       <span class="logo-o">LARO TAYO</span>
     </a>
 
-    <!-- Hamburger + avatar grouped together on mobile -->
-    <div class="dash-hamburger-group">
-      <button class="dash-hamburger" id="dash-hamburger" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
+    <!-- Account menu: avatar + name opens a small dropdown -->
+    <div class="dash-account" id="dash-account">
+      <button class="dash-account-btn" id="dash-account-btn" type="button"
+              aria-haspopup="menu" aria-expanded="false" aria-controls="dash-menu">
+        <img class="dash-account-avatar" id="dash-avatar" src="img/avatar-bata.png" alt="" />
+        <span class="dash-account-name" id="dash-name">...</span>
+        <span class="material-symbols-rounded dash-account-caret" aria-hidden="true">expand_more</span>
       </button>
-    </div>
 
-    <!-- Nav menu -->
-    <div class="dash-nav-user" id="dash-nav-user">
-      <div class="dash-user-info">
-        <span class="dash-welcome">Welcome back, <strong id="dash-name">...</strong>!</span>
+      <div class="dash-menu" id="dash-menu" role="menu" hidden>
+        <button class="dash-menu-item" id="dash-edit-profile" type="button" role="menuitem">
+          <span class="material-symbols-rounded" aria-hidden="true">person</span>Edit Profile
+        </button>
+        <button class="dash-menu-item" id="dash-password-btn" type="button" role="menuitem">
+          <span class="material-symbols-rounded" aria-hidden="true">lock</span>Change Password
+        </button>
+        <button class="dash-menu-item" id="dash-report-btn" type="button" role="menuitem">
+          <span class="material-symbols-rounded" aria-hidden="true">bug_report</span>Report a Bug
+        </button>
+        <div class="dash-menu-sep" role="separator"></div>
+        <button class="dash-menu-item danger" id="dash-logout" type="button" role="menuitem">
+          <span class="material-symbols-rounded" aria-hidden="true">logout</span>Logout
+        </button>
       </div>
-      <button class="dash-home-btn" id="dash-home-btn" onclick="window.location.href='index.html'">
-        <span>Home</span>
-      </button>
-      <button class="dash-edit-btn" id="dash-edit-profile">
-        <span>Edit Profile</span>
-      </button>
-      <button class="dash-edit-btn" id="dash-report-btn">
-        <span>Report a Bug</span>
-      </button>
-      <button class="dash-edit-btn" id="dash-password-btn">
-        <span>Change Password</span>
-      </button>
-      <button class="dash-logout-btn" id="dash-logout">
-        <span>Logout</span>
-      </button>
     </div>
   </nav>
  
@@ -184,9 +182,18 @@
       <div class="rank-pill" id="rank-pill" hidden>
         <span id="rank-pill-text">—</span>
       </div>
+      <div class="rank-pill" id="mp-rank-pill" hidden>
+        <span id="mp-rank-pill-text">—</span>
+      </div>
       <div class="stats-grid">
         <div class="stat-card yellow">
           <div class="stat-info"><span class="stat-value" id="stat-chapters">—</span><span class="stat-label">Story Chapters</span></div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-info"><span class="stat-value" id="stat-mp-wins">—</span><span class="stat-label">Multiplayer Wins</span></div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-info"><span class="stat-value" id="stat-mp-plays">—</span><span class="stat-label">Multiplayer Games</span></div>
         </div>
       </div>
     </section>
@@ -216,6 +223,20 @@
       </div>
     </section>
 
+    <!-- MULTIPLAYER GAMES -->
+    <section class="dash-section">
+      <div class="section-title">
+        <span class="tag">Play Together</span>
+        <h2>Multiplayer</h2>
+        <p class="section-sub">Play multiplayer games to make progress</p>
+      </div>
+      <div class="mp-stats" id="mp-stats">
+        <div class="mp-stat"><span>Patintero</span><strong class="mp-played" id="mp-patintero">Not yet played</strong></div>
+        <div class="mp-stat"><span>Sekyu Base</span><strong class="mp-played" id="mp-sekyu">Not yet played</strong></div>
+        <div class="mp-stat"><span>Bamsak</span><strong class="mp-played" id="mp-bamsak">Not yet played</strong></div>
+      </div>
+    </section>
+
     <!-- PLAYER ACHIEVEMENTS -->
     <section class="dash-section">
       <div class="section-title">
@@ -228,30 +249,39 @@
       </div>
     </section>
 
+    <!-- MULTIPLAYER LEADERBOARD -->
+    <section class="dash-section">
+      <div class="section-title">
+        <span class="tag">Multiplayer</span>
+        <h2>Leaderboard</h2>
+        <p class="section-sub">Top 10 players by multiplayer wins</p>
+      </div>
+      <div class="lb-card">
+        <table class="lb-table">
+          <thead><tr><th>#</th><th>Player</th><th class="lb-num">Wins</th><th class="lb-num">Games</th></tr></thead>
+          <tbody id="lb-body"><tr><td colspan="4" class="lb-empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 
   <script>
-    // Hamburger menu toggle
-    const hamburger = document.getElementById('dash-hamburger');
-    const navUser   = document.getElementById('dash-nav-user');
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('open');
-      navUser.classList.toggle('open');
-    });
-    // Close menu when clicking anywhere outside it
-    document.addEventListener('click', (e) => {
-      if (!navUser.contains(e.target) && !hamburger.contains(e.target)) {
-        hamburger.classList.remove('open');
-        navUser.classList.remove('open');
-      }
-    });
-    // Close menu when a button inside is clicked
-    navUser.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('click', () => {
-        hamburger.classList.remove('open');
-        navUser.classList.remove('open');
-      });
-    });
+    // Account dropdown
+    (function () {
+      const wrap = document.getElementById('dash-account');
+      const btn  = document.getElementById('dash-account-btn');
+      const menu = document.getElementById('dash-menu');
+      const setOpen = (open) => {
+        menu.hidden = !open;
+        wrap.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      };
+      btn.addEventListener('click', () => setOpen(menu.hidden));
+      document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) setOpen(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setOpen(false); btn.focus(); } });
+      menu.querySelectorAll('button').forEach(b => b.addEventListener('click', () => setOpen(false)));
+    })();
   </script>
     <script type="module" src="script/dashboard.js"></script>
 </body>

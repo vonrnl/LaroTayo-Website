@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 import { getAuth, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc,
-  collection, query, where, limit, getDocs, getCountFromServer, onSnapshot, serverTimestamp
+  collection, query, where, orderBy, limit, getDocs, getCountFromServer, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -127,7 +127,14 @@ const ACHIEVEMENTS = [
   { id: 'sipa',              title: 'Sipa',             desc: 'Unlocked by completing the Sipa stage.' },
   { id: 'hulihin_ang_baboy', title: 'Hulihin ang Biik', desc: 'Unlocked by completing the Hulihin ang Biik stage.' },
   { id: 'luksong_baka',      title: 'Luksong Baka',     desc: 'Unlocked by completing the Luksong Baka stage.' },
-  { id: 'story_complete',    title: 'Story Complete',   desc: 'Unlocked by completing all story chapters.', stage: STORY_CHAPTERS.length }
+  { id: 'story_complete',    title: 'Story Complete',   desc: 'Unlocked by completing all story chapters.', stage: STORY_CHAPTERS.length },
+  // Multiplayer badges: saved by Unity in students/{uid}/achievements/badges
+  // (<key>BadgeEarned = reached, <key>BadgeClaimed = player pressed CLAIM in the game)
+  { id: 'friendly',    title: 'Friendly',    desc: 'Make friends in the game.',                          badge: 'friendly' },
+  { id: 'veteran',     title: 'Veteran',     desc: 'Play Patintero, Sekyu Base and Bamsak at least once.', badge: 'veteran' },
+  { id: 'mvp',         title: 'MVP',         desc: 'Be the MVP in a Sekyu Base match.',                  badge: 'mvp' },
+  { id: 'team_player', title: 'Team Player', desc: 'Earn it by teamwork in Sekyu Base.',                 badge: 'teamPlayer' },
+  { id: 'speedster',   title: 'Speedster',   desc: 'Earn it by speed in Sekyu Base.',                    badge: 'speedster' }
 ];
 
 function formatAchievementTime(ms) {
@@ -152,18 +159,39 @@ function resultBlock(label, value, small = '', extraClass = '') {
   </div>`;
 }
 
+function renderMultiplayerStats(summary) {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('stat-mp-wins',  String(num(summary.totalMultiplayerWins)));
+  set('stat-mp-plays', String(num(summary.totalMultiplayerPlays)));
+  loadMultiplayerRank(num(summary.totalMultiplayerWins));
+  [['mp-patintero', 'playedPatintero'], ['mp-sekyu', 'playedSekyuBase'], ['mp-bamsak', 'playedBamsak']].forEach(([id, f]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = summary[f] === true ? 'Played' : 'Not yet';
+    el.classList.toggle('on', summary[f] === true);
+  });
+}
+
 function renderAchievements(achievementData, chaptersCompleted = 0) {
   const grid = document.getElementById('ach-grid');
   if (!grid) return;
+
+  const summary = achievementData.get('summary') || {};   // multiplayer totals + storyFinished
+  const badges  = achievementData.get('badges')  || {};   // multiplayer badges
+  renderMultiplayerStats(summary);
 
   let unlockedCount = 0;
   grid.innerHTML = ACHIEVEMENTS.map(a => {
     const data = achievementData.get(a.id);
     // Luksong Baka needs a real win (Unity also saves failed runs with completed = false).
-    // Other Unity badges: a document that isn't marked unlocked:false. Story badge: chapters.
-    const unlocked = a.stage
-      ? chaptersCompleted >= a.stage
-      : !!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false);
+    // Other Unity badges: a document that isn't marked unlocked:false. Story badge: chapters
+    // (or the game's storyFinished flag). Multiplayer badge: claimed in the game.
+    const earnedNotClaimed = !!a.badge && badges[a.badge + 'BadgeEarned'] === true && badges[a.badge + 'BadgeClaimed'] !== true;
+    const unlocked = a.badge
+      ? badges[a.badge + 'BadgeClaimed'] === true
+      : a.stage
+        ? (chaptersCompleted >= a.stage || summary.storyFinished === true)
+        : !!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false);
     if (unlocked) unlockedCount++;
 
     let extra = '';
@@ -178,12 +206,62 @@ function renderAchievements(achievementData, chaptersCompleted = 0) {
       <h4>${escapeHtml(a.title)}</h4>
       <p>${escapeHtml(a.desc)}</p>
       ${extra}
-      <span class="ach-status">${unlocked ? 'Unlocked' : 'Locked'}</span>
+      <span class="ach-status">${unlocked ? 'Unlocked' : earnedNotClaimed ? 'Claim it in the game' : 'Locked'}</span>
     </div>`;
   }).join('');
 
   const countText = document.getElementById('ach-count');
   if (countText) countText.textContent = `${unlockedCount} of ${ACHIEVEMENTS.length} badges unlocked`;
+}
+
+// Multiplayer rank: same idea as loadRank, but by multiplayer wins (the game's Trophy count,
+// mirrored on students/{uid}.totalMultiplayerWins by Unity).
+async function loadMultiplayerRank(wins){
+  const pill = document.getElementById('mp-rank-pill');
+  const text = document.getElementById('mp-rank-pill-text');
+  if (!pill || !text) return;
+  if (!(wins > 0)){ pill.hidden = true; return; }
+  try{
+    const higher = await getCountFromServer(query(collection(db,'students'), where('totalMultiplayerWins','>', wins)));
+    const rank = higher.data().count + 1;
+    text.textContent = rank === 1 ? `You're #1 in multiplayer!` : `You're #${rank} in multiplayer`;
+    pill.hidden = false;
+  }catch(err){
+    console.error('loadMultiplayerRank:', err);
+    pill.hidden = true;
+  }
+}
+
+/* ============================================================
+   MULTIPLAYER LEADERBOARD (top 10 by wins)
+   Uses students/{uid}.totalMultiplayerWins, mirrored by Unity.
+   ============================================================ */
+async function loadLeaderboard(myUid){
+  const body = document.getElementById('lb-body');
+  if (!body) return;
+  try{
+    const snap = await getDocs(query(collection(db,'students'), orderBy('totalMultiplayerWins','desc'), limit(10)));
+    const rows = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(p => p.status !== 'deleted' && num(p.totalMultiplayerWins) > 0);
+    if (!rows.length){
+      body.innerHTML = '<tr><td colspan="4" class="lb-empty">No multiplayer winners yet. Be the first!</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map((p, i) => {
+      const medal = ['🥇','🥈','🥉'][i] || (i + 1);
+      const name = p.username || 'Player';
+      return `<tr class="${p.id === myUid ? 'lb-me' : ''}">
+        <td class="lb-rank">${medal}</td>
+        <td><div class="lb-player"><img class="lb-avatar" src="${avatarSrc(p.avatar)}" alt=""><span>${escapeHtml(name)}${p.id === myUid ? ' (You)' : ''}</span></div></td>
+        <td class="lb-num">${num(p.totalMultiplayerWins)}</td>
+        <td class="lb-num">${num(p.totalMultiplayerPlays)}</td>
+      </tr>`;
+    }).join('');
+  }catch(err){
+    console.error('loadLeaderboard:', err);
+    body.innerHTML = '<tr><td colspan="4" class="lb-empty">Could not load the leaderboard.</td></tr>';
+  }
 }
 
 async function loadAchievements(uid, chaptersCompleted = 0) {
@@ -579,6 +657,7 @@ onAuthStateChanged(auth, async (user) => {
 
     loadAchievements(user.uid, stats.chaptersCompleted);
     loadRank(u.totalScore);
+    loadLeaderboard(user.uid);
 
     // friends
     watchFriends();

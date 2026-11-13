@@ -1575,3 +1575,151 @@ body::-webkit-scrollbar,
   .dash-nav-user .dash-edit-btn span:last-child,
   .dash-nav-user .dash-logout-btn span:last-child { display: inline !important; }
 }
+
+/* ---- MULTIPLAYER STATS (above the badges) ---- */
+.mp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.mp-stat {
+  background: #fff;
+  border: 3px solid #dde8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+  padding: 12px 14px;
+  text-align: center;
+}
+.mp-stat span { display: block; font-size: 0.72rem; font-weight: 700; color: #9AAABB; margin-bottom: 4px; }
+.mp-stat strong { font-family: var(--font-sub); font-weight: 600; font-size: 1.4rem; color: var(--text); }
+.mp-stat .mp-played { font-size: 0.95rem; color: #9AAABB; }
+.mp-stat .mp-played.on { color: #1a7a3c; }
+
+
+/* two rank pills side by side (overall + multiplayer) */
+.rank-pill + .rank-pill { margin-left: 8px; }
+
+/* ---- MULTIPLAYER LEADERBOARD ---- */
+.lb-card {
+  background: #fff;
+  border: 3px solid #dde8f0;
+  border-radius: 20px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+  overflow-x: auto;
+}
+.lb-table { width: 100%; border-collapse: collapse; }
+.lb-table th {
+  font-family: var(--font-sub); font-weight: 600;
+  font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;
+  color: #9AAABB; text-align: left;
+  padding: 12px 16px; background: #f5f9ff; border-bottom: 2px solid #dde8f0;
+}
+.lb-table td { padding: 10px 16px; border-bottom: 1px solid #eef2f6; font-weight: 700; color: var(--text); }
+.lb-table tr:last-child td { border-bottom: 0; }
+.lb-table .lb-num { text-align: right; width: 80px; }
+.lb-rank { width: 56px; font-size: 1.2rem; text-align: center; }
+.lb-table th:first-child { text-align: center; }
+.lb-player { display: flex; align-items: center; gap: 10px; }
+.lb-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #f0f6ff; border: 2px solid #dde8f0; }
+.lb-me td { background: #FFFDF0; }
+.lb-empty { text-align: center; color: #9AAABB; padding: 24px 16px !important; }
+@media (max-width: 600px) {
+  .lb-table th, .lb-table td { padding: 9px 10px; }
+  .lb-avatar { width: 30px; height: 30px; }
+}
+
+/* ============================================================
+   ACCOUNT DROPDOWN (replaces the hamburger + big buttons)
+   ============================================================ */
+.dash-account { position: relative; margin-left: auto; }
+
+.dash-account-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 0; border-radius: 999px;
+  padding: 5px 12px 5px 5px;
+  color: #fff; cursor: pointer;
+  font-family: var(--font-head); font-weight: 600; font-size: 0.92rem;
+  transition: background 0.2s;
+}
+.dash-account-btn:hover,
+.dash-account.open .dash-account-btn { background: rgba(255,255,255,0.16); }
+.dash-account-btn:focus-visible,
+.dash-menu-item:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+
+.dash-account-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  object-fit: cover; background: var(--light);
+  border: 2px solid var(--orange); display: block;
+}
+.dash-account-name {
+  max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.dash-account-caret { font-size: 20px; transition: transform 0.2s; }
+.dash-account.open .dash-account-caret { transform: rotate(180deg); }
+
+.dash-menu {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 232px; padding: 8px;
+  background: #fff; border: 2px solid #dde8f0; border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(13,30,60,0.22);
+  animation: dash-menu-in 0.14s ease-out;
+}
+.dash-menu[hidden] { display: none; }
+@keyframes dash-menu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.dash-menu-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 11px 12px;
+  background: none; border: 0; border-radius: 10px;
+  color: var(--text); cursor: pointer; text-align: left;
+  font-family: var(--font-head); font-weight: 600; font-size: 0.95rem;
+  transition: background 0.15s;
+}
+.dash-menu-item .material-symbols-rounded { font-size: 22px; color: #6A8AA0; }
+.dash-menu-item:hover { background: #EEF6FF; }
+.dash-menu-item.danger,
+.dash-menu-item.danger .material-symbols-rounded { color: #e53935; }
+.dash-menu-item.danger:hover { background: #FDECEA; }
+.dash-menu-sep { height: 1px; margin: 6px 4px; background: #dde8f0; }
+
+@media (max-width: 480px) {
+  .dash-account-name { display: none; }
+  .dash-account-btn { padding-right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dash-menu { animation: none; }
+  .dash-account-caret { transition: none; }
+}
+
+/* ============================================================
+   TIGHTER SPACING (smaller gaps between profile blocks)
+   ============================================================ */
+.dash-nav { height: 64px; }
+.dash-main { padding-top: 84px; padding-bottom: 40px; }
+.dash-welcome-banner { margin-bottom: 8px; }
+.dash-header { margin-bottom: 16px; }
+.dash-header h1 { margin-bottom: 2px; }
+.dash-section { padding: 0; margin-bottom: 20px; }   /* padding: 0 cancels style.css "section { padding: 80px 24px }" */
+.section-title { margin-bottom: 12px; }
+.section-title h2 { margin-top: 6px; }
+.rank-pill { margin-bottom: 10px; }
+.stats-grid { gap: 14px; }
+.stat-card { padding: 18px 20px; }
+.story-overview { margin-bottom: 12px; }
+.mp-stats { margin-bottom: 0; }
+@media (max-width: 768px) {
+  .dash-nav { min-height: 60px; flex-wrap: nowrap; }
+  .dash-main { padding-top: 76px; }
+  .stats-grid { gap: 10px; }
+}
+
+/* ============================================================
+   DARKER BACKGROUND (raise the 0.12 for darker, lower for lighter)
+   ============================================================ */
+.dashboard-body { background-color: #E3ECF8; }
+.dashboard-body::before {
+  background-image: linear-gradient(rgba(13, 30, 60, 0.12), rgba(13, 30, 60, 0.12)),
+                    url('../img/dbbg.png');
+}
