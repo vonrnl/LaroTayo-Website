@@ -48,7 +48,7 @@ if (currentPage === 'index.html' || currentPage === '') {
         });
       }
     });
-  }, { threshold: 0.3, rootMargin: '-60px 0px -40% 0px' });
+  }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });   // thin line across the middle of the screen: whichever section crosses it becomes active (works for tall sections like Games)
 
   sections.forEach(sec => scrollObserver.observe(sec));
 }

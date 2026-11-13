@@ -6,9 +6,6 @@
 export const REGISTRATION_FEE = 500;          // pesos
 export const TEST_MODE = true;
 
-// ---- WHICH PAYMENT TO USE ----
-//   'sim'      = the built-in fake checkout (no PayMongo, no backend needed)
-//   'paymongo' = real PayMongo checkout page (use test keys = still no real money)
 export const PAYMENT_MODE = 'paymongo';
 // Your Cloudflare Worker address (see paymongo-worker/worker.js), no trailing slash.
 export const PAYMONGO_API = 'https://laro-tayo-paymongo.vhondimapilis26.workers.dev';

@@ -1,9 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
 /* ============================================================
    SCHOOL ADMIN PANEL  (separate from the website admin panel)
    ============================================================ */
 :root {
-  --font-head: 'Bungee', 'Lilita One', cursive;   /* headings, buttons, big numbers */
-  --font-body: 'Poppins', 'Nunito', sans-serif;           /* normal text */
+  --font-title: 'Bungee', var(--font-body);   /* main headings only: h1, h2, logo (Bungee) */
+  --font-head: var(--font-body);   /* subheadings, buttons, labels (Bespoke Sans) */
+  --font-family: var(--font-head);                  /* old name, kept so nothing breaks */
+  --font-body: 'Bespoke Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;   /* normal text (Bespoke Sans) */
   --blue: #2B7FD4;
   --orange: #F4A234;
   --orange-dark: #D4851A;
@@ -41,7 +44,7 @@ html { scroll-behavior: smooth; }
   transition: transform 0.25s ease;
 }
 .sa-brand { padding: 0 8px 20px; border-bottom: 2px solid rgba(255,255,255,0.12); margin-bottom: 16px; }
-.sa-logo { display: block; font-family: var(--font-head); font-size: 1.55rem; color: var(--yellow); letter-spacing: 1px; }
+.sa-logo { display: block; font-family: var(--font-title); font-size: 1.55rem; color: var(--yellow); letter-spacing: 1px; }
 .sa-brand-sub { display: block; color: #fff; font-weight: 800; font-size: 0.85rem; margin-top: 2px; }
 .sa-school { display: block; color: #9db6d0; font-weight: 700; font-size: 0.75rem; margin-top: 4px; overflow-wrap: anywhere; }
 
@@ -93,14 +96,14 @@ html { scroll-behavior: smooth; }
   padding: 14px 28px;
 }
 .sa-top-left { display: flex; align-items: center; gap: 12px; }
-.sa-top h2 { font-family: var(--font-head); font-size: 1.25rem; font-weight: 400; color: var(--text); }
+.sa-top h2 { font-family: var(--font-title); font-size: 1.25rem; font-weight: 400; color: var(--text); }
 .sa-burger { display: none; background: none; border: 2px solid var(--line); border-radius: 10px; padding: 6px; color: var(--text); cursor: pointer; }
 .sa-user { display: flex; align-items: center; gap: 10px; }
 .sa-user-avatar {
   width: 38px; height: 38px; border-radius: 50%;
   background: var(--orange); color: #fff; border: 2px solid var(--orange-dark);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-head); font-size: 1.05rem;
+  font-family: var(--font-head); font-weight: 700; font-size: 1.05rem;
 }
 .sa-user-text { display: flex; flex-direction: column; line-height: 1.2; }
 .sa-user-text strong { font-size: 0.88rem; }
@@ -112,7 +115,7 @@ html { scroll-behavior: smooth; }
 @keyframes saFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
 .sa-head { margin-bottom: 20px; }
-.sa-head h1 { font-family: var(--font-head); font-weight: 400; font-size: 1.8rem; color: var(--text); }
+.sa-head h1 { font-family: var(--font-title); font-weight: 400; font-size: 1.8rem; color: var(--text); }
 .sa-head p { color: var(--soft); font-weight: 600; font-size: 0.92rem; margin-top: 2px; }
 
 /* ---- cards ---- */
@@ -131,7 +134,7 @@ html { scroll-behavior: smooth; }
   padding: 16px 20px;
   border-bottom: 2px solid #f0f5fb;
 }
-.sa-card-head h3, .sa-form-title { font-family: var(--font-head); font-weight: 400; font-size: 1.1rem; color: var(--text); }
+.sa-card-head h3, .sa-form-title { font-family: var(--font-head); font-weight: 700; font-size: 1.1rem; color: var(--text); }
 .sa-form-title { margin-bottom: 14px; }
 .sa-sub { font-size: 0.8rem; font-weight: 600; color: var(--soft); margin-top: 2px; }
 .sa-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -146,7 +149,7 @@ html { scroll-behavior: smooth; }
   display: flex; flex-direction: column; gap: 4px;
 }
 .sa-stat span { font-size: 0.8rem; font-weight: 800; color: var(--soft); text-transform: uppercase; letter-spacing: 0.5px; }
-.sa-stat strong { font-family: var(--font-head); font-weight: 400; font-size: 2.2rem; color: var(--text); line-height: 1.1; }
+.sa-stat strong { font-family: var(--font-head); font-weight: 700; font-size: 2.2rem; color: var(--text); line-height: 1.1; }
 .sa-stat.blue   { border-top-color: var(--blue); }
 .sa-stat.green  { border-top-color: var(--green); }
 .sa-stat.orange { border-top-color: var(--orange); }
@@ -183,7 +186,7 @@ html { scroll-behavior: smooth; }
   width: 30px; height: 30px; border-radius: 50%;
   background: #e3f2fd; color: var(--blue); border: 2px solid #b3d4f0;
   display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--font-head); font-size: 0.85rem; flex-shrink: 0;
+  font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
 }
 .sa-pill { display: inline-block; font-size: 0.75rem; font-weight: 800; padding: 3px 12px; border-radius: 50px; }
 .sa-pill.on  { background: #e8fef0; color: #1a7a3c; border: 1.5px solid var(--green); }
@@ -302,7 +305,7 @@ html { scroll-behavior: smooth; }
 }
 
 .modal-header h3 {
-  font-family: var(--font-head);
+  font-family: var(--font-head); font-weight: 700;
   font-size: 1.1rem;
   color: #1A3A5C;
 }
@@ -419,7 +422,7 @@ html { scroll-behavior: smooth; }
 }
 .pg-stat strong {
   display: block;
-  font-family: var(--font-head);
+  font-family: var(--font-head); font-weight: 700;
   font-size: 1.3rem;
   color: #1A3A5C;
 }
@@ -440,7 +443,7 @@ html { scroll-behavior: smooth; }
   color: #1A3A5C;
 }
 .pg-story-head strong {
-  font-family: var(--font-head);
+  font-family: var(--font-head); font-weight: 700;
   font-size: 1.4rem;
 }
 .pg-story-head span {
@@ -532,7 +535,7 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 12px 40px rgba(26, 58, 92, 0.25);
 }
 .swal2-title {
-  font-family: var(--font-head);
+  font-family: var(--font-title);
   font-weight: 400;
   font-size: 1.6rem;
   color: var(--text, #1A3A5C);
@@ -540,7 +543,7 @@ html { scroll-behavior: smooth; }
 .swal2-html-container { color: #4A6A85; font-size: 1rem; line-height: 1.5; }
 .swal2-styled {
   font-family: var(--font-head);
-  font-weight: 400;
+  font-weight: 700;
   font-size: 1rem;
   border-radius: 50px;
   padding: 10px 28px;
@@ -559,20 +562,6 @@ html { scroll-behavior: smooth; }
 }
 .swal2-timer-progress-bar { background: var(--orange, #F4A234); }
 .swal2-close:hover { color: var(--orange, #F4A234); }
-/* ---- HIDE SCROLLBARS (scrolling still works) ---- */
-html,
-body,
-* {
-  -ms-overflow-style: none;   /* old Edge / IE */
-  scrollbar-width: none;      /* Firefox */
-}
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  display: none;              /* Chrome, Safari, Edge */
-  width: 0;
-  height: 0;
-}
 /* ---- HIDE SCROLLBARS (scrolling still works) ---- */
 html,
 body,
@@ -610,14 +599,14 @@ body::-webkit-scrollbar,
 }
 .sa-gate-icon.good { background: #e8fef0; color: #1a7a3c; }
 .sa-gate-icon.bad  { background: #fde8e8; color: #c62828; }
-.sa-gate-card h2 { font-family: var(--font-head); font-weight: 400; font-size: 1.6rem; color: var(--text); margin-bottom: 8px; }
+.sa-gate-card h2 { font-family: var(--font-title); font-weight: 400; font-size: 1.6rem; color: var(--text); margin-bottom: 8px; }
 .sa-gate-card p { color: #4A6A8A; font-weight: 600; line-height: 1.6; font-size: 0.95rem; }
 .sa-gate-note { margin-top: 14px; padding: 10px 14px; border-radius: 12px; background: #FFF8E1; border: 2px dashed var(--orange); color: var(--text); font-size: 0.88rem; font-weight: 700; overflow-wrap: anywhere; }
 .sa-gate-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
 
 /* ---- PAYMENT POPUPS (GCash / card, test mode) ---- */
 .pay-popup { border-radius: 24px !important; font-family: var(--font-body, 'Poppins', sans-serif); }
-.pay-popup .swal2-title { font-family: 'Lilita One', 'Fredoka One', cursive; font-weight: 400; color: #0d1e3c; }
+.pay-popup .swal2-title { font-family: var(--font-title); font-weight: 400; color: #0d1e3c; }
 .pay-modal { text-align: center; }
 .pay-test-badge {
   display: inline-block; padding: 4px 12px; border-radius: 999px;
@@ -625,7 +614,7 @@ body::-webkit-scrollbar,
   font-size: 0.72rem; font-weight: 800; letter-spacing: .04em;
 }
 .pay-amt-label { margin: 14px 0 2px; color: #4A6A8A; font-weight: 700; font-size: 0.95rem; }
-.pay-amt { font-family: 'Lilita One', 'Fredoka One', cursive; font-size: 2.6rem; color: #F5A02B; line-height: 1.1; }
+.pay-amt { font-family: var(--font-head); font-weight: 700; font-size: 2.6rem; color: #F5A02B; line-height: 1.1; }
 .pay-sub { color: #4A6A8A; font-size: 0.85rem; font-weight: 600; margin: 4px 0 14px; }
 .pay-label { display: block; text-align: left; font-size: 0.82rem; font-weight: 700; color: #0d1e3c; margin: 10px 0 4px; }
 .pay-input {
@@ -656,7 +645,6 @@ body::-webkit-scrollbar,
 
 /* popups must appear above the verification / activation screen */
 .swal2-container { z-index: 4000 !important; }
-.swal2-container { z-index: 4000 !important; }
 
 /* ---- LIST OF SECTIONS (Sections tab) ---- */
 .sa-sec-list { display: grid; gap: 16px; padding: 4px 20px 20px; }
@@ -665,9 +653,13 @@ body::-webkit-scrollbar,
   display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   padding: 14px 18px; background: #f6faff; border-bottom: 2px solid var(--line);
 }
-.sa-sec-head h4 { font-family: var(--font-head); font-weight: 400; font-size: 1.05rem; color: var(--text); }
+.sa-sec-head h4 { font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; color: var(--text); }
 .sa-sec-head span { font-size: 0.8rem; font-weight: 600; color: var(--soft); }
 .sa-sec-empty { padding: 20px; text-align: center; color: #aaa; font-size: 0.9rem; }
 .sa-sec-head .sa-sec-teacher { display: block; margin-top: 4px; font-size: 0.8rem; font-weight: 600; color: var(--soft); }
 .sa-sec-head .sa-sec-teacher b { color: var(--blue); font-weight: 800; }
 .sa-sec-head .sa-sec-teacher.none { color: #b0b8c0; font-style: italic; }
+
+/* ---- EXPOSE BOLD HEADINGS (h1, h2, logo) / BESPOKE SANS BOLD SUBHEADINGS (h3, h4) ---- */
+h1, h2, .logo, .logo-o, .sa-logo { font-family: var(--font-title); font-weight: 700 !important; }
+h3, h4 { font-weight: 700 !important; }

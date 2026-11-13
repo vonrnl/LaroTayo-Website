@@ -6,4 +6,4 @@ workers_dev = true
 preview_urls = false
 
 [vars]
-ALLOWED_ORIGIN = "http://127.0.0.1:5500"
+ALLOWED_ORIGIN = "https://larotayo.netlify.app"
