@@ -246,6 +246,13 @@ const ACHIEVEMENTS = [
     stage: STORY_CHAPTERS.length,
     detail:(d, s) => `${s.chaptersCompleted}/${s.totalChapters} chapters completed`,
     goal:(s)      => `${s.chaptersCompleted}/${s.totalChapters} chapters` },
+  // Multiplayer badges: saved by Unity in students/{uid}/achievements/badges
+  // (<key>BadgeEarned = reached, <key>BadgeClaimed = player pressed CLAIM in the game)
+  { id:'friendly',    title:'Friendly',    desc:'Make friends in the game.',                            badge:'friendly' },
+  { id:'veteran',     title:'Veteran',     desc:'Play Patintero, Sekyu Base and Bamsak at least once.', badge:'veteran' },
+  { id:'mvp',         title:'MVP',         desc:'Be the MVP in a Sekyu Base match.',                    badge:'mvp' },
+  { id:'team_player', title:'Team Player', desc:'Earn it by teamwork in Sekyu Base.',                   badge:'teamPlayer' },
+  { id:'speedster',   title:'Speedster',   desc:'Earn it by speed in Sekyu Base.',                      badge:'speedster' },
 ];
 
 function formatAchievementTime(ms) {
@@ -317,6 +324,9 @@ export async function openProgressModal(student) {
   const saves = savesRes.ok ? savesRes.value.docs.map(d => ({ id: d.id, ...d.data() })) : [];
   const saved = achRes.ok ? new Map(achRes.value.docs.map(d => [d.id, d.data()])) : new Map();
 
+  const summary = saved.get('summary') || {};   // multiplayer totals + storyFinished
+  const badges  = saved.get('badges')  || {};   // multiplayer badges
+
   const chaptersCompleted = Math.min(total, saves.reduce((m, s) => Math.max(m, num(s.completedStage)), 0));
   const friendCount       = friendsRes.ok ? friendsRes.value.size : 0;
 
@@ -371,7 +381,7 @@ export async function openProgressModal(student) {
       <div class="pg-bar"><div class="pg-bar-fill" style="width:${pct}%"></div></div>
       <ul class="pg-list">${chapterRows}</ul>
       <p class="pg-subhead">Save slots (${saves.length})</p>
-      ${saves.length ? `<ul class="pg-list">${slotRows}</ul>` : '<p class="pg-row-meta" style="margin-top:8px">No story saves yet. The student has not started a New Game in Unity.</p>'}`;
+      ${saves.length ? `<ul class="pg-list">${slotRows}</ul>` : '<p class="pg-row-meta" style="margin-top:8px">No story saves yet.</p>'}`;
   }
 
   // ---- badges section ----
@@ -381,18 +391,21 @@ export async function openProgressModal(student) {
     // Same rules as dashboard.js: Luksong Baka needs a real win
     // (completed === true); the other Unity badges need a document
     // that is not marked unlocked:false; the story badge uses chapters.
-    const unlocked = a.stage
-      ? chaptersCompleted >= a.stage
-      : (!!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false));
+    const earnedNotClaimed = !!a.badge && badges[a.badge + 'BadgeEarned'] === true && badges[a.badge + 'BadgeClaimed'] !== true;
+    const unlocked = a.badge
+      ? badges[a.badge + 'BadgeClaimed'] === true
+      : a.stage
+        ? (chaptersCompleted >= a.stage || summary.storyFinished === true)
+        : (!!data && (a.id === 'luksong_baka' ? data.completed === true : data.unlocked !== false));
     if (unlocked) unlockedCount++;
-    const info = unlocked ? `<div class="pg-row-meta">${escapeHtml(a.detail(data, stats))}</div>` : '';
+    const info = (unlocked && a.detail) ? `<div class="pg-row-meta">${escapeHtml(a.detail(data, stats))}</div>` : '';
     return `<li class="pg-row">
       <div>
         <span class="pg-row-title">${escapeHtml(a.title)}</span>
         <div class="pg-row-meta">${escapeHtml(a.desc)}</div>
         ${info}
       </div>
-      <span class="pg-pill ${unlocked ? 'done' : 'locked'}">${unlocked ? 'Unlocked' : (a.goal ? a.goal(stats) : 'Locked')}</span>
+      <span class="pg-pill ${unlocked ? 'done' : 'locked'}">${unlocked ? 'Unlocked' : earnedNotClaimed ? 'Not claimed yet' : (a.goal ? a.goal(stats) : 'Locked')}</span>
     </li>`;
   }).join('');
 
@@ -400,6 +413,12 @@ export async function openProgressModal(student) {
     ${warnHtml}
     <div class="pg-stats">
       <div class="pg-stat"><strong>${friendsRes.ok ? friendCount : 'N/A'}</strong><span>Friends</span></div>
+      <div class="pg-stat"><strong>${achRes.ok ? num(summary.totalMultiplayerWins) : 'N/A'}</strong><span>Multiplayer wins</span></div>
+      <div class="pg-stat"><strong>${achRes.ok ? num(summary.totalMultiplayerPlays) : 'N/A'}</strong><span>Multiplayer plays</span></div>
+    </div>
+    <div class="pg-section">
+      <h4>Multiplayer games played</h4>
+      <ul class="pg-list two-col">${[['Patintero','playedPatintero'],['Sekyu Base','playedSekyuBase'],['Bamsak','playedBamsak']].map(([n,f]) => `<li class="pg-row"><span class="pg-row-title">${n}</span><span class="pg-pill ${summary[f] === true ? 'done' : 'locked'}">${summary[f] === true ? 'Played' : 'Not yet'}</span></li>`).join('')}</ul>
     </div>
     <div class="pg-section">
       <h4>Story progress</h4>
@@ -457,4 +476,4 @@ export function fileToCompressedDataUrl(file, maxSide = 1400) {
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad-image')); };
     img.src = url;
   });
-} 
+}

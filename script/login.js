@@ -156,8 +156,10 @@ if (loginBtn) {
 
       let isStaff = false;
       let staffData = null;
+      let staffChecked = false;
       try {
         const teacherSnap = await getDoc(doc(db, 'teachers', cred.user.uid));
+        staffChecked = true;
         if (teacherSnap.exists() && ['admin', 'teacher', 'staff'].includes(teacherSnap.data().role)) {
           isStaff = true;
           staffData = teacherSnap.data();
@@ -180,6 +182,7 @@ if (loginBtn) {
         try {
           const dSnap = await getDoc(doc(db, 'students', cred.user.uid));
           if (dSnap.exists()) blocked = dSnap.data().status === 'deleted' ? 'deleted' : (dSnap.data().status === 'disabled' ? 'disabled' : '');
+          else if (staffChecked) blocked = 'deleted';   // profile erased by the school admin: the login still exists, but the account is gone
         } catch (_) { /* can't check: let them through */ }
         if (blocked) {
           await signOut(auth);

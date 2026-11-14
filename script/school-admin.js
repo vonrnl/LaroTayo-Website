@@ -1,6 +1,6 @@
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
-  collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp,
+  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp,
   writeBatch, Timestamp,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 import {
@@ -684,22 +684,61 @@ async function toggleStudent(id) {
   }
 }
 
+// Permanently erase a student's data from Firestore (hard delete).
+// A browser cannot delete someone else's Firebase *login*, so the game also checks that
+// students/{uid} still exists (a missing profile = removed account).
+async function eraseStudentData(id) {
+  let leftovers = false;
+  const wipe = async (ref, after) => {
+    try {
+      const snap = await getDocs(ref);
+      for (const d of snap.docs) {
+        try { await deleteDoc(d.ref); if (after) await after(d); } catch (_) { leftovers = true; }
+      }
+    } catch (_) { leftovers = true; }
+  };
+  await wipe(collection(db, 'students', id, 'storySaves'));
+  await wipe(collection(db, 'students', id, 'achievements'));
+  // friends: remove the other side of each friendship too
+  await wipe(collection(db, 'students', id, 'friends'), d => deleteDoc(doc(db, 'students', d.id, 'friends', id)));
+  // pending friend requests sent or received
+  await wipe(query(collection(db, 'friendRequests'), where('from', '==', id)));
+  await wipe(query(collection(db, 'friendRequests'), where('to', '==', id)));
+  try { await deleteDoc(doc(db, 'reviews', id)); } catch (_) { /* no review, or not allowed */ }
+  return leftovers;
+}
+
 async function deleteStudent(id) {
   const u = STUDENTS.find(x => x.id === id);
   if (!u) return;
   const who = u.fullName || u.username;
   const res = await Swal.fire({
     icon: 'warning',
-    title: 'Delete this account?',
-    html: `<b>${escapeHtml(who)}</b> will be removed from your school and can no longer log in. Their seat in the section is freed.`,
+    title: 'Delete this account permanently?',
+    html: `<b>${escapeHtml(who)}</b> and all their progress (story saves, badges, friends) will be erased for good and cannot be brought back. They will no longer be able to log in to the website or the game. Their seat in the section is freed.`,
     showCancelButton: true,
-    confirmButtonText: 'Delete',
+    confirmButtonText: 'Delete permanently',
     confirmButtonColor: '#e53935',
   });
   if (!res.isConfirmed) return;
+  Swal.fire({ title: 'Deleting...', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: false, didOpen: () => Swal.showLoading() });
   try {
+    // 1) block the account first (already allowed by your rules), so it is safe even if a later step fails
     await updateDoc(doc(db, 'students', id), { status: 'deleted' });
-    Swal.fire({ icon: 'success', title: 'Deleted', text: `${who} was removed.`, timer: 1800, showConfirmButton: false });
+    // 2) erase their data, then the profile itself
+    const leftovers = await eraseStudentData(id);
+    try {
+      await deleteDoc(doc(db, 'students', id));
+    } catch (err) {
+      Swal.fire({ icon: 'warning', title: 'Account removed, not erased',
+        text: err.code === 'permission-denied'
+          ? 'The account can no longer log in, but the database rules do not allow erasing the record yet.'
+          : err.message, confirmButtonColor: '#F4A234' });
+      return;
+    }
+    Swal.fire({ icon: leftovers ? 'info' : 'success', title: 'Deleted',
+      text: leftovers ? `${who} was erased. Some extra data (like a friend's copy) could not be removed.` : `${who} was permanently deleted.`,
+      timer: leftovers ? 3200 : 1800, showConfirmButton: leftovers });
   } catch (err) {
     const msg = err.code === 'permission-denied' ? 'Database permission denied. Publish the updated Firestore rules (students status).' : err.message;
     Swal.fire({ title: 'Error', text: msg, confirmButtonColor: '#e53935' });
@@ -770,18 +809,12 @@ function renderSectionStudents() {
 
   const studentTable = list => `
     <div class="sa-table-wrap"><table class="sa-table">
-      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Date Joined</th><th>Manage</th></tr></thead>
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Date Joined</th></tr></thead>
       <tbody>${list.map((u, i) => `<tr>
         <td>${i + 1}</td>
         <td>${personCell(u)}${statusPill(u)}</td>
         <td>${escapeHtml(u.email)}</td>
         <td>${formatDate(u.joined)}</td>
-        <td><div class="sa-actions">
-          ${IS_STAFF ? `<button class="sa-mini blue" onclick="openProgressModal('${u.id}')">Progress</button>` : ''}
-          <button class="sa-mini blue" onclick="resendSetupEmail('${u.id}')">Resend</button>
-          ${disableBtn(u)}
-          <button class="sa-mini red" onclick="deleteStudent('${u.id}')">Delete</button>
-        </div></td>
       </tr>`).join('')}</tbody>
     </table></div>`;
 

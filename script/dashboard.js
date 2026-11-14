@@ -23,12 +23,21 @@ const db = getFirestore(app);
 document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
 /* ============================================================
-   AVATARS — only three choices
+   AVATARS — to add one: save the picture in img/ and add ONE line below.
+   The picker in Edit Profile is built from this list automatically.
    ============================================================ */
 const AVATARS = {
-  bata:  { label: 'Kid',       src: 'img/avatar-bata.png'  },
-  lolo:  { label: 'Mang Tomas', src: 'img/avatar-lolo.png'  },
-  libro: { label: 'Book',      src: 'img/avatar-libro.png' }
+  bata:  { label: 'Liam',       src: 'img/avatar-bata.png'  },
+  lolo:  { label: 'Lolo', src: 'img/avatar-lolo.png'  },
+  libro: { label: 'Super Book',      src: 'img/avatar-libro.png' },
+  maria: { label: 'Maria', src: 'img/avatar-maria.png' },
+  miguel: { label: 'Miguel', src: 'img/avatar-miguel.png' },
+  pedro: { label: 'Pedro', src: 'img/avatar-pedro.png' },
+  robert: { label: 'Robert', src: 'img/avatar-robert.png' },
+  jose: { label: 'Jose', src: 'img/avatar-jose.png' },
+  juan: { label: 'Juan', src: 'img/avatar-juan.png' },
+  lisa: { label: 'Lisa', src: 'img/avatar-lisa.png' },
+  thomas: { label: 'Mang Thomas', src: 'img/avatar-thomas.png' }
 };
 const DEFAULT_AVATAR = 'bata';
 
@@ -51,6 +60,17 @@ function applyAvatar(id){
     b.classList.toggle('selected', b.dataset.avatar === resolveAvatar(id));
   });
 }
+
+// Build the avatar choices in the Edit Profile popup from the AVATARS list above.
+(function buildAvatarGrid(){
+  const grid = document.getElementById('ep-avatar-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(AVATARS).map(([id, a]) =>
+    `<button class="ep-avatar-opt" data-avatar="${escapeHtml(id)}" type="button">
+      <img src="${escapeHtml(a.src)}" alt="${escapeHtml(a.label)}" onerror="console.warn('Avatar picture not found:', this.src); this.parentNode.remove()">
+      <span>${escapeHtml(a.label)}</span>
+    </button>`).join('');
+})();
 
 /* ============================================================
    HELPERS
@@ -130,11 +150,11 @@ const ACHIEVEMENTS = [
   { id: 'story_complete',    title: 'Story Complete',   desc: 'Unlocked by completing all story chapters.', stage: STORY_CHAPTERS.length },
   // Multiplayer badges: saved by Unity in students/{uid}/achievements/badges
   // (<key>BadgeEarned = reached, <key>BadgeClaimed = player pressed CLAIM in the game)
-  { id: 'friendly',    title: 'Friendly',    desc: 'Make friends in the game.',                          badge: 'friendly' },
-  { id: 'veteran',     title: 'Veteran',     desc: 'Play Patintero, Sekyu Base and Bamsak at least once.', badge: 'veteran' },
-  { id: 'mvp',         title: 'MVP',         desc: 'Be the MVP in a Sekyu Base match.',                  badge: 'mvp' },
-  { id: 'team_player', title: 'Team Player', desc: 'Earn it by teamwork in Sekyu Base.',                 badge: 'teamPlayer' },
-  { id: 'speedster',   title: 'Speedster',   desc: 'Earn it by speed in Sekyu Base.',                    badge: 'speedster' }
+  { id: 'friendly',    title: 'Friendly',    desc: 'Make friends in the game.',                          badge: 'friendly',   img: 'img/13.png' },
+  { id: 'veteran',     title: 'Veteran',     desc: 'Play Patintero, Sekyu Base and Bamsak at least once.', badge: 'veteran',    img: 'img/17.png' },
+  { id: 'mvp',         title: 'MVP',         desc: 'Be the MVP in a Sekyu Base match.',                  badge: 'mvp',        img: 'img/15.png' },
+  { id: 'team_player', title: 'Team Player', desc: 'Earn it by teamwork in Sekyu Base.',                 badge: 'teamPlayer', img: 'img/16.png' },
+  { id: 'speedster',   title: 'Speedster',   desc: 'Earn it by speed in Sekyu Base.',                    badge: 'speedster',  img: 'img/14.png' }
 ];
 
 function formatAchievementTime(ms) {
@@ -202,10 +222,17 @@ function renderAchievements(achievementData, chaptersCompleted = 0) {
       else if (a.stage)                 extra = resultBlock('Story Progress', `${Math.min(chaptersCompleted, STORY_CHAPTERS.length)}/${STORY_CHAPTERS.length}`, 'chapters completed');
     }
 
+    // Badge picture (only the multiplayer badges have one: see img in ACHIEVEMENTS).
+    // It sits under the text. If the file is missing, it is simply left out.
+    const pic = a.img
+      ? `<div class="ach-img"><img src="${escapeHtml(a.img)}" alt="${escapeHtml(a.title)} badge" loading="lazy" onerror="this.parentNode.remove()"></div>`
+      : '';
+
     return `<div class="ach-card ${unlocked ? 'unlocked' : 'locked'}">
       <h4>${escapeHtml(a.title)}</h4>
       <p>${escapeHtml(a.desc)}</p>
       ${extra}
+      ${pic}
       <span class="ach-status">${unlocked ? 'Unlocked' : earnedNotClaimed ? 'Claim it in the game' : 'Locked'}</span>
     </div>`;
   }).join('');
@@ -576,7 +603,14 @@ onAuthStateChanged(auth, async (user) => {
     const userSnap = await getDoc(userRef);
     const u = userSnap.exists() ? userSnap.data() : {};
 
+    // Profile erased (hard delete) and not a staff account: treat as a removed account.
+    let erased = false;
+    if (!userSnap.exists()) {
+      try { erased = !(await getDoc(doc(db,'teachers',user.uid))).exists(); } catch (_) { erased = false; }
+    }
+
     // Disabled or deleted by the school admin / teacher: no access to the dashboard.
+    if (erased) u.status = 'deleted';
     if (u.status === 'disabled' || u.status === 'deleted') {
       await Swal.fire({
         icon: 'info',

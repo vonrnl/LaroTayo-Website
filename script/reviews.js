@@ -5,7 +5,17 @@ const FIREBASE_VERSION = '11.0.0';
 const MAX_COMMENT = 300;
 const PAGE_SIZE = 6;
 // Same three avatars as the student dashboard (dashboard.js).
-const AVATARS = { bata: 'img/avatar-bata.png', lolo: 'img/avatar-lolo.png', libro: 'img/avatar-libro.png' };
+const AVATARS = {
+  bata: 'img/avatar-bata.png', lolo: 'img/avatar-lolo.png', libro: 'img/avatar-libro.png',
+  maria: 'img/avatar-maria.png',
+  miguel: 'img/avatar-miguel.png',
+  pedro: 'img/avatar-pedro.png',
+  robert: 'img/avatar-robert.png',
+  jose: 'img/avatar-jose.png',
+  juan: 'img/avatar-juan.png',
+  lisa: 'img/avatar-lisa.png',
+  thomas: 'img/avatar-thomas.png'
+};
 
 const base = 'https://www.gstatic.com/firebasejs/' + FIREBASE_VERSION + '/';
 const countEl = document.getElementById('rev-count');
@@ -189,8 +199,24 @@ function niceDate(ms) {
       myName = p.name;
       myAvatar = p.avatar;
       fillMine();
+      syncMyReview();
     }
   });
+
+  // keep the user's saved review in step with their current name + avatar
+  // (the review stores a copy of the avatar, so it goes stale when it is changed in the dashboard)
+  async function syncMyReview() {
+    try {
+      const ref = fb.doc(db, 'reviews', user.uid);
+      const snap = await fb.getDoc(ref);
+      if (!snap.exists()) return;
+      const d = snap.data();
+      const changes = {};
+      if (myAvatar && d.avatar !== myAvatar) changes.avatar = myAvatar;
+      if (myName && d.name !== myName) changes.name = myName;
+      if (Object.keys(changes).length) await fb.updateDoc(ref, changes);
+    } catch (_) { /* rules may block it; the next submit will still save the new avatar */ }
+  }
 
   // ---- submit ----
   form.addEventListener('submit', async e => {
