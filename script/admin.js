@@ -1,15 +1,21 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 import {
-  collection, doc, getDoc, updateDoc, onSnapshot, query, orderBy, writeBatch, serverTimestamp,
+  collection, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, writeBatch, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-import { auth, db, escapeHtml as esc, initPasswordForm, initLogout } from "./shared.js";
+import { auth, db, escapeHtml as esc, initPasswordForm, initLogout, createAdminFromEmail } from "./shared.js";
 
 /* WEBSITE ADMIN PANEL: schools, payments, reports. Owner only (teachers/{uid}.role === 'admin'). */
+
+// Only this account can create or delete other admins. (Also enforce it in Firestore rules.)
+const MAIN_ADMIN_EMAIL = 'dimapilis.vhonrenel@ncst.edu.ph';
+let IS_MAIN = false;
+const isMainEmail = e => String(e || '').trim().toLowerCase() === MAIN_ADMIN_EMAIL;
 
 const $ = id => document.getElementById(id);
 const TITLES = { dashboard: 'Dashboard', verify: 'Verification', schools: 'Schools', bugs: 'Bug Reports', payments: 'Payments', reports: 'Reports', settings: 'Settings' };
 let SCHOOLS = [], STUDENTS = [], PAYMENTS = [], paymentsFailed = false;
 let REPORTS = [], reportsFailed = false;
+let ADMINS = [];
 
 const ms   = t => !t ? 0 : t.toMillis ? t.toMillis() : (new Date(t).getTime() || 0);
 const day  = t => ms(t) ? new Date(ms(t)).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
@@ -35,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!snap.exists() || !['admin', 'teacher', 'staff'].includes(snap.data().role)) { window.location.href = 'dashboard.html'; return; }
       if (snap.data().role !== 'admin') { window.location.href = 'school-admin.html'; return; }
 
+      IS_MAIN = isMainEmail(user.email);
+      $('create-admin-card').hidden = !IS_MAIN;
       const name = snap.data().username || user.email;
       $('sa-user-name').textContent = name;
       $('sa-user-initial').textContent = name.charAt(0).toUpperCase();
@@ -66,7 +74,9 @@ function initNav() {
 function listen() {
   const fail = e => { console.error(e); Swal.fire({ icon: 'error', title: 'Could not load data', text: 'Check your Firestore rules.' }); };
   onSnapshot(collection(db, 'teachers'), s => {
-    SCHOOLS = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.role === 'teacher' && !x.ownerId);   // real schools only, not teachers added by a school
+    const all = s.docs.map(d => ({ id: d.id, ...d.data() }));
+    ADMINS = all.filter(x => x.role === 'admin');
+    SCHOOLS = all.filter(x => x.role === 'teacher' && !x.ownerId);   // real schools only, not teachers added by a school
     renderAll();
   }, fail);
   onSnapshot(collection(db, 'students'), s => { STUDENTS = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.status !== 'deleted'); renderAll(); }, fail);
@@ -118,6 +128,7 @@ function renderAll() {
 
   renderSchools(sorted, counts);
   renderVerify(sorted);
+  renderAdmins();
 
   $('payments-body').innerHTML = PAYMENTS.map(p =>
     `<tr><td>${day(p.paidAt)}</td><td>${esc(p.schoolName || '—')}<br><small>${esc(p.adminName || '')}</small></td><td>${peso(p.amount)}</td><td>${esc(p.method || '—')}</td><td>${esc(p.reference || '—')}</td></tr>`).join('')
@@ -139,6 +150,39 @@ function renderAll() {
   $('rp-schools').innerHTML = sorted.map(s =>
     `<tr><td>${esc(s.school || '—')}</td><td>${esc(s.username || '—')}</td><td>${counts[s.id] || 0}</td><td>${pill(access(s))}</td></tr>`).join('') || none(4, 'No schools yet.');
 }
+
+function renderAdmins() {
+  const me = auth.currentUser ? auth.currentUser.uid : null;
+  const rows = [...ADMINS].sort((a, b) => (isMainEmail(b.email) - isMainEmail(a.email)) || (joined(a) - joined(b)));
+  $('admins-note').textContent = IS_MAIN ? 'You are the main admin. You can add and delete other admins.' : 'Only the main admin can add or delete admins.';
+  $('admins-body').innerHTML = rows.map(a => {
+    const main = isMainEmail(a.email);
+    const del = IS_MAIN && !main && a.id !== me
+      ? `<div class="sa-actions"><button class="sa-mini red" onclick="deleteAdmin('${esc(a.id)}')">Delete</button></div>` : '—';
+    return `<tr><td>${esc(a.username || '—')}</td><td>${esc(a.email || '—')}</td><td>${main ? 'Main Admin' : 'Admin'}</td><td>${ms(a.createdAt) ? day(a.createdAt) : esc(a.joined || '—')}</td><td>${del}</td></tr>`;
+  }).join('') || none(5, 'No admins found.');
+}
+
+// Hard delete: removes the admin's profile so they can no longer open the admin panel.
+async function deleteAdmin(id) {
+  if (!IS_MAIN) return;
+  const a = ADMINS.find(x => x.id === id);
+  if (!a || isMainEmail(a.email) || (auth.currentUser && a.id === auth.currentUser.uid)) return;
+  const r = await Swal.fire({
+    icon: 'warning', title: 'Delete this admin?',
+    html: `<b>${esc(a.username || '')}</b><br>${esc(a.email || '')}<br><br><small>This permanently removes their admin access.</small>`,
+    showCancelButton: true, confirmButtonText: 'Yes, delete', confirmButtonColor: '#e53935', cancelButtonColor: '#6A8AA0',
+  });
+  if (!r.isConfirmed) return;
+  try {
+    await deleteDoc(doc(db, 'teachers', id));
+    Swal.fire({ icon: 'success', title: 'Deleted', text: 'That admin can no longer use the admin panel.', timer: 2000, showConfirmButton: false });
+  } catch (e) {
+    console.error(e);
+    Swal.fire({ icon: 'error', title: 'Could not delete', text: e.code === 'permission-denied' ? 'Database permission denied. Check your Firestore rules.' : e.message });
+  }
+}
+window.deleteAdmin = deleteAdmin;
 
 function renderVerify(sorted) {
   const pending  = sorted.filter(s => s.verification === 'pending');
@@ -243,4 +287,45 @@ function renderSchools(sorted, counts) {
 function initActions() {
   $('school-search').addEventListener('input', renderAll);
   $('bug-type').addEventListener('change', renderReports);
+  $('create-admin-btn').addEventListener('click', createAdmin);
+}
+
+async function createAdmin() {
+  if (!IS_MAIN) { Swal.fire({ icon: 'error', title: 'Not allowed', text: 'Only the main admin can create admins.' }); return; }
+  const btn = $('create-admin-btn');
+  const name  = $('new-admin-name').value.trim();
+  const email = $('new-admin-email').value.trim().toLowerCase();
+
+  if (name.length < 3) { Swal.fire({ icon: 'warning', title: 'Name needed', text: "Enter the new admin's full name (at least 3 letters).", confirmButtonColor: '#F4A234' }); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { Swal.fire({ icon: 'warning', title: 'Invalid email', text: 'Enter a valid email address.', confirmButtonColor: '#F4A234' }); return; }
+
+  const ok = await Swal.fire({
+    icon: 'question', title: 'Create admin account?',
+    html: `<b>${esc(name)}</b><br>${esc(email)}<br><br><small>This person will have full website admin access.</small>`,
+    showCancelButton: true, confirmButtonText: 'Create', confirmButtonColor: '#4CAF50', cancelButtonColor: '#6A8AA0',
+  });
+  if (!ok.isConfirmed) return;
+
+  btn.disabled = true; btn.textContent = 'Creating...';
+  try {
+    const r = await createAdminFromEmail({ name, email });
+    $('new-admin-name').value = ''; $('new-admin-email').value = '';
+    Swal.fire({
+      icon: r.emailSent ? 'success' : 'warning',
+      title: 'Admin created',
+      text: r.emailSent
+        ? `A "set your password" email was sent to ${email}.`
+        : 'The account was created, but the setup email could not be sent. Ask them to use "Forgot password" on the login page.',
+    });
+  } catch (e) {
+    console.error(e);
+    const msgs = {
+      'auth/email-already-in-use': 'That email already has a login. If it belonged to a deleted admin, remove it in Firebase Console > Authentication first.',
+      'auth/invalid-email':        'That email address is not valid.',
+      'permission-denied':         'Database permission denied. Update your Firestore rules so admins can create teachers/{uid} with role "admin".',
+    };
+    Swal.fire({ icon: 'error', title: 'Could not create admin', text: msgs[e.code] || e.message });
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Admin';
+  }
 }

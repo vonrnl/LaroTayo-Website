@@ -164,6 +164,47 @@ export async function createTeacherFromEmail({ name, email, extra = {} }) {
   return { uid, emailSent };
 }
 
+/* ============================================================
+   CREATE ANOTHER WEBSITE ADMIN (used by admin.js > Settings)
+   ------------------------------------------------------------
+   Same idea as createTeacherFromEmail: runs on a short-lived second
+   Firebase app so the current admin stays signed in, uses a random
+   password nobody sees, then emails a "set your password" link.
+   The profile is saved in teachers/{uid} with role 'admin'.
+   ============================================================ */
+export async function createAdminFromEmail({ name, email }) {
+  email = String(email).trim().toLowerCase();
+  name  = String(name).trim().replace(/\s+/g, ' ').slice(0, 60);
+  const secondaryApp  = initializeApp(firebaseConfig, `secondary-${Date.now()}`);
+  const secondaryAuth = getAuth(secondaryApp);
+  let uid;
+  try {
+    const newUser = (await createUserWithEmailAndPassword(secondaryAuth, email, randomPassword())).user;
+    try {
+      await setDoc(doc(db, 'teachers', newUser.uid), {
+        uid: newUser.uid, username: name, email,
+        role:      'admin',
+        category:  'Website Admin',
+        active:    true,
+        joined:    new Date().toISOString().split('T')[0],
+        createdAt: serverTimestamp(),
+        createdBy: auth.currentUser ? auth.currentUser.uid : null,
+      });
+    } catch (err) {
+      try { await deleteUser(newUser); } catch (_) { /* nothing more we can do */ }
+      throw err;
+    }
+    uid = newUser.uid;
+  } finally {
+    try { await signOut(secondaryAuth); } catch (_) {}
+    await deleteApp(secondaryApp);
+  }
+  let emailSent = true;
+  try { await sendPasswordResetEmail(auth, email); }
+  catch (err) { console.error('Setup email failed:', err); emailSent = false; }
+  return { uid, emailSent };
+}
+
 // "Set your password" email (used by the Resend button too).
 export function sendPasswordSetupEmail(email) {
   return sendPasswordResetEmail(auth, String(email).trim());

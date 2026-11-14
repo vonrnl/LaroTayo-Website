@@ -190,6 +190,22 @@
             </div>
           </div>
         </div>
+        <div class="sa-card sa-pad" id="create-admin-card" hidden>
+          <h3 class="sa-form-title">Create Admin Account</h3>
+          <p class="sa-sub" style="margin-bottom:12px">Add another website admin. They get an email to set their own password.</p>
+          <div class="sa-stack">
+            <div class="sa-field"><label for="new-admin-name">Full Name</label><input type="text" class="sa-input" id="new-admin-name" maxlength="60" autocomplete="off" /></div>
+            <div class="sa-field"><label for="new-admin-email">Email</label><input type="email" class="sa-input" id="new-admin-email" autocomplete="off" /></div>
+            <button class="sa-btn orange" id="create-admin-btn">Create Admin</button>
+          </div>
+        </div>
+        <div class="sa-card">
+          <div class="sa-card-head"><div><h3>Website Admins</h3><p class="sa-sub" id="admins-note"></p></div></div>
+          <div class="sa-table-wrap"><table class="sa-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Added</th><th>Action</th></tr></thead>
+            <tbody id="admins-body"></tbody>
+          </table></div>
+        </div>
       </section>
 
     </main>
